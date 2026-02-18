@@ -101,45 +101,149 @@ document.addEventListener("DOMContentLoaded", function () {
     console.warn("Sidebar container non trouvé");
   }
 
-  // ==================== INJECTION DU FOOTER ====================
-  const footerContainer = document.getElementById("footer");
-  if (footerContainer) {
-    footerContainer.innerHTML = `
-      <div class="footer-item active" data-page="accueil">
-        <i class="fas fa-home"></i>
-        <span>Accueil</span>
-      </div>
-        
-        <a href="../blog.html" class="footer-item">
-                <div data-page="profile">
-        <i class="fas fa-search"></i>
-       <br> <span>Blog</span>
-      </div>
-        </a>
-       
-       <a href="cours.html" class="footer-item">
-                <div class="footer-item" data-page="services">
-        <i class="fas fa-plus-circle"></i>
-        <span>Cours</span>
-      </div>
-       </a>
+  // ==================== FONCTION DE VÉRIFICATION DE CONNEXION ====================
+  function isUserLoggedIn() {
+    const uid = localStorage.getItem("connectedUID");
+    return uid !== null && uid !== "";
+  }
 
-      <div class="footer-item" data-page="actus">
-        <i class="fas fa-bell"></i>
-        <span>Actus</span>
-      </div>
-      <div class="footer-item" data-page="profil">
-        <i class="fas fa-user"></i>
-        <span>Profil</span>
-      </div>
+  // ==================== FONCTION D'INJECTION DU FOOTER ====================
+  function injectFooter() {
+    const footerContainer = document.getElementById("footer");
+    if (!footerContainer) {
+      console.warn("Footer container non trouvé");
+      return;
+    }
+
+    const isLoggedIn = isUserLoggedIn();
+    const profileLink = isLoggedIn ? "../profile.html" : "../user.html";
+    
+    footerContainer.innerHTML = `
+      <a href="../index.html" class="footer-item">
+        <div data-page="accueil">
+          <i class="fas fa-home"></i><br>
+          <span>Accueil</span>
+        </div>
+      </a>
+      
+      <a href="../blog.html" class="footer-item">
+        <div data-page="blog">
+          <i class="fas fa-search"></i><br>
+          <span>Blog</span>
+        </div>
+      </a>
+      
+      <a href="cours.html" class="footer-item">
+        <div data-page="cours">
+          <i class="fas fa-plus-circle"></i><br>
+          <span>Cours</span>
+        </div>
+      </a>
+
+      <a href="#" class="footer-item" data-page="actus">
+        <div>
+          <i class="fas fa-bell"></i><br>
+          <span>Actus</span>
+        </div>
+      </a>
+      
+      <a href="${profileLink}" class="footer-item">
+        <div data-page="profil">
+          <i class="fas fa-user"></i><br>
+          <span>${isLoggedIn ? 'Profil' : 'Connexion'}</span>
+        </div>
+      </a>
     `;
-    console.log("Footer injecté");
-  } else {
-    console.warn("Footer container non trouvé");
+    
+    console.log(`Footer injecté avec lien ${isLoggedIn ? 'profile.html' : 'user.html'}`);
+    
+    // Activer l'élément du footer correspondant à la page courante
+    highlightCurrentPage();
+  }
+
+  // ==================== FONCTION POUR SURBRILLER LA PAGE ACTIVE ====================
+  function highlightCurrentPage() {
+    const currentPath = window.location.pathname;
+    const footerItems = document.querySelectorAll('.footer-item');
+    
+    footerItems.forEach(item => {
+      const href = item.getAttribute('href');
+      if (href && currentPath.includes(href.replace('../', ''))) {
+        item.classList.add('active');
+      } else if (!href && item.getAttribute('data-page') === 'actus') {
+        // Pour les liens sans href (Actus)
+        if (currentPath.includes('actus')) {
+          item.classList.add('active');
+        }
+      }
+    });
+  }
+
+  // ==================== FONCTION DE CHARGEMENT DES DONNÉES UTILISATEUR ====================
+  async function loadUserData() {
+    const uid = localStorage.getItem("connectedUID");
+    
+    // Éléments de la sidebar
+    const nameEl = document.getElementById("profileName");
+    const usernameEl = document.getElementById("username");
+    const emailEl = document.getElementById("emailUser");
+    const phoneEl = document.getElementById("phone");
+    const creditEl = document.getElementById("credits");
+    const adresseEl = document.getElementById("adresse");
+    const createdAtEl = document.getElementById("createdAt");
+    const adminBtn = document.getElementById("adminPanelBtn");
+    
+    if (!uid) {
+      // Utilisateur non connecté - afficher des valeurs par défaut ou vides
+      if (nameEl) nameEl.textContent = "Visiteur";
+      if (usernameEl) usernameEl.textContent = "invité";
+      if (emailEl) emailEl.textContent = "non connecté";
+      if (phoneEl) phoneEl.textContent = "-";
+      if (creditEl) creditEl.textContent = "0";
+      if (adresseEl) adresseEl.textContent = "Non renseignée";
+      if (createdAtEl) createdAtEl.textContent = "";
+      if (adminBtn) adminBtn.classList.add("hidden");
+      return;
+    }
+
+    try {
+      const snap = await firebase.database()
+        .ref(`RJFORDROID/USERS/${uid}`)
+        .once("value");
+
+      const user = snap.val();
+      if (!user) return;
+
+      console.log("Données utilisateur chargées:", user);
+
+      // Mise à jour de la sidebar
+      if (nameEl) nameEl.textContent = user.fullName || "Utilisateur";
+      if (usernameEl) usernameEl.textContent = user.username || "";
+      if (emailEl) emailEl.textContent = user.email || "";
+      if (phoneEl) phoneEl.textContent = user.phone || "+509 XX XX XXXX";
+      if (creditEl) creditEl.textContent = user.credits ?? 0;
+      if (adresseEl) adresseEl.textContent = user.adresse || "Jacmel, Haïti";
+      
+      if (user.createdAt && createdAtEl) {
+        const date = new Date(user.createdAt);
+        const formattedDate = date.toLocaleDateString("fr-FR", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric"
+        });
+        createdAtEl.textContent = "Inscrit le " + formattedDate;
+      }
+
+      // Vérification Admin
+      if (user.isAdmin === true && adminBtn) {
+        adminBtn.classList.remove("hidden");
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des données utilisateur:", error);
+    }
   }
 
   // ==================== GESTION DU MENU CONTEXTUEL ====================
-  // Note: On doit attendre que les éléments soient injectés
   setTimeout(function() {
     const menuBtn = document.getElementById("menuBtn");
     const contextMenu = document.getElementById("contextMenu");
@@ -194,26 +298,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }, 100);
 
   // ==================== CHARGEMENT DES DONNÉES UTILISATEUR ====================
-  setTimeout(function() {
-    // Simulation de données utilisateur
-    const userData = {
-      profileName: "",
-      username: "",
-      credits: "",
-      createdAt: "",
-      emailUser: "@rj4droid.com",
-      phone: "+509 42 77 29 70",
-      adresse: "Jacmel, Haïti"
-    };
-
-    // Mise à jour des éléments dans la sidebar
-    Object.keys(userData).forEach(key => {
-      const element = document.getElementById(key);
-      if (element) {
-        element.textContent = userData[key];
-        console.log(`Élément ${key} mis à jour:`, userData[key]);
-      }
-    });
+  // Injecter d'abord le footer
+  injectFooter();
+  
+  // Puis charger les données utilisateur
+  setTimeout(async () => {
+    await loadUserData();
   }, 200);
 
   // ==================== GESTION DU FORMULAIRE DE CONTACT ====================
@@ -222,7 +312,6 @@ document.addEventListener("DOMContentLoaded", function () {
     contactForm.addEventListener("submit", function(e) {
       e.preventDefault();
       
-      // Récupération des données du formulaire
       const formData = {
         name: document.getElementById("name")?.value || "",
         email: document.getElementById("contactEmail")?.value || "",
@@ -232,8 +321,6 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       console.log("Formulaire soumis :", formData);
-      
-      // Simulation d'envoi réussi
       alert("Message envoyé avec succès ! Nous vous répondrons dans les 24h.");
       contactForm.reset();
     });
@@ -246,12 +333,22 @@ document.addEventListener("DOMContentLoaded", function () {
     if (logoutBtn) {
       logoutBtn.addEventListener("click", function() {
         if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+          localStorage.removeItem("connectedUID");
           window.location.href = "login.html";
         }
       });
       console.log("Gestionnaire de déconnexion ajouté");
     }
   }, 200);
+
+  // ==================== ÉCOUTEUR POUR LES CHANGEMENTS DE CONNEXION ====================
+  window.addEventListener("storage", function(e) {
+    if (e.key === "connectedUID") {
+      console.log("Changement détecté dans connectedUID, mise à jour...");
+      injectFooter();
+      loadUserData();
+    }
+  });
 
   console.log("Initialisation terminée");
 });
