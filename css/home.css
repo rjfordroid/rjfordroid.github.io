@@ -1,0 +1,273 @@
+  /* ===== CONTENU PRINCIPAL (avec espace pour header/footer fixes) ===== */
+    .main-content {
+      flex: 1;
+      margin-top: 90px;   /* hauteur header fixe */
+      margin-bottom: 80px; /* hauteur footer fixe */
+      padding: 0.5rem 0 1rem 0;
+      overflow-y: auto;
+    }
+
+  /* ===== REPRISE DES STYLES EXISTANTS (adaptés) ===== */
+    .services-section {
+      padding: 1.5rem 1.2rem 0.5rem 1.2rem;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .section-title i {
+      background: #1e384f;
+      padding: 10px;
+      border-radius: 16px;
+      font-size: 1.3rem;
+      color: #79bcff;
+    }
+
+    .section-title h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .cards-scroll {
+      display: flex;
+      gap: 1.2rem;
+      overflow-x: auto;
+      padding: 0.4rem 0.2rem 1.2rem 0.2rem;
+      scrollbar-width: thin;
+      scrollbar-color: #42709e #1f3347;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+    }
+
+    .cards-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .cards-scroll::-webkit-scrollbar-track {
+      background: #1f3347;
+      border-radius: 12px;
+    }
+
+    .cards-scroll::-webkit-scrollbar-thumb {
+      background: #42709e;
+      border-radius: 12px;
+    }
+
+    .service-card {
+      flex: 0 0 260px;
+      background: #132433;
+      border-radius: 2rem;
+      padding: 1.6rem 1.2rem 1.8rem 1.2rem;
+      border: 1px solid #2f4e70;
+      box-shadow: 0 15px 30px -12px #00000080;
+      scroll-snap-align: start;
+      backdrop-filter: blur(2px);
+      transition: transform 0.15s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .service-card:active {
+      transform: scale(0.99);
+    }
+
+    .card-icon {
+      background: linear-gradient(145deg, #1b344b, #10212f);
+      width: 70px;
+      height: 70px;
+      border-radius: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: #90ccff;
+      margin-bottom: 1.5rem;
+      border: 1px solid #3d6388;
+    }
+
+    .service-card h4 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .service-card p {
+      color: #b4d2ec;
+      font-size: 0.9rem;
+      margin-bottom: 1.4rem;
+      flex-grow: 1;
+    }
+
+    .chip {
+      background: #1f3d57;
+      align-self: flex-start;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #bbdeff;
+      border: 1px solid #38658b;
+    }
+
+    .preso-block {
+      background: #10212e;
+      margin: 1rem 1.2rem 2rem 1.2rem;
+      padding: 1.8rem 1.5rem;
+      border-radius: 2.2rem;
+      border: 1px solid #264a66;
+      box-shadow: 0 15px 20px -10px #03070c;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .preso-text h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .preso-text p {
+      color: #bdd6ed;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .stats-mini {
+      display: flex;
+      gap: 1.2rem;
+    }
+
+    .stat-number {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #8bc1ff;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: #90adc7;
+    }
+
+    .preso-emoji {
+      background: #1b3349;
+      border-radius: 2rem;
+      padding: 0.8rem 1.2rem;
+      font-size: 2.5rem;
+      border: 1px solid #2e5880;
+    }
+
+    .contact-section {
+      background: #0e1b27;
+      margin: 1.8rem 1.2rem 1.2rem 1.2rem;
+      padding: 2rem 1.5rem;
+      border-radius: 2.5rem;
+      border: 1px solid #284a68;
+      box-shadow: 0 20px 30px -12px black;
+    }
+
+    .contact-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .contact-header i {
+      background: #1e3e5a;
+      padding: 14px;
+      border-radius: 20px;
+      font-size: 1.4rem;
+      color: #9aceff;
+    }
+
+    .contact-header h3 {
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+      color: #b3d0ea;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      background: #1f3142;
+      border: 1.5px solid #2b4a69;
+      border-radius: 20px;
+      padding: 0.9rem 1.2rem;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      color: white;
+      outline: none;
+    }
+
+    .form-group select option {
+      background: #1f3142;
+    }
+
+    .btn-submit {
+      background: linear-gradient(145deg, #286090, #12406b);
+      width: 100%;
+      border: none;
+      border-radius: 40px;
+      padding: 1rem;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid #4582b9;
+      margin-top: 0.5rem;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+      background: #1e4a73;
+    }
+
+    .info-contact-mini {
+      background: #142637;
+      border-radius: 30px;
+      padding: 0.8rem 1.2rem;
+      margin: 1.2rem 1.2rem 0 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-size: 0.9rem;
+      border: 1px solid #2f4d70;
+      color: #bdd4ec;
+    }
+
+    .info-contact-mini i {
+      color: #79bbff;
+      margin-right: 5px;
+    }
+
+    .footer-note-hidden {
+      visibility: hidden; /* car footer fixed déjà présent */
+      height: 0;
+    }
+
+    @media (max-width: 380px) {
+      .service-card {
+        flex: 0 0 230px;
+      }
+    }
