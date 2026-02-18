@@ -19,21 +19,52 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/home.css">
   
-  <style>
-
-  /* ======= BADGES ======= */
-  .badge { display:inline-block; padding:4px 8px; background:#28a745; color:white; border-radius:4px; font-size:0.85rem; }
-
- 
- 
-  /* ======= COMMENTS ======= */
-  .comment-bubble { background:#eee; padding:10px; border-radius:8px; margin-bottom:10px; }
-  .comment-bubble.self { background:#cce5ff; align-self:flex-end; }
-  .comment-bubble.other { background:#f1f1f1; align-self:flex-start; }
-
-  textarea { width:100%; min-height:60px; padding:10px; border-radius:5px; border:1px solid #ccc; }
+<style>
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:2px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:20px;
+}
+.card{
+  background:white;
+  border-radius:8px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  overflow:hidden;
+  transition:0.3s;
+}
+.card:hover{
+  transform:translateY(-5px);
+}
+.card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+}
+.card-content{
+  padding:15px;
+}
+.card h2{
+  font-size:20px;
+  margin:0 0 10px;
+}
+.card p{
+  font-size:14px;
+  color:#555;
+}
+.read-btn{
+  display:inline-block;
+  margin-top:10px;
+  padding:8px 12px;
+  background:#111;
+  color:white;
+  text-decoration:none;
+  border-radius:4px;
+  font-size:14px;
+}
 </style>
-
 </head>
 <body>
       <!--config-->
@@ -52,17 +83,8 @@
 </span>
   <!-- CONTENU PRINCIPAL-->
   <main class="main-content">
-  <h1>Politique de confidentialité et cookies</h1>
-
-  <p>Chez <strong>RJForDroid</strong>, nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD).</p>
-
-  <h2>Données collectées</h2>
-  <ul>
-    <li>Adresse email (si vous nous contactez via le formulaire)</li>
-    <li>Cookies pour améliorer l'expérience utilisateur</li>
-    <li>Données statistiques anonymes sur la navigation</li>
-  </ul>
-<div class="ad-space">
+    <div class="container" id="blogContainer"></div>
+    <div class="ad-space">
 <!-- Bloc AdSense 2 -->
 <ins class="adsbygoogle"
      style="display:block"
@@ -74,15 +96,41 @@
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
 </div>
-  <h2>Utilisation des données</h2>
-  <p>Nous utilisons vos données uniquement pour répondre à vos demandes, améliorer nos services et analyser le trafic du site. Vos informations ne seront jamais vendues ou partagées avec des tiers à des fins commerciales.</p>
+  </main>
+  <script>
+var blogContainer = document.getElementById("blogContainer");
 
-  <h2>Cookies</h2>
-  <p>Le site utilise des cookies pour : analyser le trafic, mémoriser vos préférences et optimiser votre expérience. Vous pouvez désactiver les cookies dans les paramètres de votre navigateur.</p>
+db.ref("RJFORDROID/ARTICLES").on("value", function(snapshot){
 
-  <a href="https://whatsapp.com/channel/0029VadhmlpEAKWIRzYyWt0a">
-    <button>S'abonner sur WhatsApp</button>
-  </a>
-</main>
+  blogContainer.innerHTML = "";
+
+  if(!snapshot.exists()){
+    blogContainer.innerHTML = "<p>Aucun article disponible.</p>";
+    return;
+  }
+
+  snapshot.forEach(function(child){
+
+    var data = child.val();
+
+    if(data && data.online === true){
+
+      blogContainer.innerHTML += `
+        <article class="card">
+          <img loading="lazy" src="${data.image}" alt="${data.title}">
+          <div class="card-content">
+            <h2>${data.title}</h2>
+            <p>${data.summary}</p>
+            <a class="read-btn" href="article.html?id=${child.key}">Lire l'article</a>
+          </div>
+        </article>
+      `;
+
+    }
+
+  });
+
+});
+</script>
 </body>
 </html>

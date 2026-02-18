@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="google-adsense-account" content="ca-pub-4800728968697075">
+  
+  
+<title>Détails Article</title>
+
+<meta name="description" content="">
+<meta name="robots" content="index, follow">
+<meta name="author" content="RJFORDROID">
+<link rel="canonical" id="canonicalLink" href="">
+
+<!-- Open Graph -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="">
+<meta property="og:description" content="">
+<meta property="og:image" content="">
+<meta property="og:url" content="">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="">
+<meta name="twitter:description" content="">
+<meta name="twitter:image" content="">
+  
+  
+  <title>RJ4DROID · app mobile</title>
+  <!-- Font Awesome Icons (v6) + Google Font Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075"
+     crossorigin="anonymous"></script>
+  
+  <link rel="stylesheet" href="css/style.css">
+  
+<style>
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+  background:white;
+}
+img{
+  width:100%;
+  border-radius:8px;
+}
+.meta{
+  color:#777;
+  font-size:14px;
+  margin:10px 0;
+}
+.content{
+  margin-top:20px;
+  line-height:1.8;
+}
+.ads{
+  margin:30px 0;
+  text-align:center;
+}
+</style>
+</head>
+<body>
+      <!--config-->
+<span>  
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/userSidebar.js"></script>
+  <script src="js/layout.js"></script>
+    
+  <header class="app-header" id="header"></header>
+  <div class="sidebar" id="sidebar"></div>
+  <div class="overlay" id="overlay"></div>
+  <footer class="app-footer" id="footer">
+  </footer>
+</span>
+  <!-- CONTENU PRINCIPAL-->
+  <main class="main-content">
+<article itemscope itemtype="https://schema.org/Article">
+
+<h1 id="title" itemprop="headline"></h1>
+
+<div class="meta" id="meta"></div>
+
+<img id="image" itemprop="image" alt="Image article" loading="lazy">
+
+<!-- Bloc pub haut -->
+<div class="ad-space">
+<!-- Bloc AdSense 2 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-4800728968697075"
+     data-ad-slot="XXXXXXX"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+
+<div class="content" id="content" itemprop="articleBody"></div>
+
+<!-- Bloc pub bas -->
+<div class="ad-space">
+<!-- Bloc AdSense 2 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-4800728968697075"
+     data-ad-slot="XXXXXXX"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+
+</article>
+
+
+</main>
+
+<script>
+
+var urlParams = new URLSearchParams(window.location.search);
+var id = urlParams.get("id");
+
+if(id){
+
+  var articleRef = db.ref("RJFORDROID/ARTICLES/" + id);
+
+  articleRef.once("value", function(snapshot){
+
+    if(snapshot.exists()){
+
+      var data = snapshot.val();
+
+      var fullUrl = window.location.href;
+
+      // TITLE + META
+      document.title = data.title + " | RJFORDROID";
+
+      document.querySelector("meta[name='description']")
+        .setAttribute("content", data.summary);
+
+      document.getElementById("canonicalLink")
+        .setAttribute("href", fullUrl);
+
+      // Open Graph
+      document.querySelector("meta[property='og:title']")
+        .setAttribute("content", data.title);
+
+      document.querySelector("meta[property='og:description']")
+        .setAttribute("content", data.summary);
+
+      document.querySelector("meta[property='og:image']")
+        .setAttribute("content", data.image);
+
+      document.querySelector("meta[property='og:url']")
+        .setAttribute("content", fullUrl);
+
+      // Twitter
+      document.querySelector("meta[name='twitter:title']")
+        .setAttribute("content", data.title);
+
+      document.querySelector("meta[name='twitter:description']")
+        .setAttribute("content", data.summary);
+
+      document.querySelector("meta[name='twitter:image']")
+        .setAttribute("content", data.image);
+
+      // CONTENT
+      document.getElementById("title").innerText = data.title;
+      document.getElementById("meta").innerText =
+        "Par " + data.author + " | " + data.date + " | " + data.views + " vues";
+
+      document.getElementById("image").src = data.image;
+      document.getElementById("content").innerHTML = data.description;
+
+      // Structured Data
+      var script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.text = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": data.title,
+        "image": data.image,
+        "author": {
+          "@type": "Person",
+          "name": data.author
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "RJFORDROID"
+        },
+        "datePublished": data.date,
+        "dateModified": data.date,
+        "description": data.summary,
+        "mainEntityOfPage": fullUrl
+      });
+
+      document.head.appendChild(script);
+
+      (adsbygoogle = window.adsbygoogle || []).push({});
+      (adsbygoogle = window.adsbygoogle || []).push({});
+
+    } else {
+      document.getElementById("content").innerHTML =
+        "<p>Article introuvable.</p>";
+    }
+
+  });
+
+  // Incrémentation vues
+  articleRef.child("views").transaction(function(current){
+    return (current || 0) + 1;
+  });
+
+}
+
+</script>
+</body>
+</html>
