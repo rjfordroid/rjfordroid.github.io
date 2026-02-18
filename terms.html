@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="google-adsense-account" content="ca-pub-4800728968697075">
+  <title>RJ4DROID · app mobile</title>
+  <!-- Font Awesome Icons (v6) + Google Font Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075"
+     crossorigin="anonymous"></script>
+  
+  
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+  
+<style>
+
+  /* ===== CARTE ABOUT (style moderne) ===== */
+  .about-card {
+    background: #10212e;
+    border-radius: 2.5rem;
+    padding: 2.5rem 2rem;
+    border: 1px solid #264a66;
+    box-shadow: 0 20px 30px -12px #00000080;
+    margin-bottom: 2rem;
+  }
+
+  .about-icon {
+    background: #1e3a57;
+    width: 80px;
+    height: 80px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #8bc8ff;
+    margin: 0 auto 1.5rem;
+    border: 1px solid #34699a;
+  }
+
+  .about-card h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    text-align: center;
+    background: linear-gradient(130deg, #b3e0ff, #6eb6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+  }
+
+  .about-text {
+    color: #d1e4f5;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .about-text p {
+    margin-bottom: 1.2rem;
+  }
+
+  .about-text strong {
+    color: #9acbff;
+    font-weight: 600;
+  }
+
+  .mission-box {
+    background: #0d1f2e;
+    border-radius: 2rem;
+    padding: 1.8rem;
+    border-left: 6px solid #ff8c42;
+    margin-top: 2rem;
+  }
+
+  .mission-box h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: #ffb347;
+  }
+
+  .mission-box p {
+    color: #c2dcf5;
+    margin: 0;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0 1rem;
+  }
+
+  .feature-item {
+    background: #1a3349;
+    border-radius: 1.5rem;
+    padding: 1.2rem;
+    text-align: center;
+    border: 1px solid #345f88;
+  }
+
+  .feature-item i {
+    font-size: 2rem;
+    color: #6bb5ff;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-item span {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #c3defa;
+  }
+</style>
+
+</head>
+<body>
+      <!--config-->
+<span>  
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/userSidebar.js"></script>
+  <script src="js/layout.js"></script>
+    
+  <header class="app-header" id="header"></header>
+  <div class="sidebar" id="sidebar"></div>
+  <div class="overlay" id="overlay"></div>
+  <footer class="app-footer" id="footer">
+  </footer>
+</span>
+  <!-- CONTENU PRINCIPAL-->
+  <main class="main-content">
+  <article>
+    <header>
+      <h1>Conditions générales d'utilisation (CGU)</h1>
+      <p>Dernière mise à jour : 15 février 2026</p>
+    </header>
+
+    <section>
+      <h2>1. Acceptation des CGU</h2>
+      <p>
+        En utilisant <strong>RJFORDROID</strong>, vous acceptez les présentes Conditions générales d'utilisation. Si vous n'êtes pas d'accord, merci de ne pas utiliser le site ou les services associés.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. Propriété intellectuelle</h2>
+      <p>
+        Tout le contenu du site, y compris les articles, images, vidéos, tutoriels et ressources, est protégé par le droit d'auteur et la propriété intellectuelle. Toute reproduction, redistribution ou utilisation commerciale sans autorisation est strictement interdite.
+      </p>
+    </section>
+
+    <section>
+      <h2>3. Utilisation du site</h2>
+      <p>
+        Vous pouvez consulter les articles et utiliser les ressources pour votre apprentissage personnel. Toute utilisation commerciale, modification ou redistribution du contenu sans autorisation est interdite.
+      </p>
+    </section>
+
+    <section>
+      <h2>4. Responsabilité</h2>
+      <p>
+        RJFORDROID met tout en œuvre pour fournir des informations exactes et à jour. Cependant, nous ne pouvons être tenus responsables des erreurs, omissions ou de l'utilisation des informations présentes sur le site.
+      </p>
+    </section>
+
+    <section>
+      <h2>5. Données personnelles</h2>
+      <p>
+        Pour en savoir plus sur la collecte et l'utilisation de vos données personnelles, consultez notre <a href="privacy.html">Politique de confidentialité</a>.
+      </p>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 RJFORDROID. Tous droits réservés.</p>
+    </footer>
+  </article>
+</main>
+</body>
+</html>
