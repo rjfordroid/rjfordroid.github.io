@@ -109,14 +109,21 @@ document.addEventListener("DOMContentLoaded", function () {
         <i class="fas fa-home"></i>
         <span>Accueil</span>
       </div>
-      <div class="footer-item" data-page="explorer">
+        
+        <a href="../blog.html>
+                <div class="footer-item" data-page="profile">
         <i class="fas fa-search"></i>
         <span>Explorer</span>
       </div>
-      <div class="footer-item" data-page="services">
+        </a>
+       
+       <a href="cours.html>
+                <div class="footer-item" data-page="services">
         <i class="fas fa-plus-circle"></i>
         <span>Services</span>
       </div>
+       </a>
+
       <div class="footer-item" data-page="actus">
         <i class="fas fa-bell"></i>
         <span>Actus</span>
@@ -190,13 +197,13 @@ document.addEventListener("DOMContentLoaded", function () {
   setTimeout(function() {
     // Simulation de données utilisateur
     const userData = {
-      profileName: "Ruban Joseph",
-      username: "ruban_j",
-      credits: "1500",
-      createdAt: "01/01/2023",
-      emailUser: "contact@rj4droid.com",
+      profileName: "",
+      username: "",
+      credits: "",
+      createdAt: "",
+      emailUser: "@rj4droid.com",
       phone: "+509 42 77 29 70",
-      adresse: "Port-au-Prince, Haïti"
+      adresse: "Jacmel, Haïti"
     };
 
     // Mise à jour des éléments dans la sidebar
