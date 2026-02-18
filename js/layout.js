@@ -110,17 +110,17 @@ document.addEventListener("DOMContentLoaded", function () {
         <span>Accueil</span>
       </div>
         
-        <a href="../blog.html>
-                <div class="footer-item" data-page="profile">
+        <a href="../blog.html" class="footer-item">
+                <div data-page="profile">
         <i class="fas fa-search"></i>
-        <span>Explorer</span>
+       <br> <span>Blog</span>
       </div>
         </a>
        
-       <a href="cours.html>
+       <a href="cours.html" class="footer-item">
                 <div class="footer-item" data-page="services">
         <i class="fas fa-plus-circle"></i>
-        <span>Services</span>
+        <span>Cours</span>
       </div>
        </a>
 
