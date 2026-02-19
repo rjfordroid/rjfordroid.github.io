@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Asire Font Awesome enkli -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<title>WΛVΞ RADIO - Live</title>
+
+<style>
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #0b0c0f 0%, #1a1d24 100%);
+  color: #fff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+body::before {
+  content: '';
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 30% 50%, rgba(41, 98, 255, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+  animation: pulse 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ===== FIXED HEADER ===== */
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 12, 18, 0.95);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 15px 25px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+#title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #fff 0%, #a0b0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+#title::after {
+  content: '● LIVE';
+  position: absolute;
+  font-size: 0.6rem;
+  background: #ff3366;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 20px;
+  top: -15px;
+  right: -30px;
+  letter-spacing: 1px;
+  font-weight: 500;
+  animation: blink 2s infinite;
+  -webkit-text-fill-color: white;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+#meta {
+  font-size: 0.9rem;
+  color: #a0a8c0;
+  padding: 5px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ===== WAVE ANIMATION IN HEADER ===== */
+.header-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 30px;
+}
+
+.header-wave span {
+  width: 3px;
+  height: 15px;
+  background: linear-gradient(to top, #2962ff, #7c9cff);
+  border-radius: 3px;
+  animation: waveMini 1.2s ease-in-out infinite;
+}
+
+.header-wave span:nth-child(2) { animation-delay: 0.2s; height: 22px; }
+.header-wave span:nth-child(3) { animation-delay: 0.4s; height: 30px; }
+.header-wave span:nth-child(4) { animation-delay: 0.6s; height: 22px; }
+.header-wave span:nth-child(5) { animation-delay: 0.8s; height: 15px; }
+
+@keyframes waveMini {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.3); }
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 120px 20px 100px 20px;
+}
+
+/* ===== PLAYER CARD ===== */
+.player-card {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(18, 20, 25, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 32px;
+  padding: 30px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  margin: 20px 0;
+}
+
+/* ===== ALBUM ART PLACEHOLDER ===== */
+.album-art {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 25px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #2962ff, #1e4bd2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 40px rgba(41, 98, 255, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.album-art::before {
+  content: '';
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.album-art span {
+  font-size: 3rem;
+  filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+}
+
+/* ===== AUDIO PLAYER ===== */
+audio {
+  display:none;
+  width: 100%;
+  margin: 20px 0;
+  border-radius: 50px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+audio::-webkit-media-controls-panel {
+  background: linear-gradient(135deg, #1e2128, #14171c);
+  border-radius: 50px;
+}
+
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-timeline,
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display,
+audio::-webkit-media-controls-volume-slider,
+audio::-webkit-media-controls-seek-back-button,
+audio::-webkit-media-controls-seek-forward-button,
+audio::-webkit-media-controls-fullscreen-button {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* ===== HIDE NEXT/PREV BUTTONS ===== */
+#controls {
+  display: none;
+}
+
+/* ===== FIXED FOOTER ===== */
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(10, 12, 18, 0.95);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 15px 25px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.footer-message {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #a0a8c0;
+  font-size: 0.9rem;
+}
+
+.footer-message i {
+  color: #ff3366;
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.footer-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  color: #fff;
+}
+
+.footer-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.footer-info .divider {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 1.2rem;
+}
+
+/* ===== OVERLAY ===== */
+#overlay {
+  position: fixed;
+  height:100vh;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  cursor: pointer;
+  z-index: 19999;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: white;
+  transition: opacity 0.5s ease;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#overlay:hover {
+  background: rgba(0, 0, 0, 0.98);
+}
+
+#overlay::before {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #2962ff;
+  animation: pulse-ring 2s infinite;
+  opacity: 0.3;
+}
+
+#overlay span {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(135deg, #fff, #a0b0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2.5rem;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.3; }
+  70% { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .fixed-header {
+    padding: 12px 15px;
+  }
+  
+  #title {
+    font-size: 1.2rem;
+  }
+  
+  #title::after {
+    font-size: 0.5rem;
+    padding: 2px 4px;
+    top: -12px;
+    right: -20px;
+  }
+  
+  #meta {
+    font-size: 0.8rem;
+    padding: 3px 10px;
+  }
+  
+  .header-wave span {
+    width: 2px;
+  }
+  
+  .player-card {
+    padding: 20px;
+    border-radius: 24px;
+  }
+  
+  .album-art {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .fixed-footer {
+    padding: 12px 15px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .footer-message {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .footer-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  #overlay span {
+    font-size: 1.8rem;
+  }
+  
+  #overlay::before {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* ===== CUSTOM SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #2962ff, #1e4bd2);
+  border-radius: 4px;
+}
+
+/* ===== LOADING STATE ===== */
+#title:empty::before {
+  content: '🎵 Chargement...';
+  opacity: 0.5;
+  font-size: 1.2rem;
+  background: none;
+  -webkit-text-fill-color: #a0a8c0;
+}
+</style>
+<style>
+/* Paneau comment fiks anba paj */
+.commentait {
+  position: fixed;
+  bottom: 50px;
+  left: 0;
+  width: 100%;
+  max-height: 40%; /* Ka ajiste selon bezwen */
+  background: rgba(0, 0, 0, 0.7); /* nwa semi-transparan */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  z-index: 9999; /* toujou sou lòt kontni */
+}
+
+/* Lis mesaj yo */
+#messageList {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+/* Chak mesaj */
+#messageList .msg {
+  margin-bottom: 5px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  word-wrap: break-word;
+}
+
+/* Zone pou ekri mesaj */
+.commentait .message {
+  display: flex;
+  gap: 5px;
+}
+
+.commentait textarea {
+  flex: 1;
+  padding: 8px;
+  border-radius: 4px;
+  border: none;
+  resize: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-family: sans-serif;
+}
+
+.commentait textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Bouton voye */
+.commentait button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #2962ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.commentait button:hover {
+  background: #1c44b2;
+}
+
+/* ===== Lis itilizatè online ===== */
+.online-users {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px; 
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; 
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  color: #ffd700;  
+  border-top: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.4);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  white-space: nowrap; 
+  
+}
+
+/* Chak non itilizatè */
+.online-users span {
+  flex: 0 0 auto;  
+  padding: 5px 10px;
+  background: rgba(255,215,0,0.2);
+  border: 1px solid #ffd700;
+  border-radius: 20px;
+  cursor: default;
+  transition: transform 0.2s, background 0.2s;
+}
+
+</style>
+</head>
+<body>
+
+<div id="overlay"><span>▶ CLIQUEZ POUR LANCER</span></div>
+
+<!-- Fixed Header -->
+<header class="fixed-header">
+  <div class="header-info">
+    <h1 id="title">WΛVΞ RADIO</h1>
+    <div id="meta"></div>
+  </div>
+  
+  <!-- Wave animation in header -->
+  <div class="header-wave">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+  <div class="player-card">
+    <!-- Album Art Placeholder -->
+    <div class="album-art">
+      <span>🎵</span>
+    </div>
+    
+    <audio id="player" controls></audio>
+  </div>
+</main>
+<div class="commentait">
+  <div id="messageList"></div>
+  
+  <!-- Lis itilizatè anliy -->
+  <!-- Lis itilizatè anliy -->
+<div id="onlineUsersList" class="online-users">
+  👥 Itilizatè anliy:
+</div>
+
+  <div class="message">
+    <textarea placeholder="Ekri mesaj..."></textarea>
+    <button>send</button>
+  </div>
+</div>
+
+<!-- Fixed Footer -->
+<footer class="fixed-footer">
+  <div class="footer-message">
+    <i>❤️</i>
+    <span>Li pran kè m' • Live 24/7</span>
+  </div>
+  
+  <div class="footer-info">
+    <span>🎧 Wave Radio</span>
+    <span class="divider">|</span>
+    <span>📻 WΛVΞ</span>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+// 🔥 CONFIG FIREBASE
+var firebaseConfig = {
+    apiKey: "AIzaSyAQeHWr_vUiQmVVgJJ_cOF9qrCCLd7IJNc",
+    authDomain: "ayiweb.firebaseapp.com",
+    databaseURL: "https://ayiweb-default-rtdb.firebaseio.com",
+    projectId: "ayiweb",
+    storageBucket: "ayiweb.appspot.com",
+    messagingSenderId: "115054504556",
+    appId: "1:115054504556:web:ccd713ba01dd8f02830649"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// DOM
+const player = document.getElementById("player");
+const overlay = document.getElementById("overlay");
+const titleEl = document.getElementById("title");
+const metaEl = document.getElementById("meta");
+
+let playlist = [];
+let currentIndex = 0;
+
+// 🔥 Chaje dènye episode ak playlist
+db.ref("episodes").limitToLast(1).on("value", snapshot => {
+  snapshot.forEach(child => {
+    const data = child.val();
+    titleEl.textContent = data.title || "WΛVΞ RADIO";
+    metaEl.textContent = data.author ? "By " + data.author : "Live Session";
+    playlist = [];
+
+    if(data.tracks){
+      for(let key in data.tracks){
+        playlist.push(data.tracks[key]);
+      }
+    }
+
+    // Sync ak Firebase currentTrack
+    db.ref("currentTrack").once("value").then(snap=>{
+      const curr = snap.val();
+      if(curr && playlist[curr.index]){
+        loadTrack(curr.index, curr.time);
+      } else {
+        loadTrack(0,0);
+      }
+    });
+  });
+});
+
+// 🔥 Load track ak seek
+function loadTrack(index, seekTime=0){
+  if(playlist.length===0) return;
+  currentIndex = index % playlist.length;
+  player.src = playlist[currentIndex].url;
+  player.load();
+  player.currentTime = seekTime;
+  player.play().catch(()=>{});
+}
+
+// 🔥 Overlay click pou autoplay
+overlay.addEventListener("click", ()=>{
+  player.play().catch(()=>{});
+  overlay.style.display = "none";
+});
+
+// 🔥 Auto next lè track fini
+player.addEventListener("ended", ()=>{
+  if(playlist.length===0) return;
+  currentIndex = (currentIndex + 1) % playlist.length;
+  loadTrack(currentIndex,0);
+  db.ref("currentTrack").set({
+    index: currentIndex,
+    time: 0
+  });
+});
+
+// 🔥 Sync currentTime chak 2 segonn
+setInterval(()=>{
+  if(playlist.length===0 || !player.src) return;
+  db.ref("currentTrack").set({
+    index: currentIndex,
+    time: player.currentTime
+  });
+},2000);
+
+// 🔥 Update local player si Firebase chanje
+db.ref("currentTrack").on("value", snap=>{
+  const curr = snap.val();
+  if(curr && playlist[curr.index]){
+    if(curr.index !== currentIndex || Math.abs(player.currentTime - curr.time) > 1){
+      loadTrack(curr.index, curr.time);
+    }
+  }
+});
+</script>
+
+<script>
+// DOM
+const commentList = document.getElementById("messageList");
+const onlineUsersList = document.getElementById("onlineUsersList");
+const textarea = document.querySelector(".commentait textarea");
+const sendBtn = document.querySelector(".commentait button");
+
+// Non itilizatè nan localStorage
+let username = localStorage.getItem("username");
+if(!username){
+  // Form div pwofesyonèl pou antre non
+  const formDiv = document.createElement("div");
+  formDiv.style = "position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;";
+  formDiv.innerHTML = `
+    <div style="background:#111;padding:20px;border-radius:12px;display:flex;flex-direction:column;gap:10px;text-align:center;">
+      <h3 style="color:#ffd700;">Antre non ou pou chat la</h3>
+      <input id="usernameInput" type="text" placeholder="Non ou..." style="padding:8px;border-radius:6px;border:none;outline:none;">
+      <button id="usernameSubmit" style="padding:8px 12px;background:#2962ff;color:white;border:none;border-radius:6px;cursor:pointer;">Valide</button>
+    </div>
+  `;
+  document.body.appendChild(formDiv);
+
+  document.getElementById("usernameSubmit").onclick = ()=>{
+    const val = document.getElementById("usernameInput").value.trim();
+    username = val || "Guest";
+    localStorage.setItem("username", username);
+    formDiv.remove();
+    initChat();
+  };
+} else {
+  initChat();
+}
+
+function initChat(){
+  // Ref Firebase pou users online
+  const onlineRef = db.ref("onlineUsers");
+
+  // ID inik pou itilizatè sa a
+  const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+
+  // Mete itilizatè a online
+  onlineRef.child(userId).set({
+    username: username,
+    connectedAt: Date.now()
+  });
+  onlineRef.child(userId).onDisconnect().remove();
+
+  // Update nombre itilizatè online ak lis yo
+  onlineRef.on("value", snap => {
+    const users = snap.val() || {};
+    const count = Object.keys(users).length;
+    metaEl.textContent = `👥 ${count} moun anliy`;
+
+    // Mete lis itilizatè anliy
+    onlineUsersList.innerHTML = `👥 Itilizatè anliy: `;
+    Object.values(users).forEach(u => {
+      const span = document.createElement("span");
+      span.textContent = u.username;
+      onlineUsersList.appendChild(span);
+    });
+  });
+
+  // Ref Firebase pou chat
+  const chatRef = db.ref("liveChat");
+
+  // Voye mesaj
+  sendBtn.addEventListener("click", ()=>{
+    const msg = textarea.value.trim();
+    if(!msg) return;
+
+    chatRef.push({
+      user: username,
+      text: msg,
+      timestamp: Date.now()
+    });
+    textarea.value = "";
+  });
+
+  // Affiche mesaj yo ak edit/delete
+  chatRef.on("child_added", snapshot=>{
+    const key = snapshot.key;
+    const data = snapshot.val();
+
+    const div = document.createElement("div");
+    div.className = "msg";
+
+    const time = new Date(data.timestamp);
+    const timeStr = time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+    div.innerHTML = `<strong>${data.user}</strong> <small>${timeStr}</small><br>
+                     <span class="msgText">${data.text}</span>`;
+
+    if(data.user === username){
+      // Icon Edit
+      const editIcon = document.createElement("i");
+      editIcon.className = "fa-solid fa-pen-to-square";
+      editIcon.style = "margin-right:5px;cursor:pointer;color:#ffd700;";
+      editIcon.onclick = ()=>{
+        // Form div pou modifye mesaj
+        const formDiv = document.createElement("div");
+        formDiv.style = "position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;";
+        formDiv.innerHTML = `
+          <div style="background:#111;padding:20px;border-radius:12px;display:flex;flex-direction:column;gap:10px;text-align:center;">
+            <h3 style="color:#ffd700;">Modifye mesaj ou</h3>
+            <textarea id="editInput" style="padding:8px;border-radius:6px;border:none;outline:none;width:250px;height:80px;">${data.text}</textarea>
+            <button id="editSubmit" style="padding:8px 12px;background:#2962ff;color:white;border:none;border-radius:6px;cursor:pointer;">Valide</button>
+          </div>
+        `;
+        document.body.appendChild(formDiv);
+        document.getElementById("editSubmit").onclick = ()=>{
+          const newText = document.getElementById("editInput").value.trim();
+          if(newText) chatRef.child(key).update({text: newText});
+          formDiv.remove();
+        };
+      };
+
+      // Icon Delete
+      const delIcon = document.createElement("i");
+      delIcon.className = "fa-solid fa-trash";
+      delIcon.style = "cursor:pointer;color:#ff3366;";
+      delIcon.onclick = ()=>{
+        const confirmDiv = document.createElement("div");
+        confirmDiv.style = "position:fixed;inset:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;";
+        confirmDiv.innerHTML = `
+          <div style="background:#111;padding:20px;border-radius:12px;display:flex;flex-direction:column;gap:10px;text-align:center;">
+            <h3 style="color:#ff3366;">Ou vle efase mesaj sa a?</h3>
+            <div style="display:flex;gap:10px;justify-content:center;">
+              <button id="confirmYes" style="padding:8px 12px;background:#ff3366;color:white;border:none;border-radius:6px;cursor:pointer;">Wi</button>
+              <button id="confirmNo" style="padding:8px 12px;background:#aaa;color:#111;border:none;border-radius:6px;cursor:pointer;">Non</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(confirmDiv);
+        document.getElementById("confirmYes").onclick = ()=>{
+          chatRef.child(key).remove();
+          confirmDiv.remove();
+        };
+        document.getElementById("confirmNo").onclick = ()=>{
+          confirmDiv.remove();
+        };
+      };
+
+      div.appendChild(editIcon);
+      div.appendChild(delIcon);
+    }
+
+    commentList.appendChild(div);
+    commentList.scrollTop = commentList.scrollHeight;
+  });
+
+  // Update live si yon mesaj modifye
+  chatRef.on("child_changed", snapshot=>{
+    const data = snapshot.val();
+    const msgs = commentList.querySelectorAll(".msg");
+    msgs.forEach(div=>{
+      if(div.querySelector(".msgText") && div.querySelector(".msgText").textContent !== data.text){
+        div.querySelector(".msgText").textContent = data.text;
+      }
+    });
+  });
+
+  // Remove message si efase
+  chatRef.on("child_removed", snapshot=>{
+    const data = snapshot.val();
+    const msgs = commentList.querySelectorAll(".msg");
+    msgs.forEach(div=>{
+      if(div.querySelector(".msgText") && div.querySelector(".msgText").textContent === data.text){
+        div.remove();
+      }
+    });
+  });
+}
+</script>
+</body>
+</html>
