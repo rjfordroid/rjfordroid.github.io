@@ -23,170 +23,105 @@ const db = firebase.database();
  * UNIQUE USER ID (PERSISTENT)
  *********************************/
 
-function getUserId() {
-  let id = localStorage.getItem("visitorId");
-
+// ==============================
+// 1️⃣ BROWSER ID PÈMANAN
+// ==============================
+function getBrowserID() {
+  var id = localStorage.getItem("BrowserID");
   if (!id) {
-    id = "u-" + Math.random().toString(36).substring(2, 10);
-    localStorage.setItem("visitorId", id);
+    id = "ID-Browser-" + Math.floor(Math.random() * 100000000);
+    localStorage.setItem("BrowserID", id);
   }
-
   return id;
 }
 
 
-/*********************************
- * CLEAN BROWSER INFO
- *********************************/
-
-function getUserInfo() {
-  const ua = navigator.userAgent;
-
-  let browser = "Autre";
-
-  if (ua.includes("Edg")) browser = "Edge";
-  else if (ua.includes("Chrome")) browser = "Chrome";
-  else if (ua.includes("Firefox")) browser = "Firefox";
-  else if (ua.includes("Safari")) browser = "Safari";
-
-  return {
-    browser,
-    platform: navigator.platform,
-    userAgent: ua
-  };
-}
-
-
-/*********************************
- * GET IP + COUNTRY (CACHED)
- *********************************/
-
-async function getLocationData() {
-  const cache = localStorage.getItem("visitorLocation");
-
-  if (cache) {
-    return JSON.parse(cache);
-  }
-
-  try {
-    const res = await fetch("https://ipapi.co/json/");
-    const data = await res.json();
-
-    const location = {
-      ip: data.ip || "Unknown",
-      country: data.country_name || "Unknown"
-    };
-
-    localStorage.setItem("visitorLocation", JSON.stringify(location));
-    return location;
-
-  } catch {
-    return {
-      ip: "Unknown",
-      country: "Unknown"
-    };
-  }
-}
-
-
-/*********************************
- * PAGE INFO
- *********************************/
-
-function getPageInfo() {
-  const params = Object.fromEntries(
-    new URLSearchParams(location.search).entries()
-  );
-
-  let pageKey = "home";
-
-  if (params.id) pageKey = `article-${params.id}`;
-  else if (params.tab) pageKey = `tab-${params.tab}`;
-  else pageKey = location.pathname.replace(/\//g, "") || "home";
-
-  return { pageKey, params };
-}
-
-
-/*********************************
- * ANTI RELOAD SPAM (30s)
- *********************************/
-
+// ==============================
+// 2️⃣ ANTI-SPAM 30 SEGONN
+// ==============================
 function canRegisterVisit() {
-  const lastVisit = localStorage.getItem("lastVisitTime");
-  const now = Date.now();
+  var lastVisit = localStorage.getItem("lastVisitTime");
+  var now = Date.now();
 
-  if (lastVisit && now - parseInt(lastVisit) < 30000) {
-    return false; // Moins de 30 sec
+  if (!lastVisit || (now - lastVisit) > 30000) {
+    localStorage.setItem("lastVisitTime", now);
+    return true;
   }
 
-  localStorage.setItem("lastVisitTime", now);
-  return true;
+  return false;
 }
 
 
-/*********************************
- * SAVE VISIT
- *********************************/
-
-async function saveVisit(articleId = null) {
-
-  if (!canRegisterVisit()) return;
-
-  const userId = getUserId();
-  const info = getUserInfo();
-  const location = await getLocationData();
-  const now = Date.now();
-  const { pageKey, params } = getPageInfo();
-
-  // 🔹 SAVE INDIVIDUAL VISIT
-  const visitRef = db.ref("RJFORDROID/stats/visits").push();
-
-  await visitRef.set({
-    userId,
-    page: pageKey,
-    articleId: articleId || null,
-    country: location.country,
-    ip: location.ip,
-    browser: info.browser,
-    platform: info.platform,
-    userAgent: info.userAgent,
-    timestamp: now,
-    params
-  });
-
-  // 🔹 AGGREGATED STATS
-  db.ref(`stats/pages/${pageKey}/count`)
-    .transaction(c => (c || 0) + 1);
-
-  db.ref(`stats/countries/${location.country}/count`)
-    .transaction(c => (c || 0) + 1);
-
-  db.ref(`stats/browsers/${info.browser}/count`)
-    .transaction(c => (c || 0) + 1);
-
-  if (articleId) {
-    db.ref(`stats/articles/${articleId}/views`)
-      .transaction(v => (v || 0) + 1);
-  }
-
-  // 🔹 USER ONLINE SYSTEM
-  const onlineRef = db.ref(`RJFORDROID/stats/online/${userId}`);
-
-  onlineRef.set({
-    page: pageKey,
-    lastSeen: now
-  });
-
-  onlineRef.onDisconnect().remove();
+// ==============================
+// 3️⃣ FILTRE BOT
+// ==============================
+function isBot() {
+  var ua = navigator.userAgent.toLowerCase();
+  return ua.includes("bot") ||
+         ua.includes("crawl") ||
+         ua.includes("spider") ||
+         ua.includes("facebookexternalhit") ||
+         ua.includes("whatsapp");
 }
 
 
+// ==============================
+// 4️⃣ ENREGISTRER VISITE
+// ==============================
+function enregistrerVisite() {
 
-/*********************************
- * INIT
- *********************************/
+  if (isBot()) {
+    console.log("Bot détecté ❌");
+    return;
+  }
 
-document.addEventListener("DOMContentLoaded", () => {
-  saveVisit();
-});
+  if (!canRegisterVisit()) {
+    console.log("Anti-spam actif ⏳");
+    return;
+  }
+
+  // API IP + Pays
+  fetch("https://ipapi.co/json/")
+    .then(response => response.json())
+    .then(function(locationData) {
+
+      var visitesRef = database.ref("RJFORDROID/VISITES");
+
+      var data = {
+        BrowserID: getBrowserID(),
+        Date_visite: new Date().toLocaleString(),
+        Path: window.location.pathname,
+        Pays: locationData.country_name,
+        ip: locationData.ip,
+        Usernavigater: navigator.userAgent,
+        Visit: document.title
+      };
+
+      visitesRef.push(data);
+
+      // ==============================
+      // 5️⃣ KONTE VISIT INIK
+      // ==============================
+      var uniqueRef = database.ref("RJFORDROID/UNIQUE_VISITORS/" + getBrowserID());
+
+      uniqueRef.once("value", function(snapshot) {
+        if (!snapshot.exists()) {
+          uniqueRef.set({
+            firstVisit: new Date().toLocaleString(),
+            ip: locationData.ip,
+            Pays: locationData.country_name
+          });
+        }
+      });
+
+      console.log("Visite enregistrée ✔");
+
+    })
+    .catch(function(error) {
+      console.log("Erreur API IP :", error);
+    });
+}
+
+
+// 🚀 Lanse
+enregistrerVisite();
