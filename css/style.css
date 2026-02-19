@@ -16,7 +16,7 @@
     
      h1, h2 { margin-bottom:15px; color:#333; }
   h1 { font-size:2rem; margin-bottom:20px; text-align:center; color:white; }
-  p { margin-bottom:15px; }
+  p { margin-bottom:15px; color:white;}
   ul { margin-left:20px; margin-bottom:15px; }
   li { margin-bottom:8px; }
     
@@ -149,6 +149,15 @@ background: linear-gradient(145deg, #0d1b2c 0%, #1b2f45 100%);
 .context-menu a:hover {
   background: #2a2a2a;
   padding-left: 20px;
+}
+
+.main-content {
+  margin-bottom: 100px;
+  margin-top: 100px;
+flex: 1;
+overflow-y: auto;
+color: white;
+border: 1px solid linear-gradient(145deg, #0d1b2c 0%, #1b2f45 100%);
 }
 
     /* ===== SIDEBAR (coulisse gauche) ===== */
