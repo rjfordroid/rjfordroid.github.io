@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const isLoggedIn = isUserLoggedIn();
-    const profileLink = isLoggedIn ? "../profile.html" : "../user.html";
+    const profileLink = isLoggedIn ? "../profile.html" : "../users.html";
     
     footerContainer.innerHTML = `
       <a href="../index.html" class="footer-item">
@@ -155,11 +155,13 @@ document.addEventListener("DOMContentLoaded", function () {
       </a>
     `;
     
-    console.log(`Footer injecté avec lien ${isLoggedIn ? 'profile.html' : 'user.html'}`);
+    console.log(`Footer injecté avec lien ${isLoggedIn ? 'profile.html' : 'users.html'}`);
     
     // Activer l'élément du footer correspondant à la page courante
     highlightCurrentPage();
   }
+  
+  
 
   // ==================== FONCTION POUR SURBRILLER LA PAGE ACTIVE ====================
   function highlightCurrentPage() {
@@ -334,7 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
       logoutBtn.addEventListener("click", function() {
         if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
           localStorage.removeItem("connectedUID");
-          window.location.href = "login.html";
+          window.location.href = "users.html";
         }
       });
       console.log("Gestionnaire de déconnexion ajouté");
