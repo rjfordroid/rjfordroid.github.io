@@ -6,80 +6,179 @@
 <title>RJ4Droid - Login / Signup</title>
 
 <style>
-body {
+*{
   margin:0;
-  font-family: Arial, sans-serif;
-  background:#f4f6f9;
+  padding:0;
+  box-sizing:border-box;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-.container {
-  max-width: 400px;
-  margin: 80px auto;
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
-}
-
-.tabs {
+body{
+  height:100vh;
   display:flex;
-  margin-bottom:20px;
-  cursor:pointer;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#111,#1c1c1c);
 }
 
-.tabs div {
+.container{
+  width:100%;
+  max-width:420px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(15px);
+  border-radius:15px;
+  padding:35px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4);
+  color:white;
+}
+
+.container h2{
+  text-align:center;
+  margin-bottom:25px;
+  font-weight:600;
+  letter-spacing:1px;
+}
+
+.tabs{
+  display:flex;
+  margin-bottom:25px;
+  border-radius:8px;
+  overflow:hidden;
+  background:#222;
+}
+
+.tabs div{
   flex:1;
   text-align:center;
-  padding:10px;
-  border-bottom:2px solid #ccc;
+  padding:12px;
+  cursor:pointer;
+  transition:0.3s;
   font-weight:500;
+  color:#aaa;
 }
 
-.tabs div.active {
-  border-bottom:2px solid #ff6600;
-  color:#ff6600;
+.tabs div.active{
+  background:#ff6600;
+  color:white;
 }
 
-form {
+form{
   display:none;
   flex-direction:column;
 }
 
-form.active {
+form.active{
   display:flex;
 }
 
-input, button {
-  padding:10px;
-  margin:10px 0;
-  border-radius:5px;
-  border:1px solid #ccc;
-  width:100%;
+input{
+  background:#1f1f1f;
+  border:1px solid #333;
+  padding:12px;
+  margin-bottom:15px;
+  border-radius:8px;
+  color:white;
+  font-size:14px;
+  transition:0.3s;
 }
 
-button {
+input:focus{
+  border-color:#ff6600;
+  outline:none;
+}
+
+button{
+  padding:12px;
+  border:none;
+  border-radius:8px;
   background:#ff6600;
   color:white;
-  border:none;
+  font-weight:bold;
   cursor:pointer;
+  transition:0.3s;
 }
 
-.message {
+button:hover{
+  background:#ff8533;
+}
+
+.message{
   display:none;
-  margin:10px 0;
-  padding:8px;
-  border-radius:5px;
+  padding:10px;
+  margin-top:10px;
+  border-radius:6px;
+  font-size:13px;
 }
 
-.message.info {background:#d9edf7;color:#31708f;}
-.message.success {background:#dff0d8;color:#3c763d;}
-.message.error {background:#f2dede;color:#a94442;}
+.message.success{
+  background:#1f3d1f;
+  color:#7CFC00;
+}
+
+.message.error{
+  background:#3d1f1f;
+  color:#ff4d4d;
+}
+
+#logoutBtn{
+  margin-top:20px;
+  background:#444;
+}
+
+#logoutBtn:hover{
+  background:#666;
+}
+
+/* Responsive mobile */
+@media(max-width:480px){
+  .container{
+    margin:20px;
+    padding:25px;
+  }
+}
+/* ===== Left Branding ===== */
+.left{
+  flex:1;
+  padding:8px;
+  display:block;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.left h1{
+  text-align: center;
+  font-size:40px;
+  margin-bottom:20px;
+  color:#ff6600;
+}
+
+.left p{
+  font-size:14px;
+  line-height:1.6;
+  color:#ccc;
+  max-width:500px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+hr{
+  border: 3px solid;
+  margin-bottom: 10px;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+    <div class="left">
+    <h1>RJ4Droid</h1>
+    <p>
+      Plateforme digitale moderne pour gérer vos services,
+      automatiser vos processus et développer votre présence en ligne.
+      Sécurisé. Rapide. Professionnel.
+    </p>
+  </div><hr>
+
 
   <div class="tabs">
     <div id="loginTab" class="active">Login</div>
