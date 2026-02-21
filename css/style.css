@@ -157,7 +157,7 @@ background: linear-gradient(145deg, #0d1b2c 0%, #1b2f45 100%);
 flex: 1;
 overflow-y: auto;
 color: white;
-border: 1px solid linear-gradient(145deg, #0d1b2c 0%, #1b2f45 100%);
+border: 1px solid linear-gradient(145deg, #0d1b2c 0%, lime 100%);
 }
 
     /* ===== SIDEBAR (coulisse gauche) ===== */
@@ -341,8 +341,9 @@ border: 1px solid linear-gradient(145deg, #0d1b2c 0%, #1b2f45 100%);
 
     .footer-item {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
       align-items: center;
+      justify-content: center;
       color: #80a4c7;
       font-size: 0.75rem;
       transition: color 0.1s;
