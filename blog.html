@@ -17,10 +17,10 @@
   
   
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/home.css">
   
 <style>
 .container{
+  border: 1px solid lime;
   max-width:1100px;
   margin:auto;
   padding:2px;
@@ -34,6 +34,7 @@
   box-shadow:0 4px 10px rgba(0,0,0,0.05);
   overflow:hidden;
   transition:0.3s;
+  padding: 0;
 }
 .card:hover{
   transform:translateY(-5px);
@@ -42,6 +43,7 @@
   width:100%;
   height:200px;
   object-fit:cover;
+  margin: 0;
 }
 .card-content{
   padding:15px;
@@ -83,15 +85,26 @@
 </span>
   <!-- CONTENU PRINCIPAL-->
   <main class="main-content">
-    <div class="container" id="blogContainer"></div>
+    <div class="container" id="blogContainer">
+      <article class="card">
+          <img loading="lazy" src="image/image.png" alt="${data.title}">
+          <div class="card-content">
+            <h2>Mon premier aryicle data</h2>
+            <p>Dans cet article ,vous allez apprendre a securiser votre android et naviguer plus fluide les connection wifi</p>
+            <a class="read-btn" href="article.html?id=${child.key}">Lire l'article</a>
+          </div>
+        </article>
+    </div>
     <div class="ad-space">
 <!-- Bloc AdSense 2 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075"
+     crossorigin="anonymous"></script>
 <ins class="adsbygoogle"
-     style="display:block"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
      data-ad-client="ca-pub-4800728968697075"
-     data-ad-slot="XXXXXXX"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
+     data-ad-slot="7551320679"></ins>
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
