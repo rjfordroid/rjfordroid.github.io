@@ -132,146 +132,221 @@
   <footer class="app-footer" id="footer">
   </footer>
 </span>
+
   <!-- CONTENU PRINCIPAL-->
-  <main class="main-content">
-     <div class="services-section">
-      <div class="section-title">
-        <i class="fas fa-layer-group"></i>
-        <h3>Vos problèmes plus Solution</h3>
-      </div>
-<div class="cards-scroll">
-  <div class="service-card">
-    <div class="card-icon">
-      <i class="fa-solid fa-circle-question"></i>
-    </div>
-   <p>
-      Vous souhaitez apprendre à développer des applications Android ? Créer votre propre blog professionnel ? Transformer votre site web en application mobile performante ?
-   </p>
-</div>
-    <div class="service-card">
-       <div class="card-icon">
-      <i class="fa-solid fa-circle-check"></i>
-    </div>
+<main class="main-content">
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>
+        Formation, Astuce services informatique sur Android
+      </h1><hr>
       <p>
-        Nous proposons des solutions modernes, efficaces et adaptées aux entrepreneurs, étudiants et entreprises en Haïti et à l’international.
+        Je vous transforme en un pro d'informatique sur Android, developper vos idées en applications web mobiles performantes et sites web modernes.
+        Développement rapide, sécurisé et sur mesure.
       </p>
+      <div class="hero-buttons">
+        <a href="#contact" class="btn-primary">
+          <i class="fas fa-rocket"></i> Lancer mon projet
+        </a>
+        <a href="https://wa.me/50942772970" target="_blank" class="btn-secondary">
+          <i class="fab fa-whatsapp"></i> Discuter sur WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- SECTION PROBLÈME / SOLUTION -->
+  <section class="services-section">
+    <div class="section-title">
+      <h2>Vous avez une idée ? Je vous aide à la concrétiser.</h2><hr>
+    </div>
+
+    <div class="cards-scroll">
+      <div class="service-card">
+        <div class="card-icon">
+          <i class="fa-solid fa-circle-question"></i>
+        </div>
+        <p>
+          Vous souhaitez apprendre Android ? Créer un blog professionnel ?
+          Transformer votre site en application mobile ?
+        </p>
+      </div>
+
+      <div class="service-card">
+        <div class="card-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <p>
+          Je propose des solutions modernes adaptées aux entrepreneurs,
+          étudiants et entreprises en Haïti et à l’international.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- SERVICES -->
+  <section class="services-section">
+    <div class="section-title">
+      <h2>Services sur mesure</h2><hr>
+    </div>
+
+    <div class="cards-scroll">
+
+      <div class="service-card">
+        <div class="card-icon"><i class="fas fa-pencil-alt"></i></div>
+        <h3>Blog professionnel</h3>
+        <p>Blog personnalisé, administration simple, intégration Firebase ou Google Sheets.</p>
+        <span class="chip">dès 2500 HTG</span>
+      </div>
+
+      <div class="service-card">
+        <div class="card-icon"><i class="fas fa-user-check"></i></div>
+        <h3>Formulaire intelligent</h3>
+        <p>Validation temps réel, API, stockage sécurisé Firebase.</p>
+        <span class="chip">sur devis</span>
+      </div>
+
+      <div class="service-card">
+        <div class="card-icon"><i class="fas fa-mobile-alt"></i></div>
+        <h3>Site Web → Application Android</h3>
+        <p>Conversion optimisée avec WebView avancée + splash screen personnalisé.</p>
+        <span class="chip">à partir de 3000 HTG</span>
+      </div>
+
+    </div>
+  </section>
+
+<section id="portfolio" class="portfolio-section">
+  <h2>Mes réalisations</h2><hr>
+  <div class="portfolio-grid">
+    <div class="portfolio-item" onclick="openModal('image/not.png','Application X')">
+      <img src="image/not.png" alt="Application X">
+      <span>Pran Nòt</span>
+    </div>
+    <div class="portfolio-item" onclick="openModal('image/rjprompt.jpg','Application Y')">
+      <img src="image/rjprompt.jpg" alt="Application Y">
+      <span>RJ Prompt</span>
+    </div>
   </div>
-</div>
-    <!-- SECTION SERVICES (défilement horizontal de cartes) -->
-    <div class="services-section">
-      <div class="section-title">
-        <i class="fas fa-layer-group"></i>
-        <h3>Services · sur mesure</h3>
-      </div>
+  </div>
+</section>
 
-      <div class="cards-scroll">
-        <!-- Carte 1 : création blog perso -->
-        <div class="service-card">
-          <div class="card-icon"><i class="fas fa-pencil-alt"></i></div>
-          <h4>Blog perso</h4>
-          <p>Création de blog customisé, interface épurée, administration facile. Intégration Firebase / Google Sheets</p>
-          <span class="chip">dès 2500 HTG</span>
+<a href="https://wa.me/50942772970" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
+  <!-- À PROPOS -->
+  <section class="preso-block">
+    <div class="preso-text">
+      <h2>Ruban Joseph · Développeur Web & Mobile</h2>
+      <p>
+        J’accompagne les debutant ambitieux à lancer leurs projets
+        efficacement et sans complication sur android.
+      </p>
+
+      <div class="stats-mini">
+        <div class="stat-item">
+          <span class="stat-number">+25</span>
+          <span class="stat-label">applications livrées</span>
         </div>
-
-        <!-- Carte 2 : formulaire d'inscription -->
-        <div class="service-card">
-          <div class="card-icon"><i class="fas fa-user-check"></i></div>
-          <h4>Formulaire d’inscription</h4>
-          <p>UI/UX moderne, validation en temps réel, connexion API, stockage sécurisé (Firebase, Google Sheets, Whatsapp).</p>
-          <span class="chip">sur devis</span>
-        </div>
-
-        <!-- Carte 3 : convertir site web en APK -->
-        <div class="service-card">
-          <div class="card-icon"><i class="fas fa-file-code"></i></div>
-          <h4>Site Web → APK</h4>
-          <p>Transformez votre site ou PWA en véritable application Android (WebView optimisée + splash screen).</p>
-          <span class="chip">à partir de 3000 HTG</span>
+        <div class="stat-item">
+          <span class="stat-number">4.8</span>
+          <span class="stat-label">⭐ satisfaction client</span>
         </div>
       </div>
     </div>
-<div class="ad-space">
-<!-- Bloc AdSense 2 -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-4800728968697075"
-     data-ad-slot="XXXXXXX"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-</div>
-    <!-- BLOC PRÉSENTATION -->
-    <div class="preso-block">
-      <div class="preso-text">
-        <h3>Salut, moi c’est Ruban Joseph</h3>
-        <p>Développeur web depuis 7 ans, j’aide les créatifs et entrepreneurs à lancer leurs projets sans prise de tête. De l’idée à la publication sur le play store</p>
-        <div class="stats-mini">
-          <div class="stat-item">
-            <span class="stat-number">+25</span>
-            <span class="stat-label">apps livrées</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-number">4,8</span>
-            <span class="stat-label">⭐ avis clients</span>
-          </div>
-        </div>
+  </section>
+  
+  <!-- TÉMOIGNAGES -->
+<section class="temoignages-block">
+  <h2>Témoignages</h2>
+  <div class="temoignages-list">
+    <div class="temoignage-item">
+      <p>"Ruban m'a aidé à lancer mon app Android en moins d'un mois. Super clair et efficace !"</p>
+      <span>- Alice M.</span>
+    </div>
+    <div class="temoignage-item">
+      <p>"Grâce à ses conseils, j'ai pu concrétiser mon projet sans galère technique."</p>
+      <span>- Karim L.</span>
+    </div>
+    <div class="temoignage-item">
+      <p>"Un développeur pro et patient, je recommande vivement à tous les débutants."</p>
+      <span>- Sophie D.</span>
+    </div>
+  </div>
+</section>
+
+<style>
+.temoignages-block {
+  padding: 40px 20px;
+  text-align: center;
+}
+.temoignages-block h2 {
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #333;
+}
+.temoignages-list {
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap;
+  justify-content: start;
+  overflow-x: auto;
+}
+.temoignage-item {
+  min-width: 300px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 250px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.temoignage-item p {
+  font-style: italic;
+  margin-bottom: 10px;
+}
+.temoignage-item span {
+  font-weight: bold;
+  color: #555;
+}
+</style>
+
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contact">
+    <div class="contact-header">
+      <h2>Discutons de votre projet</h2>
+    </div>
+
+    <form>
+      <div class="form-group">
+        <label for="name">Nom</label>
+        <input type="text" id="name" required>
       </div>
-      <div class="preso-emoji">
-        <i class="fa-regular fa-hand-peace"></i>
-      </div>
-    </div>
 
-    <!-- FORMULAIRE DE CONTACT -->
-    <div class="contact-section">
-      <div class="contact-header">
-        <i class="fas fa-paper-plane"></i>
-        <h3>Contact express</h3>
+      <div class="form-group">
+        <label for="contactEmail">Email</label>
+        <input type="email" id="contactEmail" required>
       </div>
 
-      <form action="#" method="post">
-        <div class="form-group">
-          <label for="name">Nom / prénom</label>
-          <input type="text" id="name" name="name" placeholder="ex: Jordan M." required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="contactEmail" name="email" placeholder="votre@email.com" required>
-        </div>
-        
-                <div class="form-group">
-          <label for="email">Whatsapp</label>
-          <input type="number" id="contactPhone" name="email" placeholder="votre@email.com" required>
-        </div>
-        <div class="form-group">
-          <label for="service-select">Service concerné (optionnel)</label>
-          <select id="service-select" name="service">
-            <option value="blog">Blog personnel</option>
-            <option value="form">Formulaire d'inscription</option>
-            <option value="apk">Conversion Web → APK</option>
-            <option value="autre">Autre / sur mesure</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" placeholder="Décrivez brièvement votre projet..." required></textarea>
-        </div>
+      <div class="form-group">
+        <label for="contactPhone">WhatsApp</label>
+        <input type="tel" id="contactPhone" placeholder="+509..." required>
+      </div>
 
-        <button type="submit" class="btn-submit"><i class="fas fa-rocket"></i> Envoyer la demande</button>
-      </form>
-    </div>
+      <div class="form-group">
+        <label for="message">Votre projet</label>
+        <textarea id="message" required></textarea>
+      </div>
 
-    <!-- mini contact info -->
-    <div class="info-contact-mini">
-      <span><i class="fas fa-clock"></i> réponse sous 24h</span>
-      <span><i class="fab fa-whatsapp"></i> +509 42 77 29 70</span>
-    </div>
+      <button type="submit" class="btn-submit">
+        <i class="fas fa-paper-plane"></i> Envoyer la demande
+      </button>
+    </form>
+  </section>
 
-    <!-- petite note scroll (indicatif) -->
-    <div style="text-align:right; padding-right:2rem; font-size:0.7rem; color:#3d607b;">
-      <i class="fas fa-arrow-left"></i>  faire glisser les cartes  <i class="fas fa-arrow-right"></i>
-    </div>
-  </main>
+</main>
 </body>
 </html>
