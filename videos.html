@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  
+  <!-- BALISES SEO AJOUTÉES -->
+<title>Vidéo Formation Exclusive Disponible Pendant 24 Heures | RJ4DROID</title>
+  <meta name="description" content="Nouvo vidéo fòmasyon exclusive disponib pandan 24 heures sèlman. Aprann HTML, CSS, Android ak devlopman web ak RJ4DROID. Aksè limite, pa rate li.">
+  <meta name="keywords" content="vidéo formation 24h, formation html haiti, apprendre css android, developpement web haiti, video exclusive rj4droid, formation programmation 24 heures">
+  <meta name="author" content="Ruban Joseph">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://rjfordroid.netlify.app/videos.html">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rjfordroid.netlify.app">
+  <meta property="og:title" content="RJ4DROID · Création d'applications mobiles et sites web">
+  <meta property="og:description" content="Gade dènte video RJ4DROID la, epi fòme tè ou chak 24 trè ak yon video,ki disponib sou paj sa">
+  <meta property="og:image" content="videos/poster.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://rjfordroid.netlify.app">
+  <meta property="twitter:title" content="RJ4DROID · Création d'applications mobiles et sites web">
+  <meta property="twitter:description" content="Gade dènte video RJ4DROID la, epi fòme tè ou chak 24 trè ak yon video,ki disponib sou paj sa">
+  <meta property="twitter:image" content="videos/poster.png">
+
+  <!-- Balise de langue alternative -->
+  <link rel="alternate" hreflang="fr"
+  href="https://rjfordroid.netlify.app/videos.html">
+  <link rel="alternate" hreflang="x-default"
+  href="https://rjfordroid.netlify.app.videos.html">
+
+  <!-- Favicon (à ajouter si vous en avez un) -->
+  <link rel="icon" type="image/png" href="image/logo1.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <!-- Google AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-4800728968697075">
+  
+  <!-- Font Awesome Icons (v6) + Google Font Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075" crossorigin="anonymous"></script>
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+
+  <!-- Données structurées JSON-LD (SEO avancé) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Ruban Joseph",
+    "url": "https://rj4droid.com",
+    "image": "https://rj4droid.com/img/profile.jpg",
+    "sameAs": [
+      "https://www.linkedin.com/in/rubanjoseph",
+      "https://twitter.com/rubanjoseph"
+    ],
+    "jobTitle": "Développeur web et mobile",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "RJ4DROID"
+    },
+    "description": "Développeur web depuis 7 ans, je crée des applications Android, sites web et formulaires d'inscription sur mesure.",
+    "knowsAbout": ["Développement Android", "Développement web", "Firebase", "PWA", "APK"],
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "HT"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "RJ4DROID",
+    "description": "Services de développement d'applications mobiles et sites web sur mesure",
+    "url": "https://rj4droid.com",
+    "logo": "https://rj4droid.com/img/logo.png",
+    "priceRange": "$$",
+    "areaServed": {
+      "@type": "Country",
+      "name": "HT"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Services de développement",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Création de blog personnel"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Formulaire d'inscription"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Conversion site web en APK"
+          }
+        }
+      ]
+    }
+  }
+  </script>
+  <style>
+  video {
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.video-fullscreen {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  height: 98vh !important; /* pa 90vh */
+  z-index: 999999;
+  background: black;
+  border-radius: 0 !important;
+  object-fit: contain; /* pa cover */
+}
+.video-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.video-actions button {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(145deg, #111, #222);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.video-actions button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+}
+
+#btnPlay { background: linear-gradient(145deg, #28a745, #1e7e34); }
+#btnDownload { background: linear-gradient(145deg, #007bff, #0056b3); }
+#btnLike { background: linear-gradient(145deg, #ff9800, #e65100); }
+#btnShare { background: linear-gradient(145deg, #9c27b0, #6a0080); }
+#btnFullscreen { background: linear-gradient(145deg, #f44336, #b71c1c); }
+   </style>
+</head>
+<body>
+      <!--config-->
+<span>  
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/userSidebar.js"></script>
+  <script src="js/layout.js"></script>
+    
+  <header class="app-header" id="header"></header>
+  <div class="sidebar" id="sidebar"></div>
+  <div class="overlay" id="overlay"></div>
+  <footer class="app-footer" id="footer">
+  </footer>
+</span>
+
+  <!-- CONTENU PRINCIPAL-->
+<main class="main-content">
+  <!-- Ajout de l'ID myVideo -->
+  <video id="myVideo" width="100%" poster="videos/poster.png">
+    <source src="videos/video.mp4" type="video/mp4">
+  </video>
+  
+    <div class="video-actions">
+  <button id="btnPlay" title="Play (-50 crédits)">
+    <i class="fas fa-play"></i>
+  </button>
+
+  <button id="btnDownload" title="Télécharger (-200 crédits)">
+    <i class="fas fa-download"></i>
+  </button>
+
+  <button id="btnLike" title="Like (+10 crédits)">
+    <i class="fas fa-thumbs-up"></i>
+  </button>
+
+  <button id="btnShare" title="Partager (+10 crédits)">
+    <i class="fas fa-share-nodes"></i>
+  </button>
+
+  <button id="btnFullscreen" title="Plein écran">
+    <i class="fas fa-expand"></i>
+  </button>
+</div>
+<div class="pubs">
+  <h1 id="title">🎬 Vidéo Fòmasyon Exclusive Disponib Pandan 24 Heures Sèlman</h1>
+  <small id="sumary">
+    Dekouvri kijan ou ka mete yon imaj nan yon pa web html e diferan metòd ou ka
+    itilize pou fè sa.
+  </small>
+  <p id="description">
+    Video sa pa ou plizyè metòd ou ka mete yon imaj nan yon paj web, aprè ou fin
+    gade video sa, ou pa gen oken difikilte pou ensere imaj nan yon oaj web an
+    html
+  </p>
+  <p>
+    Nan yon paj web am html ,ounka mete valè imaj ke ou vle, e nenpot kote imaj
+    la ye ou ka fèl afiche sou sit web ou, si imaj la nan baz done ou, oubyen se
+    yon lyen ou jwenn ou ka tou jou afichel, selman tout gen avantaj yo ak
+    enkonvenyan yo
+  </p>
+  <script async="async" data-cfasync="false" src="https://pl28816780.effectivegatecpm.com/0a0a0536603e7588276c34fddd29be4e/invoke.js"></script>
+<div id="container-0a0a0536603e7588276c34fddd29be4e"></div> 
+</div>
+</main>
+<script>
+// ==================== GESTION DES CRÉDITS (VIDÉO & 24H) ====================
+
+// Identifiant unique pour cette vidéo et durée d'accès
+const VIDEO_ID = "video_principale_01"; 
+const ACCESS_DURATION_MS = 24 * 60 * 60 * 1000; // 24 heures en millisecondes
+
+// Fonction globale pour gérer les transactions de crédits
+async function handleTransaction(amount, actionCallback) {
+  const uid = localStorage.getItem("connectedUID");
+  
+  if (!uid) {
+    alert("Vous devez être connecté pour effectuer cette action.");
+    return;
+  }
+
+  const userRef = firebase.database().ref(`RJFORDROID/USERS/${uid}`);
+
+  try {
+    const snap = await userRef.once("value");
+    const user = snap.val();
+    
+    if (!user) return;
+
+    let currentCredits = user.credits || 0;
+
+    if (amount < 0 && currentCredits < Math.abs(amount)) {
+      alert(`Crédits insuffisants. Il vous faut ${Math.abs(amount)} crédits.`);
+      return; 
+    }
+
+    const newCredits = currentCredits + amount;
+    await userRef.update({ credits: newCredits });
+
+    const creditEl = document.getElementById("credits");
+    if (creditEl) {
+      creditEl.textContent = newCredits;
+    }
+
+    if (actionCallback) {
+      actionCallback();
+    }
+
+  } catch (error) {
+    console.error("Erreur lors de la transaction:", error);
+    alert("Une erreur est survenue lors de la transaction.");
+  }
+}
+
+// ==================== ÉCOUTEURS D'ÉVÉNEMENTS ====================
+
+document.addEventListener("DOMContentLoaded", () => {
+  
+  const video = document.getElementById("myVideo");
+  const btnPlay = document.getElementById("btnPlay");
+  const btnDownload = document.getElementById("btnDownload");
+  const btnLike = document.getElementById("btnLike");
+  const btnShare = document.getElementById("btnShare");
+  
+  const btnFullscreen = document.getElementById("btnFullscreen");
+
+if (btnFullscreen) {
+  btnFullscreen.addEventListener("click", () => {
+
+    const header = document.getElementById("header");
+    const footer = document.getElementById("footer");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    if (!video.classList.contains("video-fullscreen")) {
+
+      video.classList.add("video-fullscreen");
+      video.setAttribute("controls", "true");
+      
+      btnFullscreen.style.position = "fixed";
+btnFullscreen.style.top = "120px";
+btnFullscreen.style.right = "2px";
+btnFullscreen.style.zIndex = "999999";
+btnFullscreen.style.background = "red";
+btnFullscreen.style.color = "#fff";
+btnFullscreen.style.borderRadius = "50%";
+btnFullscreen.style.padding = "12px";
+
+      if(header) header.style.display = "none";
+      if(footer) footer.style.display = "none";
+      if(sidebar) sidebar.style.display = "none";
+      if(overlay) overlay.style.display = "none";
+
+    } else {
+
+      video.classList.remove("video-fullscreen");
+      video.removeAttribute("controls");
+
+      btnFullscreen.style.position = "";
+btnFullscreen.style.top = "";
+btnFullscreen.style.right = "";
+btnFullscreen.style.zIndex = "";
+btnFullscreen.style.background = "";
+btnFullscreen.style.color = "";
+btnFullscreen.style.borderRadius = "";
+btnFullscreen.style.padding = "";
+
+      if(header) header.style.display = "";
+      if(footer) footer.style.display = "";
+      if(sidebar) sidebar.style.display = "";
+      if(overlay) overlay.style.display = "";
+
+    }
+
+  });
+}
+  
+  const uid = localStorage.getItem("connectedUID");
+
+  // Vérifier l'accès au chargement de la page pour afficher "Accès 24h"
+  if (uid && btnPlay) {
+    firebase.database().ref(`RJFORDROID/USERS/${uid}/videoAccess/${VIDEO_ID}`)
+      .once("value").then(snap => {
+        const lastAccess = snap.val();
+        if (lastAccess && (Date.now() - lastAccess < ACCESS_DURATION_MS)) {
+          btnPlay.textContent = "Accès";
+        }
+      });
+  }
+
+  // --- ACTION : PLAY (-50 crédits, VALABLE 24 HEURES) ---
+  if (btnPlay) {
+    btnPlay.addEventListener("click", async () => {
+      if (!uid) {
+        alert("Vous devez être connecté pour lire la vidéo.");
+        return;
+      }
+
+      // 1. Si la vidéo est en cours, on fait juste pause
+      if (!video.paused) {
+        video.pause();
+        btnPlay.textContent = "Play";
+        return;
+      }
+
+      // 2. Vérification de l'accès dans Firebase
+      const accessRef = firebase.database().ref(`RJFORDROID/USERS/${uid}/videoAccess/${VIDEO_ID}`);
+      
+      try {
+        const snap = await accessRef.once("value");
+        const lastAccess = snap.val();
+        const now = Date.now();
+
+        // Si payé il y a moins de 24h -> LECTURE GRATUITE
+        if (lastAccess && (now - lastAccess < ACCESS_DURATION_MS)) {
+          video.play();
+          btnPlay.textContent = "Pause";
+        } 
+        // Sinon (Jamais payé OU expiré) -> PAIEMENT 50 CRÉDITS
+        else {
+          handleTransaction(-50, async () => {
+            await accessRef.set(now); // Sauvegarde de l'heure actuelle
+            video.play();
+            btnPlay.textContent = "Pause";
+            alert("50 crédits déduits. Vous avez accès en illimité à cette vidéo pendant 24 heures !");
+          });
+        }
+      } catch (error) {
+        console.error("Erreur de vérification d'accès :", error);
+      }
+    });
+  }
+
+  // --- ACTION : TÉLÉCHARGER (-200 crédits) ---
+  if (btnDownload) {
+    btnDownload.addEventListener("click", () => {
+      handleTransaction(-200, () => {
+        const videoSrc = video.querySelector("source").src;
+        const a = document.createElement("a");
+        a.href = videoSrc;
+        a.download = "RJ4DROID_Video.mp4"; 
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        alert("Téléchargement lancé !");
+      });
+    });
+  }
+
+  // --- ACTION : LIKE (+10 crédits) ---
+  if (btnLike) {
+    btnLike.addEventListener("click", function() {
+      handleTransaction(10, () => {
+        alert("Merci pour votre like ! 10 crédits ajoutés.");
+        this.disabled = true;
+        this.style.opacity = "0.5";
+        this.textContent = "Liké ✓";
+      });
+    });
+  }
+
+  // --- ACTION : PARTAGER (+10 crédits) ---
+  if (btnShare) {
+    btnShare.addEventListener("click", function() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Regardez cette vidéo sur RJ4DROID',
+          url: window.location.href
+        }).then(() => {
+          handleTransaction(10, () => {
+            alert("Merci pour le partage ! 10 crédits ajoutés.");
+            this.disabled = true;
+            this.style.opacity = "0.5";
+            this.textContent = "Partagé ✓";
+          });
+        }).catch((error) => console.log('Erreur de partage', error));
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert("Lien copié dans le presse-papier !");
+        handleTransaction(10, () => {
+          this.disabled = true;
+          this.style.opacity = "0.5";
+          this.textContent = "Lien copié ✓";
+        });
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>
