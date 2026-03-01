@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoApp - Player Seri</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #fe2c55;
+            --bg-dark: #010101;
+            --text-white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background-color: var(--bg-dark);
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-white);
+            overflow: hidden;
+        }
+
+        .app-container { display: flex; height: 100vh; }
+
+        .video-loader {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 500;
+            display: none;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .side-menu {
+            width: 250px; background: #121212;
+            border-right: 1px solid #333; padding: 20px;
+            transition: transform 0.3s ease; z-index: 1001;
+        }
+        .side-menu.hidden { transform: translateX(-300px); position: absolute; }
+        .side-menu h2 { font-size: 1.2rem; margin-bottom: 20px; color: var(--primary-color); }
+        
+        #episodeList { list-style: none; padding: 0; }
+        #episodeList li {
+            padding: 12px; margin-bottom: 8px; background: #222;
+            border-radius: 8px; cursor: pointer; transition: 0.2s;
+        }
+        #episodeList li.active { background: var(--primary-color); }
+        #episodeList li:hover { background: #333; }
+
+        .video-section {
+            flex: 1; position: relative;
+            display: flex; justify-content: center; background: #000;
+        }
+        #mainVideo { height: 100%; max-width: 500px; width: 100%; object-fit: cover; background: #000; }
+
+        .menu-toggle {
+            position: fixed; top: 20px; right: 20px;
+            background: var(--glass-bg); border: none; color: white;
+            font-size: 1.5rem; padding: 10px; border-radius: 50%; cursor: pointer; z-index: 1002;
+        }
+        .side-bar {
+            position: fixed; right: 15px; bottom: 120px;
+            display: flex; flex-direction: column; gap: 25px;
+            z-index: 10;
+        }
+        .action-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .action-item i { font-size: 30px; margin-bottom: 5px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .action-item i.active { color: var(--primary-color); }
+        
+        .video-info { 
+            position: absolute; bottom: 30px; left: 20px; 
+            max-width: 75%; pointer-events: none; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        .comments-panel {
+            position: absolute; bottom: -100%; left: 0; width: 100%; height: 60%;
+            background: white; color: black; border-radius: 15px 15px 0 0;
+            transition: 0.4s; display: flex; flex-direction: column; z-index: 1000;
+        }
+        .comments-panel.active { bottom: 0; }
+        .comments-header { padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
+        .comments-list { flex: 1; overflow-y: auto; padding: 15px; }
+        .comment-input-area { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #eee; }
+        .comment-input-area input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; }
+        .comment-input-area button { border: none; background: var(--primary-color); color: white; padding: 10px 15px; border-radius: 50%; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <nav class="side-menu" id="sideMenu">
+            <h2 id="serieTitle">Lis Epizòd</h2>
+            <ul id="episodeList"></ul>
+        </nav>
+
+        <main class="video-section">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+
+            <div class="video-loader" id="loader">
+                <div class="spinner"></div>
+            </div>
+
+            <video id="mainVideo" src="" loop playsinline controlsList="nodownload"></video>
+
+            <div class="video-info">
+                <h3 id="videoTitle">Chajman...</h3>
+                <p id="videoDesc">Tanpri tann...</p>
+            </div>
+
+            <div class="side-bar">
+                <div class="action-item" onclick="handleLike()">
+                    <i class="fas fa-heart" id="likeIcon"></i>
+                    <span id="likeCount">0</span>
+                </div>
+                <div class="action-item" onclick="toggleComments()">
+                    <i class="fas fa-comment-dots"></i>
+                    <span id="commentCount">0</span>
+                </div>
+                <div class="action-item" onclick="handleShare()">
+                    <i class="fas fa-share"></i>
+                    <span id="shareCount">0</span>
+                </div>
+            </div>
+
+            <div class="comments-panel" id="commentsPanel">
+                <div class="comments-header">
+                    <h4>Commentaires</h4>
+                    <button onclick="toggleComments()" style="border:none; background:none; font-size:1.5rem;">&times;</button>
+                </div>
+                <div class="comments-list" id="commentsList"></div>
+                <div class="comment-input-area">
+                    <input type="text" id="commentInput" placeholder="Ajouter un commentaire...">
+                    <button onclick="addComment()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Rekipere ID seri nan URL la (?serie=ID)
+        const urlParams = new URLSearchParams(window.location.search);
+        const SERIE_ID = urlParams.get('serie');
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQeHWr_vUiQmVVgJJ_cOF9qrCCLd7IJNc",
+            authDomain: "ayiweb.firebaseapp.com",
+            databaseURL: "https://ayiweb-default-rtdb.firebaseio.com",
+            projectId: "ayiweb",
+            storageBucket: "ayiweb.appspot.com",
+            messagingSenderId: "115054504556",
+            appId: "1:115054504556:web:ccd713ba01dd8f02830649"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let episodesData = [];
+        let currentIndex = 0;
+
+        const video = document.getElementById('mainVideo');
+        const loader = document.getElementById('loader');
+        const title = document.getElementById('videoTitle');
+        const desc = document.getElementById('videoDesc');
+        const serieHeader = document.getElementById('serieTitle');
+        const likeCount = document.getElementById('likeCount');
+        const shareCount = document.getElementById('shareCount');
+        const commentCount = document.getElementById('commentCount');
+        const episodeListUI = document.getElementById('episodeList');
+        const commentsListUI = document.getElementById('commentsList');
+
+        // GESTION LOADER
+        video.addEventListener('waiting', () => { loader.style.display = 'block'; });
+        video.addEventListener('canplay', () => { loader.style.display = 'none'; });
+        video.addEventListener('loadstart', () => { loader.style.display = 'block'; });
+        video.addEventListener('playing', () => { loader.style.display = 'none'; });
+
+        function init() {
+            if (!SERIE_ID) {
+                title.innerText = "Erreur: Seri ID manke nan URL la.";
+                return;
+            }
+
+            // Path: RJFORDROID/SERIES/ID_SERI
+            db.ref(`RJFORDROID/SERIES/${SERIE_ID}`).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.EPISODES) {
+                    serieHeader.innerText = data.titre || "Lis Epizòd";
+                    
+                    const episodesObj = data.EPISODES;
+                    const prevCount = episodesData.length;
+                    
+                    // Konvèti objè an tablo
+                    episodesData = Object.keys(episodesObj).map(key => ({
+                        dbKey: key,
+                        ...episodesObj[key]
+                    }));
+
+                    // Triye pa nimewo epizòd
+                    episodesData.sort((a, b) => (parseInt(a.episodeNumber) || 0) - (parseInt(b.episodeNumber) || 0));
+                    
+                    renderMenu();
+                    
+                    if (prevCount === 0 && episodesData.length > 0) {
+                        prepareFirstEpisode(0);
+                    } else {
+                        updateStatsOnly();
+                    }
+                } else {
+                    title.innerText = "Pa gen epizòd nan seri sa.";
+                }
+            });
+        }
+
+        function renderMenu() {
+            episodeListUI.innerHTML = "";
+            episodesData.forEach((ep, index) => {
+                const li = document.createElement('li');
+                li.innerText = `Ep. ${ep.episodeNumber || index + 1} : ${ep.title}`;
+                if (index === currentIndex) li.classList.add('active');
+                li.onclick = () => {
+                    loadAndPlayEpisode(index);
+                    if(window.innerWidth < 768) toggleMenu();
+                };
+                episodeListUI.appendChild(li);
+            });
+        }
+
+        function prepareFirstEpisode(index) {
+            currentIndex = index;
+            const data = episodesData[index];
+            video.src = data.url;
+            title.innerText = data.title;
+            desc.innerText = data.desc || "";
+            updateStatsOnly();
+        }
+
+        function loadAndPlayEpisode(index) {
+            if (!episodesData[index]) return;
+            currentIndex = index;
+            const data = episodesData[index];
+            
+            loader.style.display = 'block';
+            video.src = data.url;
+            video.muted = false;
+            video.load();
+            
+            video.play().catch(e => {
+                console.log("Play failed: ", e);
+                loader.style.display = 'none';
+            });
+
+            title.innerText = data.title;
+            desc.innerText = data.desc || "";
+            updateStatsOnly();
+            
+            Array.from(episodeListUI.children).forEach((li, i) => {
+                li.classList.toggle('active', i === index);
+            });
+        }
+
+        function updateStatsOnly() {
+            const data = episodesData[currentIndex];
+            if (!data) return;
+            likeCount.innerText = data.likes || 0;
+            shareCount.innerText = data.shares || 0;
+            const commentsArray = data.comments ? Object.values(data.comments) : [];
+            commentCount.innerText = commentsArray.length;
+            updateCommentsUI(commentsArray);
+        }
+
+        function handleLike() {
+            const epKey = episodesData[currentIndex].dbKey;
+            const currentLikes = episodesData[currentIndex].likes || 0;
+            db.ref(`RJFORDROID/SERIES/${SERIE_ID}/EPISODES/${epKey}`).update({ likes: currentLikes + 1 });
+            document.getElementById('likeIcon').classList.add('active');
+        }
+
+              function handleShare() {
+            // Nou rekipere done epizòd ki ap jwe a
+            const currentEpisode = episodesData[currentIndex];
+            const epKey = currentEpisode.dbKey;
+            
+            // Tit ak Deskripsyon pou pataje a
+            const shareTitle = currentEpisode.title || "Gade seri sa sou RJFORDROID";
+            const shareDesc = currentEpisode.desc || "Yon bèl seri pou w swiv.";
+            const shareLink = `https://rjfordroid.netlify.app/serie.html?serie=${SERIE_ID}`;
+
+            // Mesaj konplè a
+            const fullMessage = `${shareTitle}\n\n${shareDesc}\n\nRegarder la série complète sur :\n${shareLink}`;
+
+            // Tcheke si navigatè a ka pataje (Mobile sitou)
+            if (navigator.share) {
+                navigator.share({
+                    title: shareTitle,
+                    text: fullMessage,
+                    url: shareLink
+                }).then(() => {
+                    // Si pataje a reyisi, nou ogmante konte a nan Firebase
+                    const currentShares = currentEpisode.shares || 0;
+                    db.ref(`RJFORDROID/SERIES/${SERIE_ID}/EPISODES/${epKey}`).update({ 
+                        shares: currentShares + 1 
+                    });
+                }).catch((error) => console.log('Erè nan pataje:', error));
+            } else {
+                // Si se sou PC oswa navigatè a pa sipòte l, nou jis kopye lyen an
+                const tempInput = document.createElement("input");
+                document.body.appendChild(tempInput);
+                tempInput.value = shareLink;
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                alert("Lien seri a kopye! Ou ka voye l bay zanmi w.");
+            }
+        }
+
+        function addComment() {
+            const input = document.getElementById('commentInput');
+            if(input.value.trim() !== "") {
+                const epKey = episodesData[currentIndex].dbKey;
+                db.ref(`RJFORDROID/SERIES/${SERIE_ID}/EPISODES/${epKey}/comments`).push(input.value);
+                input.value = "";
+            }
+        }
+
+        function updateCommentsUI(comments) {
+            commentsListUI.innerHTML = "";
+            comments.slice().reverse().forEach(c => {
+                const p = document.createElement('p');
+                p.style.cssText = "padding: 10px; border-bottom: 1px solid #eee; margin:0; font-size:14px;";
+                p.innerText = c;
+                commentsListUI.appendChild(p);
+            });
+        }
+
+        function toggleComments() { document.getElementById('commentsPanel').classList.toggle('active'); }
+        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('hidden'); }
+        document.getElementById('menuToggle').onclick = toggleMenu;
+
+        init();
+    </script>
+</body>
+</html>

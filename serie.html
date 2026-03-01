@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Tout Seri Fòmasyon RJFORDROID - Aprann HTML, CSS, Android</title>
+    <meta name="description" content="Dekouvri tout seri fòmasyon videyo exclusive sou RJFORDROID. Aprann kreyasyon aplikasyon Android, sit web HTML/CSS ak Firebase. Deboke potansyèl ou kounye a.">
+    <meta name="keywords" content="fòmasyon android ayiti, aprann pwogramasyon kreyòl, kreyasyon aplikasyon mobil, fòmasyon html css kreyòl, rjfordroid seri, aprann devlopman web, kredi rjfordroid">
+    <meta name="author" content="RJFORDROID">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://rjfordroid.com/series.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rjfordroid.com/series.html">
+    <meta property="og:title" content="Tout Seri Fòmasyon Videyo sou RJFORDROID">
+    <meta property="og:description" content="Gade pi bèl seri fòmasyon sou teknoloji an kreyòl. Devlope konpetans ou nan Android ak Web ak RJFORDROID.">
+    <meta property="og:image" content="https://rjfordroid.com/image/og-image-series.jpg">
+
+    <link rel="icon" type="image/png" href="image/logo1.png">
+    <meta name="theme-color" content="#fe2c55"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --primary-color: #fe2c55;
+            --success-color: #25d366;
+            --bg-dark: #010101;
+            --text-white: #ffffff;
+            --skeleton-bg: #e0e0e0;
+        }
+
+        .series-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px; padding: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .series-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                padding: 10px;
+            }
+            .serie-banner { height: 110px !important; }
+            .serie-info h3 { font-size: 0.75rem !important; margin: 0 !important; }
+            .serie-info p, .serie-info div { display: none; }
+            .status-badge { font-size: 0.6rem !important; padding: 3px 6px !important; }
+        }
+
+        .serie-card {
+            background: white; border-radius: 12px;
+            overflow: hidden; cursor: pointer;
+            transition: 0.3s; border: 1px solid #ddd;
+            position: relative;
+            padding:0;
+        }
+
+        .serie-card:hover { transform: translateY(-3px); border-color: var(--primary-color); }
+        
+        .serie-banner { 
+            width: 100%; 
+            height: 180px; 
+            background: #000; 
+            object-fit: cover; 
+            display: block;
+            transition: opacity 0.5s;
+        }
+
+        .skeleton {
+            background-image: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .serie-info { padding:2px 12px; color: #333;}
+
+        /* ========================================== */
+        /* KORIJÈ TIT SOU YON SÈL LIY AK ...          */
+        /* ========================================== */
+        .serie-info h3 { 
+            margin: 0; 
+            color: var(--primary-color); 
+            font-size: 1rem;
+            white-space: nowrap;      /* Anpeche tit la desann anba */
+            overflow: hidden;         /* Kache pati ki depase a */
+            text-overflow: ellipsis;  /* Mete ... nan fen a */
+            width: 100%;              /* Sèvi ak tout espas ki disponib */
+        }
+        
+        .status-badge {
+            position: absolute; top: 10px; right: 10px;
+            padding: 5px 12px; border-radius: 20px; 
+            font-weight: bold; font-size: 0.75rem; color: white;
+            z-index: 5;
+        }
+        .badge-price { background: var(--primary-color); }
+        .badge-unlocked { background: var(--success-color); box-shadow: 0 0 10px rgba(37, 211, 102, 0.4); }
+
+        .custom-popup {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 5000; align-items: center; justify-content: center;
+        }
+        .popup-content {
+            background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 350px;
+            text-align: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .popup-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; color: #000; }
+        .popup-msg { color: #666; margin-bottom: 20px; font-size: 0.9rem; }
+        .popup-btns { display: flex; gap: 10px; }
+        .p-btn { border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; }
+        .p-btn-confirm { background: var(--primary-color); color: white; }
+        .p-btn-cancel { background: #f0f0f0; color: #333; }
+
+        #mainLoader { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(0,0,0,0.1); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        #episodePage { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; }
+        .back-btn { position: absolute; top: 20px; left: 20px; background: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; z-index: 2001; font-weight: bold;}
+    </style>
+</head>
+<body>
+
+<div id="customPopup" class="custom-popup">
+    <div class="popup-content">
+        <div class="popup-title" id="pTitle">Mesaj</div>
+        <div class="popup-msg" id="pMsg">...</div>
+        <div class="popup-btns" id="pBtns"></div>
+    </div>
+</div>
+
+<span>  
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/userSidebar.js"></script>
+  <script src="js/layout.js"></script>
+    
+  <header class="app-header" id="header"></header>
+  <div class="sidebar" id="sidebar"></div>
+  <div class="overlay" id="overlay"></div>
+  <footer class="app-footer" id="footer"></footer>
+</span>
+
+<main class="main-content">
+    <div id="homePage">
+      <div style="
+    position: relative; 
+    height: 200px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center; 
+    background: url('image/service.jpg') center/cover no-repeat;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    color: white;
+">
+    <div style="
+        position: absolute; 
+        top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(0, 0, 0, 0.6); 
+        z-index: 1;
+    "></div>
+
+    <div style="position: relative; z-index: 2; padding: 0 15px;">
+        <h1 style=" color: green;
+            font-size: 1.8rem; 
+            margin: 0; 
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+        ">
+            RJFORDROID <span style="color:white">SERIES</span>
+        </h1>
+        <p style="
+            font-size: 0.95rem; 
+            margin-top: 8px; 
+            opacity: 0.9;
+            font-weight: 300;
+            color:white;
+        ">
+            <i class="fas fa-graduation-cap"></i> Chwazi yon seri pou w kòmanse fòmasyon w
+        </p>
+    </div>
+</div>
+
+        <div id="mainLoader"><div class="spinner"></div></div>
+        <section class="series-grid" id="seriesContainer" aria-label="Liste des séries de formation"></section>
+    </div>
+</main>
+
+<div id="episodePage">
+    <button class="back-btn" onclick="closeEpisodes()"><i class="fas fa-arrow-left"></i> Retounen</button>
+    <iframe id="episodeFrame" src="" style="width:100%; height:100vh; border:none;" title="Lecteur vidéo de formation"></iframe>
+</div>
+
+<script>
+    const SERIE_COST = 50; 
+    const seriesContainer = document.getElementById('seriesContainer');
+    const mainLoader = document.getElementById('mainLoader');
+    const uid = localStorage.getItem("connectedUID");
+
+    // ==========================================
+    // LOGIK NOTIFIKASYON BROWSER
+    // ==========================================
+    const isNotifySupported = ("Notification" in window);
+
+    if (isNotifySupported) {
+        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
+    }
+
+    function sendNotify(title, body) {
+        if (isNotifySupported && Notification.permission === "granted") {
+            try {
+                new Notification(title, {
+                    body: body,
+                    icon: "image/logo1.png"
+                });
+            } catch (e) {
+                console.error("Erè notifikasyon:", e);
+            }
+        }
+    }
+
+    function checkUpdates(data) {
+        const seriesKeys = Object.keys(data);
+        if (seriesKeys.length === 0) return;
+
+        const latestSerieId = seriesKeys[seriesKeys.length - 1];
+        const lastSeenSerie = localStorage.getItem('rj_last_serie');
+        
+        if (lastSeenSerie && lastSeenSerie !== latestSerieId) {
+            sendNotify("Nouvo Seri!", `Seri "${data[latestSerieId].titre}" disponib kounye a.`);
+        }
+        localStorage.setItem('rj_last_serie', latestSerieId);
+
+        seriesKeys.forEach(sId => {
+            const episodes = data[sId].EPISODES;
+            if (episodes) {
+                const epKeys = Object.keys(episodes);
+                const latestEpId = epKeys[epKeys.length - 1];
+                const storageKey = `rj_last_ep_${sId}`;
+                const lastEpSeen = localStorage.getItem(storageKey);
+
+                if (lastEpSeen && lastEpSeen !== latestEpId) {
+                    sendNotify("Nouvo Epizòd!", `Yon nouvo videyo ajoute nan: ${data[sId].titre}`);
+                }
+                localStorage.setItem(storageKey, latestEpId);
+            }
+        });
+    }
+
+    // ==========================================
+    // FONKSYON PRINCIPAL YO
+    // ==========================================
+    function showPopup(title, msg, isConfirm = false, onConfirm = null) {
+        document.getElementById('pTitle').innerText = title;
+        document.getElementById('pMsg').innerText = msg;
+        const btnContainer = document.getElementById('pBtns');
+        btnContainer.innerHTML = "";
+
+        if (isConfirm) {
+            const btnCancel = document.createElement('button');
+            btnCancel.className = "p-btn p-btn-cancel";
+            btnCancel.innerText = "Anile";
+            btnCancel.onclick = () => document.getElementById('customPopup').style.display = "none";
+            
+            const btnOk = document.createElement('button');
+            btnOk.className = "p-btn p-btn-confirm";
+            btnOk.innerText = "Deboke";
+            btnOk.onclick = () => {
+                document.getElementById('customPopup').style.display = "none";
+                if (onConfirm) onConfirm();
+            };
+            btnContainer.appendChild(btnCancel);
+            btnContainer.appendChild(btnOk);
+        } else {
+            const btnOk = document.createElement('button');
+            btnOk.className = "p-btn p-btn-confirm";
+            btnOk.innerText = "OK";
+            btnOk.onclick = () => document.getElementById('customPopup').style.display = "none";
+            btnContainer.appendChild(btnOk);
+        }
+        document.getElementById('customPopup').style.display = "flex";
+    }
+
+    async function loadSeries() {
+        let unlockedSeries = {};
+        if (uid) {
+            const userSnap = await db.ref(`RJFORDROID/USERS/${uid}/unlockedSeries`).once("value");
+            if (userSnap.exists()) unlockedSeries = userSnap.val();
+        }
+
+        db.ref('RJFORDROID/SERIES').on('value', (snapshot) => {
+            seriesContainer.innerHTML = "";
+            mainLoader.style.display = "none";
+            const data = snapshot.val();
+            
+            if (data) {
+                checkUpdates(data);
+                Object.keys(data).forEach(key => {
+                    const isUnlocked = unlockedSeries[key] === true;
+                    createSerieCard(key, data[key], isUnlocked);
+                });
+            } else {
+                seriesContainer.innerHTML = "<p>Pa gen seri disponib kounye a.</p>";
+            }
+        });
+    }
+
+    function createSerieCard(id, data, isUnlocked) {
+        const card = document.createElement('article');
+        card.className = 'serie-card';
+        card.setAttribute('tabindex', '0');
+        card.onclick = () => handleSerieClick(id, isUnlocked);
+        card.onkeypress = (e) => { if(e.key === 'Enter') handleSerieClick(id, isUnlocked); };
+
+        const banner = data.banner || ''; 
+        const cost = data.price || SERIE_COST;
+
+        card.innerHTML = `
+            <div class="status-badge ${isUnlocked ? 'badge-unlocked' : 'badge-price'}">
+                ${isUnlocked ? '<i class="fas fa-check"></i>' : cost}
+            </div>
+            <img 
+                src="${banner}" 
+                class="serie-banner skeleton" 
+                alt="Banner Seri" 
+                loading="lazy"
+                onerror="this.onerror=null; this.src='https://via.placeholder.com/300x180/000000/FFFFFF?text=IMAGE+MANKE'; this.classList.remove('skeleton');"
+                onload="this.classList.remove('skeleton');"
+            >
+            <div class="serie-info">
+                <h3 title="${data.titre}">${data.titre}</h3>
+            </div>
+        `;
+        seriesContainer.appendChild(card);
+    }
+
+    async function handleSerieClick(serieId, alreadyUnlocked) {
+        if (!uid) {
+            showPopup("Atansyon", "Ou dwe konekte pou w ka gade seri sa a!");
+            return;
+        }
+
+        if (alreadyUnlocked) {
+            openSerie(serieId);
+            return;
+        }
+
+        try {
+            const serieSnap = await db.ref(`RJFORDROID/SERIES/${serieId}`).once("value");
+            const serieData = serieSnap.val();
+            if (!serieData) return;
+
+            const REAL_COST = serieData.price || SERIE_COST;
+            const userRef = db.ref(`RJFORDROID/USERS/${uid}`);
+            const userSnap = await userRef.once("value");
+            const userCredits = userSnap.val().credits || 0;
+
+            if (userCredits < REAL_COST) {
+                showPopup("Kredi Enfisiyan", `Ou bezwen ${REAL_COST} kredi. Ou gen ${userCredits}.`);
+                return;
+            }
+
+            showPopup("Deboke Seri", `Deboke "${serieData.titre}" pou ${REAL_COST} kredi?`, true, async () => {
+                await userRef.update({
+                    credits: userCredits - REAL_COST,
+                    [`unlockedSeries/${serieId}`]: true
+                });
+                showPopup("Siksè", "Seri a deboke!");
+                setTimeout(() => location.reload(), 1200);
+            });
+        } catch (e) { showPopup("Erè", "Pwoblèm koneksyon."); }
+    }
+
+    function openSerie(id) {
+        document.getElementById('episodePage').style.display = "block";
+        document.getElementById('episodeFrame').src = `player.html?serie=${id}`;
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeEpisodes() {
+        document.getElementById('episodePage').style.display = "none";
+        document.getElementById('episodeFrame').src = "";
+        document.body.style.overflow = "auto";
+    }
+
+    loadSeries();
+</script>
+</body>
+</html>
