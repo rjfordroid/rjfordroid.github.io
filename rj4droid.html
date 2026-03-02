@@ -521,22 +521,62 @@
       margin-top: 10px;
       text-align: center;
     }
+    
+    
+    
+    .player{
+    width:350px;
+    background:#000;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 0 20px rgba(0,0,0,0.8);
+}
+
+video{
+    width:100%;
+}
+
+.controls{
+    background:#1c1c1c;
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.buttons{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+button{
+    background:#ff3c00;
+    border:none;
+    padding:6px 10px;
+    border-radius:6px;
+    color:white;
+    cursor:pointer;
+    font-size:14px;
+}
+
+button:hover{
+    background:#ff6a00;
+}
+
+.progress{
+    width:100%;
+}
+
+.time{
+    color:white;
+    font-size:12px;
+    text-align:right;
+}
   </style>
 </head>
 <body>
-  <!-- Fil d'Ariane (Breadcrumb) -->
-  <div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-    <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-      <a href="https://rjfordroid.netlify.app" itemprop="item"><span itemprop="name">Accueil</span></a>
-      <meta itemprop="position" content="1">
-    </span>
-    <span>›</span>
-    <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-      <span itemprop="name">Chaîne WhatsApp</span>
-      <meta itemprop="position" content="2">
-    </span>
-  </div>
-  
+
   <!--config-->
   <span>  
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -553,6 +593,36 @@
 
   <!-- CONTENU PRINCIPAL-->
   <main class="main-content" id="main-content">
+    <section class="video">
+      <div class="player">
+
+    <video id="video">
+        <source src="videos/YouCut_20260227_154400351.mp4" type="video/mp4">
+    </video>
+
+    <div class="controls">
+
+        <input type="range" id="progress" class="progress" value="0">
+
+        <div class="buttons">
+            <button onclick="playVideo()">▶</button>
+            <button onclick="pauseVideo()">⏸</button>
+            <button onclick="stopVideo()">⏹</button>
+            <a id="downloadBtn" href="videos/YouCut_20260227_154400351.mp4" download>
+                <button>📥</button>
+            </a>
+        </div>
+
+        <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
+
+        <div class="time">
+            <span id="current">0:00</span> / <span id="duration">0:00</span>
+        </div>
+
+    </div>
+
+</div>
+    </section>
     <!-- SECTION CHAÎNE WHATSAPP -->
     <section class="channel-section" id="whatsapp" aria-labelledby="channel-title">
       <div class="channel-container">
@@ -622,7 +692,53 @@
     </section>
   </main>
 
-  <script>
+<!--video script-->
+<script>
+const video = document.getElementById("video");
+const progress = document.getElementById("progress");
+const volume = document.getElementById("volume");
+const current = document.getElementById("current");
+const duration = document.getElementById("duration");
+
+function playVideo(){
+    video.play();
+}
+
+function pauseVideo(){
+    video.pause();
+}
+
+function stopVideo(){
+    video.pause();
+    video.currentTime = 0;
+}
+
+video.addEventListener("timeupdate", ()=>{
+    progress.value = (video.currentTime / video.duration) * 100;
+    current.textContent = formatTime(video.currentTime);
+});
+
+video.addEventListener("loadedmetadata", ()=>{
+    duration.textContent = formatTime(video.duration);
+});
+
+progress.addEventListener("input", ()=>{
+    video.currentTime = (progress.value / 100) * video.duration;
+});
+
+volume.addEventListener("input", ()=>{
+    video.volume = volume.value;
+});
+
+function formatTime(time){
+    let minutes = Math.floor(time / 60);
+    let seconds = Math.floor(time % 60);
+    if(seconds < 10) seconds = "0" + seconds;
+    return minutes + ":" + seconds;
+}
+</script>
+
+<script>
     // --- ID utilisateur unique pour likes temporaires si pas connecté ---
     let userId = localStorage.getItem('rjUserId');
     if(!userId){
@@ -716,6 +832,9 @@
             <button class="shareBtn" style="background:#128C7E;color:#fff;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;font-weight:600;flex:1;" aria-label="Partager sur WhatsApp">
               <i class="fab fa-whatsapp"></i> Partager
             </button>
+            <button class="facebookShareBtn" style="background:#1877F2;color:#fff;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;font-weight:600;flex:1;" aria-label="Partager sur Facebook">
+              <i class="fab fa-facebook"></i> Partager
+            </button>
           </div>
         `;
 
@@ -737,7 +856,7 @@
           }
         });
 
-        // --- Share ---
+        // --- Share WhatsApp ---
         entry.querySelector('.shareBtn').addEventListener('click', async () => {
           const shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(data.title + "\n" + data.desc + "\n" + data.url)}`;
           window.open(shareUrl, '_blank', 'noopener,noreferrer');
@@ -748,7 +867,7 @@
             return;
           }
 
-          // Vérifier si l'utilisateur a déjà partagé cet article
+          // Vérifier si l'utilisateur a déjà partagé cet article sur WhatsApp
           const shareRef = firebase.database().ref(`RJFORDROID/WHATSAPP_CHAINE/${key}/shares/${uid}`);
           const snapShare = await shareRef.once('value');
           const hasSharedBefore = snapShare.exists();
@@ -762,7 +881,36 @@
           // Marquer comme partagé
           await shareRef.set(true);
 
-          alert(`✅ Partage enregistré ! +${creditsToAdd} crédits ajoutés à votre compte.`);
+          alert(`✅ Partage WhatsApp enregistré ! +${creditsToAdd} crédits ajoutés à votre compte.`);
+        });
+
+        // --- Share Facebook ---
+        entry.querySelector('.facebookShareBtn').addEventListener('click', async () => {
+          // URL de partage Facebook
+          const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(data.url)}&quote=${encodeURIComponent(data.title + " - " + data.desc)}`;
+          window.open(facebookShareUrl, '_blank', 'width=600,height=400,noopener,noreferrer');
+
+          const uid = localStorage.getItem("connectedUID");
+          if(!uid){
+            alert("Connectez-vous pour recevoir vos crédits la prochaine fois !");
+            return;
+          }
+
+          // Vérifier si l'utilisateur a déjà partagé cet article sur Facebook
+          const facebookShareRef = firebase.database().ref(`RJFORDROID/WHATSAPP_CHAINE/${key}/facebookShares/${uid}`);
+          const snapShare = await facebookShareRef.once('value');
+          const hasSharedBefore = snapShare.exists();
+
+          // Déterminer le nombre de crédits (10 crédits pour Facebook aussi)
+          const creditsToAdd = hasSharedBefore ? 1 : 10;
+
+          // Ajouter les crédits à l'utilisateur
+          await addCredits(uid, creditsToAdd);
+
+          // Marquer comme partagé sur Facebook
+          await facebookShareRef.set(true);
+
+          alert(`✅ Partage Facebook enregistré ! +${creditsToAdd} crédits ajoutés à votre compte.`);
         });
 
         entry.style.opacity = 0;
