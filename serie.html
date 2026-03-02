@@ -17,7 +17,6 @@
             --bg-dark: #010101;
         }
 
-        /* DASHBOARD GLOBAL */
         .global-stats-container {
             display: flex;
             justify-content: center;
@@ -55,10 +54,8 @@
             font-size: 0.65rem;
             color: #888;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        /* GRID SERIE */
         .series-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -94,7 +91,6 @@
 
         .stat-item { display: flex; align-items: center; gap: 5px; font-weight: 600; }
         .stat-item i { color: #aaa; font-size: 0.9rem; }
-        .stat-item i.fa-heart { color: var(--primary-color); }
 
         .status-badge {
             position: absolute; top: 12px; right: 12px;
@@ -109,13 +105,14 @@
             .series-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
             .serie-banner { height: 100px !important; }
             .global-stats-container { gap: 8px; padding: 0 10px; }
-            .stat-card-global { padding: 10px; }
-            .stat-card-global span { font-size: 1rem; }
         }
 
-        /* POPUP & LOADER */
         .custom-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; }
         .popup-content { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; }
+        .p-btn { border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; }
+        .p-btn-confirm { background: var(--primary-color); color: white; }
+        .p-btn-cancel { background: #f0f0f0; color: #333; }
+        
         .spinner { width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin: auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -124,7 +121,7 @@
 
 <div id="customPopup" class="custom-popup">
     <div class="popup-content">
-        <div id="pTitle" style="font-weight:bold; margin-bottom:10px;">Peye</div>
+        <div id="pTitle" style="font-weight:bold; margin-bottom:10px;">Mesaj</div>
         <div id="pMsg" style="margin-bottom:20px; font-size:0.85rem; color:#666;">...</div>
         <div id="pBtns" style="display:flex; gap:10px;"></div>
     </div>
@@ -134,7 +131,13 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
   <script src="js/firebase.js"></script>
+  <script src="js/userSidebar.js"></script>
+  <script src="js/layout.js"></script>
+    
   <header class="app-header" id="header"></header>
+  <div class="sidebar" id="sidebar"></div>
+  <div class="overlay" id="overlay"></div>
+  <footer class="app-footer" id="footer"></footer>
 </span>
 
 <main class="main-content">
@@ -205,22 +208,11 @@
                         epCount = episodes.length;
                         
                         episodes.forEach(ep => {
-                            // Kalkile LIKES (si se chif oswa objè)
                             if (ep.likes) {
-                                if (typeof ep.likes === 'number') {
-                                    likeCount += ep.likes;
-                                } else if (typeof ep.likes === 'object') {
-                                    likeCount += Object.keys(ep.likes).length;
-                                }
+                                likeCount += (typeof ep.likes === 'number') ? ep.likes : Object.keys(ep.likes).length;
                             }
-
-                            // Kalkile KOMANTÈ
                             if (ep.comments) {
-                                if (typeof ep.comments === 'number') {
-                                    commentCount += ep.comments;
-                                } else if (typeof ep.comments === 'object') {
-                                    commentCount += Object.keys(ep.comments).length;
-                                }
+                                commentCount += (typeof ep.comments === 'number') ? ep.comments : Object.keys(ep.comments).length;
                             }
                         });
                     }
@@ -253,7 +245,7 @@
                 <h3>${data.titre}</h3>
                 <div class="serie-stats">
                     <div class="stat-item"><i class="fas fa-video"></i> ${epCount}</div>
-                    <div class="stat-item"><i class="fas fa-heart"></i> ${likeCount}</div>
+                    <div class="stat-item"><i class="fas fa-heart" style="color:var(--primary-color)"></i> ${likeCount}</div>
                     <div class="stat-item"><i class="far fa-comment"></i> ${commentCount}</div>
                 </div>
             </div>
@@ -262,16 +254,86 @@
     }
 
     async function handleSerieClick(serieId, alreadyUnlocked) {
-        if (!uid) { showPopup("Atansyon", "Ou dwe konekte!"); return; }
-        if (alreadyUnlocked) { window.location.href = `player.html?serie=${serieId}`; return; }
-        // ... (Lojik peman ou deja genyen an)
+        // 1. Verifye koneksyon
+        if (!uid) {
+            showPopup("Atansyon", "Ou dwe konekte pou w ka deboke seri sa a!");
+            return;
+        }
+
+        // 2. Si l deboke deja, jis ouvri l
+        if (alreadyUnlocked) {
+            window.location.href = `player.html?serie=${serieId}`;
+            return;
+        }
+
+        try {
+            const serieSnap = await db.ref(`RJFORDROID/SERIES/${serieId}`).once("value");
+            const serieData = serieSnap.val();
+            
+            // 3. Verifye si gen epizòd anvan tout bagay
+            const episodes = serieData.EPISODES ? Object.keys(serieData.EPISODES) : [];
+            if (episodes.length === 0) {
+                showPopup("Bientôt disponible", "Seri sa a poko gen epizòd ladan l. Rete branche!");
+                return;
+            }
+
+            const REAL_COST = serieData.price || SERIE_COST;
+            const userRef = db.ref(`RJFORDROID/USERS/${uid}`);
+            const userSnap = await userRef.once("value");
+            const userCredits = userSnap.val().credits || 0;
+
+            // 4. Verifye kredi
+            if (userCredits < REAL_COST) {
+                showPopup("Kredi Enfisiyan", `Ou bezwen ${REAL_COST} kredi pou deboke seri sa a. Ou gen sèlman ${userCredits} kredi.`);
+                return;
+            }
+
+            // 5. Mande konfimasyon pou deboke
+            showPopup("Deboke Seri", `Èske ou vle deboke "${serieData.titre}" pou ${REAL_COST} kredi?`, true, async () => {
+                await userRef.update({
+                    credits: userCredits - REAL_COST,
+                    [`unlockedSeries/${serieId}`]: true
+                });
+                showPopup("Siksè", "Seri a deboke ak siksè! Prale nan player...");
+                setTimeout(() => {
+                    window.location.href = `player.html?serie=${serieId}`;
+                }, 1500);
+            });
+
+        } catch (e) {
+            console.error(e);
+            showPopup("Erè", "Gen yon pwoblèm ki rive. Tanpri eseye ankò.");
+        }
     }
 
-    function showPopup(title, msg) {
+    function showPopup(title, msg, isConfirm = false, onConfirm = null) {
         document.getElementById('pTitle').innerText = title;
         document.getElementById('pMsg').innerText = msg;
         const btnContainer = document.getElementById('pBtns');
-        btnContainer.innerHTML = `<button onclick="document.getElementById('customPopup').style.display='none'" style="flex:1; padding:10px; border:none; border-radius:8px; background:var(--primary-color); color:white; font-weight:bold;">OK</button>`;
+        btnContainer.innerHTML = "";
+
+        if (isConfirm) {
+            const btnCancel = document.createElement('button');
+            btnCancel.className = "p-btn p-btn-cancel";
+            btnCancel.innerText = "Anile";
+            btnCancel.onclick = () => document.getElementById('customPopup').style.display = "none";
+            
+            const btnOk = document.createElement('button');
+            btnOk.className = "p-btn p-btn-confirm";
+            btnOk.innerText = "Deboke";
+            btnOk.onclick = () => {
+                document.getElementById('customPopup').style.display = "none";
+                if (onConfirm) onConfirm();
+            };
+            btnContainer.appendChild(btnCancel);
+            btnContainer.appendChild(btnOk);
+        } else {
+            const btnOk = document.createElement('button');
+            btnOk.className = "p-btn p-btn-confirm";
+            btnOk.innerText = "OK";
+            btnOk.onclick = () => document.getElementById('customPopup').style.display = "none";
+            btnContainer.appendChild(btnOk);
+        }
         document.getElementById('customPopup').style.display = "flex";
     }
 
