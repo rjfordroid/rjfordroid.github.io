@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  
+  <title>RJ4DROID · Création d'applications et sites web par Ruban Joseph</title>
+  <meta name="description" content="Développeur web et mobile en Haïti. Formation Android, création de blog professionnel et conversion site web en application mobile Android.">
+  <meta name="keywords" content="création application, développement web, blog personnel, formulaire inscription, conversion site en APK, développeur Haïti, Ruban Joseph">
+  <meta name="author" content="Ruban Joseph">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://rjfordroid.netlify.app">
+  
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rjfordroid.netlify.app">
+  <meta property="og:title" content="RJ4DROID · Création d'applications mobiles et sites web">
+  <meta property="og:description" content="Développeur web et mobile en Haïti. Formation Android, création de blog professionnel et conversion site web en application mobile Android.">
+  <meta property="og:image" content="image/home.png">
+
+  <link rel="icon" type="image/png" href="image/logo1.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+
+  <style>
+      .apps-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 20px;
+          padding: 20px;
+      }
+      .app-card {
+          border: 1px solid #ddd;
+          border-radius: 12px;
+          padding: 15px;
+          text-align: center;
+          background-color: #fff;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+          transition: transform 0.3s ease;
+      }
+      .app-card:hover {
+          transform: translateY(-5px);
+      }
+      .app-icon {
+          width: 80px;
+          height: 80px;
+          border-radius: 18px;
+          object-fit: cover;
+          margin-bottom: 12px;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          background-color: #f9f9f9;
+      }
+      .app-card h3 {
+          margin: 10px 0 5px;
+          font-size: 1.1rem;
+          color: #333;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+      }
+      .app-card p {
+          font-size: 0.9rem;
+          color: #666;
+          height: 40px;
+          overflow: hidden;
+      }
+      .btn-details {
+          display: inline-block;
+          margin-top: 15px;
+          padding: 10px 20px;
+          background-color: #007bff;
+          color: white;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 0.9rem;
+      }
+
+      /* --- MODIFIKASYON POU MOBIL (GRID DE 3) --- */
+      @media (max-width: 600px) {
+          .apps-grid {
+              grid-template-columns: repeat(3, 1fr); /* Fòse 3 kolòn */
+              gap: 10px; /* Redui espas la */
+              padding: 10px;
+          }
+          .app-card {
+              padding: 10px 5px;
+              border-radius: 8px;
+          }
+          .app-icon {
+              width: 55px; /* Redui gwosè ikon an */
+              height: 55px;
+              border-radius: 12px;
+              margin-bottom: 8px;
+          }
+          .app-card h3 {
+              font-size: 0.75rem; /* Tèks pi piti */
+              margin: 5px 0;
+          }
+          .app-card p {
+              display: none; /* Kache deskripsyon an sou mobil pou n ka gen plas */
+          }
+          .btn-details {
+              margin-top: 8px;
+              padding: 6px 10px;
+              font-size: 0.7rem;
+              border-radius: 5px;
+          }
+      }
+  </style>
+</head>
+<body>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="js/firebase.js"></script> 
+  <script src="js/userSidebar.js"></script>
+  <script src="js/layout.js"></script>
+    
+  <header class="app-header" id="header"></header>
+  <div class="sidebar" id="sidebar"></div>
+  <div class="overlay" id="overlay"></div>
+
+  <main class="main-content">
+      <div id="apps-container" class="apps-grid">
+          <p style="text-align:center; grid-column: 1/-1;">Chargement des applications...</p>
+      </div>
+
+      <script>
+          function formatDriveUrl(url) {
+              if (!url) return 'image/logo1.png';
+              if (url.includes('drive.google.com')) {
+                  const fileId = url.match(/\/d\/([^\/]+)/)?.[1];
+                  if (fileId) {
+                      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500`;
+                  }
+              }
+              return url;
+          }
+
+          document.addEventListener("DOMContentLoaded", function() {
+              const appRef = firebase.database().ref('RJFORDROID/APPS');
+              const appsContainer = document.getElementById('apps-container');
+
+              appRef.on('value', (snapshot) => {
+                  appsContainer.innerHTML = ''; 
+                  
+                  if (!snapshot.exists()) {
+                      appsContainer.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Aucune application disponible pour le moment.</p>';
+                      return;
+                  }
+
+                  snapshot.forEach((childSnapshot) => {
+                      const appData = childSnapshot.val();
+                      if (appData.Online === true) {
+                          const appCard = document.createElement('div');
+                          appCard.className = 'app-card';
+                          
+                          const urlNom = encodeURIComponent(appData.Nom);
+                          const descRaw = appData.Desc || "";
+                          const shortDesc = descRaw.length > 60 ? descRaw.substring(0, 60) + '...' : descRaw;
+                          const cleanIconUrl = formatDriveUrl(appData.Icon);
+
+                          appCard.innerHTML = `
+                              <img src="${cleanIconUrl}" alt="${appData.Nom}" class="app-icon" onerror="this.src='image/logo1.png'">
+                              <h3>${appData.Nom}</h3>
+                              <p>${shortDesc}</p>
+                              <a href="p/apps.html?nom=${urlNom}" class="btn-details">Détails</a>
+                          `;
+                          appsContainer.appendChild(appCard);
+                      }
+                  });
+
+                  if (appsContainer.innerHTML === '') {
+                      appsContainer.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Aucune application active.</p>';
+                  }
+              });
+          });
+      </script>
+
+      <div style="text-align: center; margin: 20px 0;">
+          <script>
+            atOptions = {
+              'key' : '84f94dfc2ebce76ea4663ccd18ce574e',
+              'format' : 'iframe',
+              'height' : 50,
+              'width' : 320,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highperformanceformat.com/84f94dfc2ebce76ea4663ccd18ce574e/invoke.js"></script>
+      </div>
+
+      <a href="https://wa.me/50942772970" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+  </main>
+
+  <footer class="app-footer" id="footer"></footer>
+
+</body>
+</html>
