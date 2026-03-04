@@ -38,7 +38,7 @@
         #login-screen button:hover { background: #008f6f; }
         #error-msg { color: red; font-size: 14px; margin-bottom: 10px; display: none; }
 
-        /* Loader Overlay (Pour Upload Image) */
+        /* Loader Overlay */
         #loader {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; color: white;
@@ -48,11 +48,9 @@
 
         /* App Layout */
         #app { display: none; width: 100%; height: 100%; background: white; flex-direction: row; position: relative; overflow: hidden; }
-        
-        /* Overlay pour le menu Mobile */
         #menu-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 90; }
 
-        /* Sidebar (Users) */
+        /* Sidebar */
         #sidebar { width: 390px; background: #202c33; color: white; display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease; height: 100%; position:relative;}
         .sidebar-header { padding: 15px 20px; background: #111b21; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a3942; }
         .logout-btn { position: absolute; right: 1px; top: 1px; background: #ff3b30; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 0.8em; font-weight: bold;}
@@ -86,7 +84,6 @@
         #chat-header { padding: 15px 20px; background: #f0f2f5; font-size: 1.2em; font-weight: bold; border-bottom: 1px solid #ccc; color: #111b21; display: flex; align-items: center; z-index: 10; }
         #menu-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #111b21; padding: 5px; margin-right: 15px; display: none; }
         .back-btn { display: none; background: none; border: none; font-size: 20px; cursor: pointer; margin-right: 15px; color: #111b21; padding: 5px;}
-        .hidden-btn { display: none !important; }
         
         #news-filters { display: none; padding: 10px 15px; background: white; border-bottom: 1px solid #ccc; justify-content: space-between; gap: 10px; flex-shrink: 0; z-index: 9; overflow-x: auto;}
         .filter-btn { flex: 1; min-width: max-content; padding: 8px 12px; border: none; border-radius: 20px; background: #f0f2f5; color: #54656f; font-weight: bold; cursor: pointer; transition: background 0.3s, color 0.3s;}
@@ -96,8 +93,6 @@
         #messages { flex: 1; padding: 2px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
         #pagination-controls { display: none; justify-content: center; gap: 15px; padding: 15px; background: #efeae2; flex-shrink: 0; border-top: 1px solid #ddd; }
         #pagination-controls button { padding: 8px 16px; border: none; border-radius: 5px; background: #00a884; color: white; font-weight: bold; cursor: pointer; }
-        #pagination-controls button:disabled { background: #b0c4b1; cursor: not-allowed; }
-        #pagination-controls span { display: flex; align-items: center; font-weight: bold; color: #54656f; }
 
         .msg { max-width: 90%; padding: 8px 12px; border-radius: 10px; position: relative; word-wrap: break-word; font-size: 15px; }
         .msg.other { background: white; align-self: flex-start; border-top-left-radius: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.1);}
@@ -106,36 +101,60 @@
         .msg.me .msg-sender { display: none; }
         .msg-img { max-width: 100%; max-height: 250px; border-radius: 8px; margin-bottom: 5px; cursor: pointer; object-fit: cover; display: block; background-color: #e0e0e0;}
 
+        /* ======== CSS NEWS (ACTUALITÉS) ======== */
         .news-card { max-width: 99% !important; align-self: center !important; border-top-left-radius: 10px !important; width: 100%; margin-bottom: 15px; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
         .news-category-tag { display: inline-block; background: #00a884; color: white; padding: 4px 10px; border-radius: 15px; font-size: 11px; margin-bottom: 10px; font-weight: bold; text-transform: uppercase; margin-right: 5px; }
         .news-tag { display: inline-block; background: #e0e0e0; color: #333; padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; margin-right: 5px; font-style: italic; }
-
+        .news-text { font-size: 15px; color: #333; line-height: 1.5; white-space: pre-wrap; transition: all 0.3s ease;}
+        .text-truncated { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .text-expanded { display: block; }
+        .read-more-btn { background: none; border: none; color: #00a884; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 5px; padding: 0; outline: none; }
+        .read-more-btn:hover { text-decoration: underline; }
         .news-actions { display: flex; justify-content: space-between; margin-top: 15px; border-top: 1px solid #f0f2f5; padding-top: 15px; }
         .news-actions button { background: none; border: none; cursor: pointer; color: #54656f; font-size: 14px; display: flex; align-items: center; gap: 6px; font-weight: bold; transition: color 0.2s;}
-        .news-actions button:hover { color: #00a884; }
         .news-actions button span { background: #f0f2f5; padding: 2px 6px; border-radius: 10px; font-size: 12px; }
 
         .delete-btn { display: none; position: absolute; top: -10px; left: -10px; background: #ff3b30; color: white; border-radius: 50%; width: 22px; height: 22px; text-align: center; line-height: 22px; cursor: pointer; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;}
         .msg.me:hover .delete-btn { display: block; }
 
+        /* ======== NOUVO CSS POU SERIES ======== */
+        #series-area { display: none; flex: 1; overflow-y: auto; background: #f0f2f5; padding-bottom: 20px; }
+        .series-header-banner { background: #000; border-radius: 0 0 25px 25px; padding: 30px 20px; text-align: center; color: white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .series-header-banner h1 { color: #fe2c55; font-size: 1.8rem; margin: 0; }
+        .series-header-banner span.tv { color: white; }
+        .series-header-banner p { font-size: 0.85rem; opacity: 0.8; margin-top: 5px; }
+
+        .global-stats-container { display: flex; justify-content: center; gap: 15px; padding: 0 20px; margin-bottom: 25px; }
+        .stat-card-global { background: white; padding: 15px; border-radius: 15px; text-align: center; flex: 1; max-width: 150px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border: 1px solid #eee; }
+        .stat-card-global i { display: block; font-size: 1.3rem; margin-bottom: 5px; color: #fe2c55; }
+        .stat-card-global span { display: block; font-weight: 800; font-size: 1.2rem; color: #222; }
+        .stat-card-global small { font-size: 0.65rem; color: #888; text-transform: uppercase; }
+
+        .series-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 0 20px; }
+        .serie-card { background: white; border-radius: 15px; overflow: hidden; cursor: pointer; transition: transform 0.3s; border: 1px solid #eee; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+        .serie-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .serie-banner { width: 100%; height: 160px; background: #000; object-fit: cover; display: block; }
+        .serie-info { padding: 12px; }
+        .serie-info h3 { margin: 0 0 10px 0; color: #333; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .serie-stats { display: flex; gap: 15px; font-size: 0.8rem; color: #555; border-top: 1px solid #f9f9f9; padding-top: 10px; }
+        .stat-item { display: flex; align-items: center; gap: 5px; font-weight: 600; }
+        .status-badge { position: absolute; top: 12px; right: 12px; padding: 4px 10px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; color: white; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+        .badge-price { background: #fe2c55; }
+        .badge-unlocked { background: #25d366; }
+        /* ====================================== */
+
         #input-area { padding: 10px 5px; background: #f0f2f5; display: flex; gap: 2px; align-items: center; position: relative; border-top: 1px solid #ccc; box-sizing: border-box; }
         .icon-btn { background: none; border: none; font-size: 24px; cursor: pointer; outline: none; transition: transform 0.2s; padding: 5px; color: #54656f;}
-        .icon-btn:hover { transform: scale(1.1); }
         
         #message-input { flex: 1; padding: 12px 15px; border: none; border-radius: 20px; outline: none; font-size: 15px; background: white;}
         #send-btn { padding: 10px 10px; background: #00a884; color: white; border: none; border-radius: 2px; cursor: pointer; font-weight: bold; font-size: 15px;}
-        #send-btn:hover { background: #008f6f; }
 
         #admin-news-area { display: none; flex-direction: column; gap: 15px; padding: 20px; background: white; flex: 1; overflow-y: auto; }
-        #admin-news-area h3 { color: #111b21; border-bottom: 2px solid #00a884; padding-bottom: 10px; margin-bottom: 10px;}
-        #admin-news-area input, #admin-news-area select, #admin-news-area textarea { padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; outline: none; width: 100%; background: #f0f2f5; }
-        #admin-news-area textarea { resize: vertical; min-height: 100px; }
+        #admin-news-area input, #admin-news-area select, #admin-news-area textarea { padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; width: 100%; background: #f0f2f5; }
         #admin-news-area button { padding: 12px; background: #00a884; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
-        #admin-news-area button:hover { background: #008f6f; }
 
         #emoji-picker { display: none; position: absolute; bottom: 70px; left: 15px; background: white; border: 1px solid #ccc; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 280px; height: 200px; overflow-y: auto; padding: 10px; grid-template-columns: repeat(6, 1fr); gap: 5px; z-index: 1000; }
         .emoji-item { cursor: pointer; font-size: 22px; text-align: center; padding: 5px; border-radius: 5px; transition: background 0.2s;}
-        .emoji-item:hover { background: #f0f2f5; }
 
         @media (max-width: 768px) {
             #sidebar { position: absolute; top: 0; left: 0; width: 85%; max-width: 320px; height: 100%; z-index: 100; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.3); }
@@ -143,8 +162,9 @@
             #app.menu-active #sidebar { transform: translateX(0); }
             #app.menu-active #menu-overlay { display: block; }
             #menu-btn { display: block; }
-            .msg { max-width: 85%; }
-            #emoji-picker { width: 100%; left: 0; bottom: 60px; border-radius: 0; border-top: 1px solid #ccc;}
+            .series-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 10px; }
+            .serie-banner { height: 110px !important; }
+            .global-stats-container { gap: 8px; padding: 0 10px; }
         }
     </style>
 </head>
@@ -192,6 +212,7 @@
                 <span id="chat-title-text">📰 Actualités</span>
             </div>
 
+            <!-- Filtres News -->
             <div id="news-filters">
                 <button class="filter-btn active" onclick="setNewsCategory('Amour')">❤️ Amour</button>
                 <button class="filter-btn" onclick="setNewsCategory('Politique')">🏛️ Politique</button>
@@ -199,10 +220,34 @@
                 <button class="filter-btn" onclick="setNewsCategory('Informatique')">💻 Info</button>
             </div>
             
+            <!-- Zone Messages & Actualités -->
             <div id="messages"></div>
             <div id="pagination-controls"></div>
             <div id="emoji-picker"></div>
 
+            <!-- NOUVO : Zone Séries Vidéos -->
+            <div id="series-area">
+                <div class="series-header-banner">
+                    <h1>RJFORDROID <span class="tv">TV</span></h1>
+                    <p>Fòmasyon san limit an Kreyòl</p>
+                </div>
+                
+                <div class="global-stats-container">
+                    <div class="stat-card-global">
+                        <i>▶️</i><span id="globalEpisodes">0</span><small>Epizòd</small>
+                    </div>
+                    <div class="stat-card-global">
+                        <i>❤️</i><span id="globalLikes">0</span><small>Likes</small>
+                    </div>
+                    <div class="stat-card-global">
+                        <i>💬</i><span id="globalComments">0</span><small>Kòmantè</small>
+                    </div>
+                </div>
+
+                <div class="series-grid" id="seriesContainer"></div>
+            </div>
+
+            <!-- Zone Admin News -->
             <div id="admin-news-area">
                 <h3>Créer une nouvelle actualité</h3>
                 <input type="text" id="news-title" placeholder="Titre de l'actualité..." />
@@ -212,13 +257,14 @@
                     <option value="Bible">📖 Bible</option>
                     <option value="Informatique">💻 Informatique</option>
                 </select>
-                <input type="text" id="news-tags" list="existing-tags" placeholder="Tags (séparés par des virgules, ex: android, tech)..." />
+                <input type="text" id="news-tags" list="existing-tags" placeholder="Tags (ex: android, tech)..." />
                 <datalist id="existing-tags"></datalist>
                 <textarea id="news-content" placeholder="Contenu de l'actualité..."></textarea>
                 <input type="file" id="news-file" accept="image/*" />
                 <button id="send-news-btn">Publier l'actualité</button>
             </div>
 
+            <!-- Input Messages -->
             <div id="input-area">
                 <button id="emoji-btn" class="icon-btn">😀</button>
                 <button class="icon-btn" onclick="document.getElementById('file-input').click()">📎</button>
@@ -230,8 +276,9 @@
     </div>
 
     <script type="module">
+        // Mwen ajoute "update" nan import yo ki te manke a pou update credits
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, get, set, push, onValue, onDisconnect, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { getDatabase, ref, get, set, update, push, onValue, onDisconnect, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyAQeHWr_vUiQmVVgJJ_cOF9qrCCLd7IJNc",
@@ -252,7 +299,7 @@
         const popupConfirmBtn = document.getElementById("popup-confirm-btn");
         const popupCancelBtn = document.getElementById("popup-cancel-btn");
 
-        function showPopup(message, isConfirm = false, onConfirm = null) {
+        window.showPopup = function(message, isConfirm = false, onConfirm = null) {
             popupMsg.innerText = message;
             popupOverlay.style.display = "flex";
             popupCancelBtn.style.display = isConfirm ? "inline-block" : "none";
@@ -272,6 +319,7 @@
         let isAppLoaded = false; 
         let allChatsData = {}; 
         let previousMessageCounts = {}; 
+        
         let currentNewsCategory = "Amour"; 
         let allNewsItems = []; 
         let currentNewsPage = 1;
@@ -280,13 +328,19 @@
         let isNewsLoaded = false;
         let initialNewsKeys = new Set();
 
+        const SERIE_COST = 50; // Pou seri yo
+
         const loginScreen = document.getElementById("login-screen");
         const appScreen = document.getElementById("app");
         const identifierInput = document.getElementById("identifier-input");
         const passwordInput = document.getElementById("password-input");
         const loginBtn = document.getElementById("login-btn");
         const errorMsg = document.getElementById("error-msg");
+        
         const messagesDiv = document.getElementById("messages");
+        const seriesArea = document.getElementById("series-area");
+        const seriesContainer = document.getElementById("seriesContainer");
+        
         const paginationControls = document.getElementById("pagination-controls");
         const messageInput = document.getElementById("message-input");
         const sendBtn = document.getElementById("send-btn");
@@ -330,17 +384,13 @@
         function voyeNotifikasyonAndroid(tit, mesaj) {
             if (typeof AndroidControler !== "undefined") {
                 AndroidControler.deklancheNotifikasyon(tit, mesaj);
-            } else {
-                console.log("AndroidControler pa disponib (ou pa nan app la)");
             }
         }
 
         function showBrowserNotification(title, body) {
             if (!("Notification" in window)) return;
             if (Notification.permission === "granted") {
-                try {
-                    new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/1041/1041916.png" });
-                } catch(e) { console.log("Notif error: ", e); }
+                try { new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/1041/1041916.png" }); } catch(e) {}
             }
         }
 
@@ -398,8 +448,7 @@
                 showPopup("Veuillez remplir tous les champs.");
                 return;
             }
-            const usersRef = ref(db, 'RJFORDROID/USERS');
-            get(usersRef).then((snapshot) => {
+            get(ref(db, 'RJFORDROID/USERS')).then((snapshot) => {
                 if (snapshot.exists()) {
                     const users = snapshot.val();
                     let foundKey = null, foundData = null;
@@ -419,12 +468,8 @@
                     } else {
                         showPopup("Identifiant ou mot de passe incorrect.");
                     }
-                } else {
-                    showPopup("Aucun utilisateur trouvé dans la base.");
-                }
-            }).catch(() => {
-                showPopup("Erreur de connexion à la base de données.");
-            });
+                } else showPopup("Aucun utilisateur trouvé dans la base.");
+            }).catch(() => showPopup("Erreur de connexion à la base de données."));
         });
 
         window.logout = function() {
@@ -454,8 +499,7 @@
         }
 
         function listenToAllChats() {
-            const allChatsRef = ref(db, 'RJFORDROID/CHAT_USERS');
-            onValue(allChatsRef, (snapshot) => {
+            onValue(ref(db, 'RJFORDROID/CHAT_USERS'), (snapshot) => {
                 allChatsData = snapshot.exists() ? snapshot.val() : {};
                 const now = Date.now();
                 for(let chatId in allChatsData) {
@@ -470,11 +514,8 @@
                     if (previousMessageCounts[chatId] !== undefined && count > previousMessageCounts[chatId]) {
                         const lastMsg = validMsgs[validMsgs.length - 1];
                         if (isAppLoaded && lastMsg && lastMsg.sender !== currentUser.username) {
-                            playNotificationSound();
-                            voyeNotifikasyonAndroid(
-                                "Mesaj soti nan " + lastMsg.sender,
-                                lastMsg.text ? lastMsg.text : "📸 Imaj resevwa"
-                            );
+                            notifSound.currentTime = 0; notifSound.play().catch(()=>{});
+                            voyeNotifikasyonAndroid("Mesaj soti nan " + lastMsg.sender, lastMsg.text ? lastMsg.text : "📸 Imaj resevwa");
                             showBrowserNotification("Nouveau message de " + lastMsg.sender, lastMsg.text ? lastMsg.text : "📸 Image reçue");
                         }
                     }
@@ -495,14 +536,8 @@
                         for (let key in newsData) {
                             if (!initialNewsKeys.has(key)) {
                                 initialNewsKeys.add(key);
-                                playNotificationSound();
-                                
-                                // MWEN KORIJE PARTI SA A: voyeNotifikasyonAndroid pou atik
-                                voyeNotifikasyonAndroid(
-                                    "📰 Nouvelle Actualité",
-                                    newsData[key].title ? newsData[key].title : "Un nouvel article a été publié !"
-                                );
-                                
+                                notifSound.currentTime = 0; notifSound.play().catch(()=>{});
+                                voyeNotifikasyonAndroid("📰 Nouvelle Actualité", newsData[key].title ? newsData[key].title : "Un nouvel article a été publié !");
                                 showBrowserNotification("📰 Nouvelle Actualité", newsData[key].title || "Un nouvel article a été publié !");
                             }
                         }
@@ -512,17 +547,20 @@
         }
 
         function getPrivateChatId(user1, user2) {
-            const users = [user1, user2].sort();
-            return `${users[0]}_${users[1]}`;
+            return [user1, user2].sort().join('_');
         }
 
         function loadUsers() {
             onValue(ref(db, 'RJFORDROID/USERS'), (snapshot) => {
                 const isAdmin = (currentUser && (currentUser.role === 'admin' || currentUser.isAdmin === true || currentUser.isAdmin === "true"));
+                
+                // Mwen ajoute tab SERIES la isit la nan sidebar la
                 userListDiv.innerHTML = `
-                    ${isAdmin ? `<div class="user-item ${currentChatId === 'ADMIN_PANEL' ? 'active' : ''}" data-chatid="ADMIN_PANEL" onclick="switchChat('ADMIN_PANEL')"><div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #ff3b30, #cc2f26);">⚙️</div><div class="user-details"><div class="user-name">Administration</div><div class="user-sub">Gérer les actualités</div></div></div></div>` : ''}
+                    ${isAdmin ? `<div class="user-item ${currentChatId === 'ADMIN_PANEL' ? 'active' : ''}" data-chatid="ADMIN_PANEL" onclick="switchChat('ADMIN_PANEL')"><div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #ff3b30, #cc2f26);">⚙️</div><div class="user-details"><div class="user-name">Administration</div><div class="user-sub">Gérer les actus</div></div></div></div>` : ''}
                     <div class="user-item ${currentChatId === 'ACTUALITE' ? 'active' : ''}" data-chatid="ACTUALITE" onclick="switchChat('ACTUALITE')"><div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #f5a623, #f5d328);">📰</div><div class="user-details"><div class="user-name">Actualités</div><div class="user-sub">RJFORDROID Infos</div></div></div><span class="badge" style="display:none;"></span></div>
+                    <div class="user-item ${currentChatId === 'SERIES' ? 'active' : ''}" data-chatid="SERIES" onclick="switchChat('SERIES')"><div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #fe2c55, #ff0033);">📺</div><div class="user-details"><div class="user-name">Séries Vidéos</div><div class="user-sub">Fòmasyon & Amizman</div></div></div><span class="badge" style="display:none;"></span></div>
                     <div class="user-item ${currentChatId === 'GROUP' ? 'active' : ''}" data-chatid="GROUP" onclick="switchChat('GROUP')"><div class="user-info"><div class="avatar avatar-group">👥</div><div class="user-details"><div class="user-name">Chat Groupe</div><div class="user-sub">Public</div></div></div><span class="badge" style="display:none;"></span></div>`;
+                
                 if (snapshot.exists()) {
                     const users = snapshot.val();
                     for (let key in users) {
@@ -546,12 +584,15 @@
             document.querySelectorAll('.user-item').forEach(item => {
                 const chatId = item.getAttribute('data-chatid');
                 let badge = item.querySelector('.badge');
-                if(!badge || !chatId || chatId === "ACTUALITE" || chatId === "ADMIN_PANEL") return;
+                if(!badge || !chatId || chatId === "ACTUALITE" || chatId === "ADMIN_PANEL" || chatId === "SERIES") return; // Ignore SERIES pou kounya
+                
                 let msgs = allChatsData[chatId] ? Object.values(allChatsData[chatId]) : [];
                 let totalOther = msgs.filter(m => m.sender !== currentUser.username).length;
                 let seen = JSON.parse(localStorage.getItem('seen_msgs_' + currentUser.username)) || {};
+                
                 if(currentChatId === chatId) { seen[chatId] = totalOther; localStorage.setItem('seen_msgs_' + currentUser.username, JSON.stringify(seen)); }
                 let unread = totalOther - (seen[chatId] || 0);
+                
                 if(unread > 0) { badge.innerText = unread; badge.className = 'badge unread-badge'; badge.style.display = 'inline-block'; }
                 else { badge.innerText = totalOther; badge.className = 'badge read-badge'; badge.style.display = totalOther > 0 ? 'inline-block' : 'none'; }
             });
@@ -562,22 +603,30 @@
 
         window.switchChat = (target) => {
             if(currentUser) localStorage.setItem("rjfordroid_last_chat_" + currentUser.username, target);
+            
+            // Jesyon Display selon Tap ou chwazi a
             adminNewsArea.style.display = (target === "ADMIN_PANEL") ? "flex" : "none";
             newsFilters.style.display = (target === "ACTUALITE") ? "flex" : "none";
-            inputArea.style.display = (target !== "ACTUALITE" && target !== "ADMIN_PANEL") ? "flex" : "none";
-            messagesDiv.style.display = (target !== "ADMIN_PANEL") ? "flex" : "none";
+            inputArea.style.display = (target !== "ACTUALITE" && target !== "ADMIN_PANEL" && target !== "SERIES") ? "flex" : "none";
+            messagesDiv.style.display = (target !== "ADMIN_PANEL" && target !== "SERIES") ? "flex" : "none";
+            seriesArea.style.display = (target === "SERIES") ? "block" : "none"; // Afiche Zone Seri a
             
             if (target === "ADMIN_PANEL") { currentChatId = "ADMIN_PANEL"; chatTitleText.innerText = "⚙️ Admin"; }
             else if (target === "ACTUALITE") { currentChatId = "ACTUALITE"; chatTitleText.innerText = "📰 Accueil"; updateFilterUI(); loadNews(); }
+            else if (target === "SERIES") { currentChatId = "SERIES"; chatTitleText.innerText = "📺 Séries Vidéos"; loadSeries(); } // Chaje seri yo
             else if (target === "GROUP") { currentChatId = "GROUP"; chatTitleText.innerText = "👥 Groupe"; loadChat("GROUP"); }
             else { currentChatId = getPrivateChatId(currentUser.username, target); chatTitleText.innerText = `👤 ${target}`; loadChat(currentChatId); }
 
             document.getElementById("app").classList.remove("menu-active");
-            backBtn.style.display = (currentChatId === "ACTUALITE") ? "none" : "block";
-            menuBtn.style.display = (currentChatId === "ACTUALITE") ? "block" : "none";
+            backBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "SERIES") ? "none" : "block";
+            menuBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "SERIES") ? "block" : "none";
+            
             updateBadges();
         };
 
+        /* ========================================= */
+        /* LOGIQUE NEWS / ACTUALITÉS                 */
+        /* ========================================= */
         window.setNewsCategory = (cat) => {
             currentNewsCategory = cat;
             if(currentUser) localStorage.setItem("rjfordroid_last_category_" + currentUser.username, cat);
@@ -624,10 +673,15 @@
             div.className = `news-card`; 
             let tagsHtml = item.tags ? item.tags.split(',').map(t => `<span class="news-tag">#${t.trim()}</span>`).join('') : "";
             let imgHtml = item.imageUrl ? `<img src="${item.imageUrl}" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin-bottom:10px;" loading="lazy" />` : "";
+            let textContent = item.text || "";
+            let showBtn = textContent.length > 80;
+
             div.innerHTML = `
                 <div style="margin-bottom:12px;"><span class="news-category-tag">${item.category}</span>${tagsHtml}</div>
                 <div style="font-weight:bold; font-size:18px; margin-bottom:10px; color:#111b21;">${item.title || ""}</div>
-                ${imgHtml}<div style="font-size:15px; color:#333; line-height:1.5; white-space: pre-wrap;">${item.text || ""}</div>
+                ${imgHtml}
+                <div id="text-${key}" class="news-text text-truncated">${textContent}</div>
+                ${showBtn ? `<button id="btn-${key}" class="read-more-btn" onclick="toggleReadMore('${key}')">Lire la suite...</button>` : ''}
                 <div style="font-size:12px; color:#8696a0; text-align:right; margin-top:10px;">Publié le ${item.date || new Date(item.timestamp).toLocaleString()}</div>
                 <div class="news-actions">
                     <button onclick="voteNews('${key}', 'likes')">👍 <span>${item.likes || 0}</span></button>
@@ -638,42 +692,46 @@
             messagesDiv.appendChild(div);
         }
 
-        window.deleteNews = (key) => {
-            showPopup("Effacer cette actualité ?", true, () => remove(ref(db, `RJFORDROID/ACTUALITE/${key}`)));
+        window.toggleReadMore = function(key) {
+            document.querySelectorAll('.news-text.text-expanded').forEach(el => {
+                if (el.id !== `text-${key}`) {
+                    el.classList.remove('text-expanded'); el.classList.add('text-truncated');
+                    let btn = document.getElementById(el.id.replace('text-', 'btn-'));
+                    if (btn) btn.innerText = "Lire la suite...";
+                }
+            });
+            let textContainer = document.getElementById(`text-${key}`);
+            let btn = document.getElementById(`btn-${key}`);
+            if (textContainer.classList.contains('text-truncated')) {
+                textContainer.classList.remove('text-truncated'); textContainer.classList.add('text-expanded'); btn.innerText = "Voir moins";
+            } else {
+                textContainer.classList.add('text-truncated'); textContainer.classList.remove('text-expanded'); btn.innerText = "Lire la suite...";
+            }
         };
 
+        window.deleteNews = (key) => showPopup("Effacer cette actualité ?", true, () => remove(ref(db, `RJFORDROID/ACTUALITE/${key}`)));
         window.voteNews = (key, type) => {
             get(ref(db, `RJFORDROID/ACTUALITE/${key}/voters_${type}/${currentUserKey}`)).then(snap => {
                 if (snap.exists()) showPopup(`Déjà ${type === 'likes' ? 'liké' : 'disliké'}.`);
                 else {
                     set(ref(db, `RJFORDROID/ACTUALITE/${key}/voters_${type}/${currentUserKey}`), true);
                     const countRef = ref(db, `RJFORDROID/ACTUALITE/${key}/${type}`);
-                    get(countRef).then(s => set(countRef, (s.val() || 0) + 1));
-                    addCredits(1);
+                    get(countRef).then(s => set(countRef, (s.val() || 0) + 1)); addCredits(1);
                 }
             });
         };
-
         window.shareNews = (key, title) => {
             const currentNews = allNewsItems.find(i => i.id === key);
             const content = `*${title}*\n\n${currentNews ? currentNews.text : ""}\n\nApp : https://rjfordroid.netlify.app`;
-            
             get(ref(db, `RJFORDROID/ACTUALITE/${key}/voters_shares/${currentUserKey}`)).then(snap => {
                 if (!snap.exists()) {
                     set(ref(db, `RJFORDROID/ACTUALITE/${key}/voters_shares/${currentUserKey}`), true);
                     const sRef = ref(db, `RJFORDROID/ACTUALITE/${key}/shares`);
-                    get(sRef).then(s => set(sRef, (s.val() || 0) + 1));
-                    addCredits(5);
+                    get(sRef).then(s => set(sRef, (s.val() || 0) + 1)); addCredits(5);
                 }
-
-                if (typeof AndroidControler !== "undefined" && AndroidControler.shareToAndroid) {
-                    AndroidControler.shareToAndroid(title, content);
-                } else if (navigator.share) {
-                    navigator.share({ title, text: content }).catch(() => {});
-                } else {
-                    navigator.clipboard.writeText(content);
-                    showPopup("Lien copié !");
-                }
+                if (typeof AndroidControler !== "undefined" && AndroidControler.shareToAndroid) AndroidControler.shareToAndroid(title, content);
+                else if (navigator.share) navigator.share({ title, text: content }).catch(() => {});
+                else { navigator.clipboard.writeText(content); showPopup("Lien copié !"); }
             });
         };
 
@@ -691,18 +749,142 @@
                     .then(r => r.json()).then(res => {
                         loader.style.display = "none"; if(!res.success) return showPopup("Erreur upload.");
                         const id = res.url.match(/\/d\/([^\/]+)/)?.[1] || "";
-                        pushNewsToFirebase(title, category, text, id ? `https://drive.google.com/thumbnail?id=${id}&sz=w600` : "", "", tags);
+                        push(ref(db, `RJFORDROID/ACTUALITE`), { title, category, tags, text, imageUrl: id ? `https://drive.google.com/thumbnail?id=${id}&sz=w600` : "", fullUrl: res.url, timestamp: serverTimestamp(), author: currentUser.username, likes: 0, dislikes: 0, shares: 0 }).then(() => { newsTitleInput.value = ""; newsContentInput.value = ""; newsFileInput.value = ""; showPopup("Publié avec succès !"); });
                     }).catch(() => { loader.style.display = "none"; showPopup("Erreur serveur."); });
                 };
                 reader.readAsDataURL(file);
-            } else pushNewsToFirebase(title, category, text, "", "", tags);
+            } else {
+                push(ref(db, `RJFORDROID/ACTUALITE`), { title, category, tags, text, imageUrl: "", fullUrl: "", timestamp: serverTimestamp(), author: currentUser.username, likes: 0, dislikes: 0, shares: 0 }).then(() => { newsTitleInput.value = ""; newsContentInput.value = ""; showPopup("Publié avec succès !"); });
+            }
         });
 
-        function pushNewsToFirebase(title, category, text, imageUrl, fullUrl, tags) {
-            push(ref(db, `RJFORDROID/ACTUALITE`), { title, category, tags, text, imageUrl, fullUrl, timestamp: serverTimestamp(), author: currentUser.username, likes: 0, dislikes: 0, shares: 0 })
-            .then(() => { newsTitleInput.value = ""; newsTagsInput.value = ""; newsContentInput.value = ""; newsFileInput.value = ""; showPopup("Publié avec succès !"); });
+        /* ========================================= */
+        /* NOUVO LOGIQUE: SÉRIES VIDÉOS              */
+        /* ========================================= */
+        window.loadSeries = async function() {
+            if (!currentUserKey) return;
+            
+            // Nou rale done konfimasyon ki seri moun sa deboke deja nan pwofil li
+            let unlockedSeries = {};
+            try {
+                const userSnap = await get(ref(db, `RJFORDROID/USERS/${currentUserKey}/unlockedSeries`));
+                if (userSnap.exists()) unlockedSeries = userSnap.val();
+            } catch (e) { console.error("Err:", e); }
+
+            onValue(ref(db, 'RJFORDROID/SERIES'), (snapshot) => {
+                seriesContainer.innerHTML = "";
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    let totalG_Ep = 0; let totalG_Like = 0; let totalG_Comm = 0;
+
+                    for(let key in data) {
+                        const serie = data[key];
+                        const isUnlocked = unlockedSeries[key] === true;
+                        
+                        let epCount = 0; let likeCount = 0; let commentCount = 0;
+
+                        if (serie.EPISODES) {
+                            const episodes = Object.values(serie.EPISODES);
+                            epCount = episodes.length;
+                            episodes.forEach(ep => {
+                                if (ep.likes) likeCount += (typeof ep.likes === 'number') ? ep.likes : Object.keys(ep.likes).length;
+                                if (ep.comments) commentCount += (typeof ep.comments === 'number') ? ep.comments : Object.keys(ep.comments).length;
+                            });
+                        }
+
+                        totalG_Ep += epCount;
+                        totalG_Like += likeCount;
+                        totalG_Comm += commentCount;
+
+                        createSerieCard(key, serie, isUnlocked, epCount, likeCount, commentCount);
+                    }
+
+                    document.getElementById('globalEpisodes').innerText = totalG_Ep;
+                    document.getElementById('globalLikes').innerText = totalG_Like;
+                    document.getElementById('globalComments').innerText = totalG_Comm;
+                }
+            });
+        };
+
+        function createSerieCard(id, data, isUnlocked, epCount, likeCount, commentCount) {
+            const card = document.createElement('article');
+            card.className = 'serie-card';
+            card.onclick = () => handleSerieClick(id, isUnlocked);
+
+            card.innerHTML = `
+                <div class="status-badge ${isUnlocked ? 'badge-unlocked' : 'badge-price'}">
+                    ${isUnlocked ? '✔️ Deboke' : (data.price || SERIE_COST) + ' 💰'}
+                </div>
+                <img src="${data.banner || 'https://via.placeholder.com/300x160?text=No+Image'}" class="serie-banner">
+                <div class="serie-info">
+                    <h3>${data.titre}</h3>
+                    <div class="serie-stats">
+                        <div class="stat-item">▶️ ${epCount}</div>
+                        <div class="stat-item">❤️ ${likeCount}</div>
+                        <div class="stat-item">💬 ${commentCount}</div>
+                    </div>
+                </div>
+            `;
+            seriesContainer.appendChild(card);
         }
 
+        window.handleSerieClick = async function(serieId, alreadyUnlocked) {
+            if (alreadyUnlocked) {
+                // Si l deboke deja, al nan paj player a kote l ka jwe videyo yo
+                window.location.href = `player.html?serie=${serieId}`;
+                return;
+            }
+
+            try {
+                const serieSnap = await get(ref(db, `RJFORDROID/SERIES/${serieId}`));
+                if(!serieSnap.exists()) return;
+                const serieData = serieSnap.val();
+                
+                const episodes = serieData.EPISODES ? Object.keys(serieData.EPISODES) : [];
+                if (episodes.length === 0) {
+                    showPopup("Bientôt disponible: Seri sa a poko gen epizòd ladan l. Rete branche!");
+                    return;
+                }
+
+                const REAL_COST = serieData.price || SERIE_COST;
+                const userSnap = await get(ref(db, `RJFORDROID/USERS/${currentUserKey}`));
+                const userCredits = userSnap.val().credits || 0;
+
+                if (userCredits < REAL_COST) {
+                    showPopup(`Kredi Enfisiyan : Ou bezwen ${REAL_COST} kredi pou deboke seri sa a. Ou gen sèlman ${userCredits} kredi.`);
+                    return;
+                }
+
+                showPopup(`Èske ou vle deboke "${serieData.titre}" pou ${REAL_COST} kredi?`, true, async () => {
+                    // Update user credits ak ajoute seri a nan sa l deboke yo
+                    const updates = {};
+                    updates[`RJFORDROID/USERS/${currentUserKey}/credits`] = userCredits - REAL_COST;
+                    updates[`RJFORDROID/USERS/${currentUserKey}/unlockedSeries/${serieId}`] = true;
+                    
+                    await update(ref(db), updates);
+                    showPopup("Seri a deboke ak siksè! Prale nan player...");
+                    
+                    // Refrechi Info UI a 
+                    currentUser.credits = userCredits - REAL_COST;
+                    if(!currentUser.unlockedSeries) currentUser.unlockedSeries = {};
+                    currentUser.unlockedSeries[serieId] = true;
+                    localStorage.setItem("rjfordroid_session", JSON.stringify({ key: currentUserKey, data: currentUser }));
+                    refreshMyInfoUI();
+
+                    setTimeout(() => {
+                        window.location.href = `player.html?serie=${serieId}`;
+                    }, 1500);
+                });
+
+            } catch (e) {
+                console.error(e);
+                showPopup("Erè: Gen yon pwoblèm ki rive. Tanpri eseye ankò.");
+            }
+        };
+
+        /* ========================================= */
+        /* LOGIQUE CHAT                              */
+        /* ========================================= */
         function loadChat(chatId) {
             onValue(ref(db, `RJFORDROID/CHAT_USERS/${chatId}`), (snapshot) => {
                 if (currentChatId !== chatId) return;
@@ -724,7 +906,7 @@
                 ${msg.imageUrl ? `<img src="${msg.imageUrl}" class="msg-img" onclick="window.open('${msg.fullUrl || msg.imageUrl}', '_blank')" />` : ''}
                 ${msg.text ? `<div class="msg-text">${msg.text}</div>` : ''}`;
             messagesDiv.appendChild(div);
-            if(currentChatId !== "ACTUALITE") setTimeout(() => messagesDiv.scrollTop = messagesDiv.scrollHeight, 100);
+            if(currentChatId !== "ACTUALITE" && currentChatId !== "SERIES") setTimeout(() => messagesDiv.scrollTop = messagesDiv.scrollHeight, 100);
         }
 
         function sendMessage() {
@@ -755,8 +937,6 @@
             };
             reader.readAsDataURL(file);
         });
-
-        function playNotificationSound() { notifSound.currentTime = 0; notifSound.play().catch(() => {}); }
     </script>
 </body>
 </html>
