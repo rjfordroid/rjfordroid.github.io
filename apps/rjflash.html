@@ -194,6 +194,16 @@
         <input type="password" id="password-input" placeholder="Mot de passe" />
         <button id="login-btn">Se connecter</button>
     </div>
+   <form style="display:none;" id="signupForm">
+    <input type="text" id="fullName" placeholder="Nom complet" required>
+    <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="text" id="phone" placeholder="Téléphone">
+    <input type="password" id="password" placeholder="Mot de passe" required>
+    <input type="password" id="confirmPassword" placeholder="Confirmer mot de passe" required>
+    <button type="submit">Créer un compte</button>
+    <div id="signupMessage" class="message"></div>
+  </form>
 
     <div id="app">
         <div id="menu-overlay" onclick="toggleMenu()"></div>
@@ -202,6 +212,16 @@
                 <div id="my-info" class="user-info"></div>
                 <button class="logout-btn" onclick="logout()">Déconnexion</button>
             </div>
+            <script>
+  atOptions = {
+    'key' : '84f94dfc2ebce76ea4663ccd18ce574e',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/84f94dfc2ebce76ea4663ccd18ce574e/invoke.js"></script>
             <div id="user-list"></div>
         </div>
 
@@ -275,8 +295,8 @@
         </div>
     </div>
 
-    <script type="module">
-        // Mwen ajoute "update" nan import yo ki te manke a pou update credits
+<script type="module">
+        // #region 1 - FIREBASE CONFIGURATION & IMPORTS
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, get, set, update, push, onValue, onDisconnect, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
@@ -292,27 +312,10 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        // #endregion
 
-        // --- GESTION POPUP PERSONNALISÉ ---
-        const popupOverlay = document.getElementById("custom-popup-overlay");
-        const popupMsg = document.getElementById("popup-message");
-        const popupConfirmBtn = document.getElementById("popup-confirm-btn");
-        const popupCancelBtn = document.getElementById("popup-cancel-btn");
 
-        window.showPopup = function(message, isConfirm = false, onConfirm = null) {
-            popupMsg.innerText = message;
-            popupOverlay.style.display = "flex";
-            popupCancelBtn.style.display = isConfirm ? "inline-block" : "none";
-            
-            popupConfirmBtn.onclick = () => {
-                popupOverlay.style.display = "none";
-                if (onConfirm) onConfirm();
-            };
-            popupCancelBtn.onclick = () => {
-                popupOverlay.style.display = "none";
-            };
-        }
-
+        // #region 2 - VARIABLES GLOBALES & ELEMENTS DOM
         let currentUser = null; 
         let currentUserKey = ""; 
         let currentChatId = "ACTUALITE"; 
@@ -355,6 +358,8 @@
         const newsFilters = document.getElementById("news-filters");
         const backBtn = document.querySelector(".back-btn");
         const menuBtn = document.getElementById("menu-btn");
+        
+        // Admin DOM
         const adminNewsArea = document.getElementById("admin-news-area");
         const sendNewsBtn = document.getElementById("send-news-btn");
         const newsTitleInput = document.getElementById("news-title");
@@ -362,25 +367,29 @@
         const newsTagsInput = document.getElementById("news-tags");
         const newsContentInput = document.getElementById("news-content");
         const newsFileInput = document.getElementById("news-file");
+        // #endregion
 
-        const emojis = ['😀','😂','🤣','😊','😍','🥰','😎','🤓','😭','😤','😡','🤬','🤯','🥶','🥵','🥳','🤔','🙄','🤫','🤥','😴','🤢','🤮','🤠','😈','👻','💩','👽','🤖','🎃','🫶','👍','👎','👊','✌️','🤞','🤟','🤘','👌','🤌','🤏','👇','👆','👉','👈','🙏','💪','🧠','👀','👅','💋','🔥','✨','🎉','💯','❤️','💔','🎈','🎁','👑'];
 
-        emojis.forEach(emoji => {
-            let span = document.createElement('span');
-            span.className = 'emoji-item';
-            span.innerText = emoji;
-            span.onclick = () => {
-                messageInput.value += emoji; 
-                emojiPicker.style.display = 'none'; 
-                messageInput.focus();
+        // #region 3 - SYSTEME DE POPUP & NOTIFICATIONS
+        const popupOverlay = document.getElementById("custom-popup-overlay");
+        const popupMsg = document.getElementById("popup-message");
+        const popupConfirmBtn = document.getElementById("popup-confirm-btn");
+        const popupCancelBtn = document.getElementById("popup-cancel-btn");
+
+        window.showPopup = function(message, isConfirm = false, onConfirm = null) {
+            popupMsg.innerText = message;
+            popupOverlay.style.display = "flex";
+            popupCancelBtn.style.display = isConfirm ? "inline-block" : "none";
+            
+            popupConfirmBtn.onclick = () => {
+                popupOverlay.style.display = "none";
+                if (onConfirm) onConfirm();
             };
-            emojiPicker.appendChild(span);
-        });
+            popupCancelBtn.onclick = () => {
+                popupOverlay.style.display = "none";
+            };
+        }
 
-        emojiBtn.addEventListener("click", () => {
-            emojiPicker.style.display = emojiPicker.style.display === "grid" ? "none" : "grid";
-        });
-        
         function voyeNotifikasyonAndroid(tit, mesaj) {
             if (typeof AndroidControler !== "undefined") {
                 AndroidControler.deklancheNotifikasyon(tit, mesaj);
@@ -393,7 +402,10 @@
                 try { new Notification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/1041/1041916.png" }); } catch(e) {}
             }
         }
+        // #endregion
 
+
+        // #region 4 - OUTILS & COMPTES UTILISATEURS (Credits, Info, Roles)
         function getRoleBadge(userObj) {
             if (userObj.role === 'admin' || userObj.isAdmin === true || userObj.isAdmin === "true") return '<span class="role-badge role-admin">Admin</span>';
             else if (userObj.role === 'moderateur' || userObj.isMod === true || userObj.isMod === "true") return '<span class="role-badge role-mod">Modo</span>';
@@ -427,7 +439,10 @@
                 });
             });
         }
+        // #endregion
 
+
+        // #region 5 - INITIALISATION & AUTHENTIFICATION (Login / Logout)
         window.onload = () => {
             const savedSession = localStorage.getItem("rjfordroid_session");
             if(savedSession) {
@@ -497,55 +512,10 @@
             if(savedChat) switchChat(savedChat); else switchChat("ACTUALITE"); 
             setTimeout(() => { isAppLoaded = true; }, 1500);
         }
+        // #endregion
 
-        function listenToAllChats() {
-            onValue(ref(db, 'RJFORDROID/CHAT_USERS'), (snapshot) => {
-                allChatsData = snapshot.exists() ? snapshot.val() : {};
-                const now = Date.now();
-                for(let chatId in allChatsData) {
-                    const messages = allChatsData[chatId];
-                    let validMsgs = [];
-                    for(let messageKey in messages) {
-                        const msg = messages[messageKey];
-                        if(msg.timestamp && (now - msg.timestamp > 86400000)) remove(ref(db, `RJFORDROID/CHAT_USERS/${chatId}/${messageKey}`));
-                        else validMsgs.push(msg);
-                    }
-                    const count = validMsgs.length;
-                    if (previousMessageCounts[chatId] !== undefined && count > previousMessageCounts[chatId]) {
-                        const lastMsg = validMsgs[validMsgs.length - 1];
-                        if (isAppLoaded && lastMsg && lastMsg.sender !== currentUser.username) {
-                            notifSound.currentTime = 0; notifSound.play().catch(()=>{});
-                            voyeNotifikasyonAndroid("Mesaj soti nan " + lastMsg.sender, lastMsg.text ? lastMsg.text : "📸 Imaj resevwa");
-                            showBrowserNotification("Nouveau message de " + lastMsg.sender, lastMsg.text ? lastMsg.text : "📸 Image reçue");
-                        }
-                    }
-                    previousMessageCounts[chatId] = count;
-                }
-                updateBadges(); 
-            });
-        }
 
-        function listenToNewsNotifications() {
-            onValue(ref(db, 'RJFORDROID/ACTUALITE'), (snapshot) => {
-                if (snapshot.exists()) {
-                    const newsData = snapshot.val();
-                    if (!isNewsLoaded) {
-                        for (let key in newsData) initialNewsKeys.add(key);
-                        isNewsLoaded = true;
-                    } else {
-                        for (let key in newsData) {
-                            if (!initialNewsKeys.has(key)) {
-                                initialNewsKeys.add(key);
-                                notifSound.currentTime = 0; notifSound.play().catch(()=>{});
-                                voyeNotifikasyonAndroid("📰 Nouvelle Actualité", newsData[key].title ? newsData[key].title : "Un nouvel article a été publié !");
-                                showBrowserNotification("📰 Nouvelle Actualité", newsData[key].title || "Un nouvel article a été publié !");
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
+        // #region 6 - NAVIGATION & LISTE DES UTILISATEURS (Sidebar & Menu)
         function getPrivateChatId(user1, user2) {
             return [user1, user2].sort().join('_');
         }
@@ -554,7 +524,6 @@
             onValue(ref(db, 'RJFORDROID/USERS'), (snapshot) => {
                 const isAdmin = (currentUser && (currentUser.role === 'admin' || currentUser.isAdmin === true || currentUser.isAdmin === "true"));
                 
-                // Mwen ajoute tab SERIES la isit la nan sidebar la
                 userListDiv.innerHTML = `
                     ${isAdmin ? `<div class="user-item ${currentChatId === 'ADMIN_PANEL' ? 'active' : ''}" data-chatid="ADMIN_PANEL" onclick="switchChat('ADMIN_PANEL')"><div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #ff3b30, #cc2f26);">⚙️</div><div class="user-details"><div class="user-name">Administration</div><div class="user-sub">Gérer les actus</div></div></div></div>` : ''}
                     <div class="user-item ${currentChatId === 'ACTUALITE' ? 'active' : ''}" data-chatid="ACTUALITE" onclick="switchChat('ACTUALITE')"><div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #f5a623, #f5d328);">📰</div><div class="user-details"><div class="user-name">Actualités</div><div class="user-sub">RJFORDROID Infos</div></div></div><span class="badge" style="display:none;"></span></div>
@@ -584,7 +553,7 @@
             document.querySelectorAll('.user-item').forEach(item => {
                 const chatId = item.getAttribute('data-chatid');
                 let badge = item.querySelector('.badge');
-                if(!badge || !chatId || chatId === "ACTUALITE" || chatId === "ADMIN_PANEL" || chatId === "SERIES") return; // Ignore SERIES pou kounya
+                if(!badge || !chatId || chatId === "ACTUALITE" || chatId === "ADMIN_PANEL" || chatId === "SERIES") return;
                 
                 let msgs = allChatsData[chatId] ? Object.values(allChatsData[chatId]) : [];
                 let totalOther = msgs.filter(m => m.sender !== currentUser.username).length;
@@ -604,16 +573,15 @@
         window.switchChat = (target) => {
             if(currentUser) localStorage.setItem("rjfordroid_last_chat_" + currentUser.username, target);
             
-            // Jesyon Display selon Tap ou chwazi a
             adminNewsArea.style.display = (target === "ADMIN_PANEL") ? "flex" : "none";
             newsFilters.style.display = (target === "ACTUALITE") ? "flex" : "none";
             inputArea.style.display = (target !== "ACTUALITE" && target !== "ADMIN_PANEL" && target !== "SERIES") ? "flex" : "none";
             messagesDiv.style.display = (target !== "ADMIN_PANEL" && target !== "SERIES") ? "flex" : "none";
-            seriesArea.style.display = (target === "SERIES") ? "block" : "none"; // Afiche Zone Seri a
+            seriesArea.style.display = (target === "SERIES") ? "block" : "none";
             
             if (target === "ADMIN_PANEL") { currentChatId = "ADMIN_PANEL"; chatTitleText.innerText = "⚙️ Admin"; }
             else if (target === "ACTUALITE") { currentChatId = "ACTUALITE"; chatTitleText.innerText = "📰 Accueil"; updateFilterUI(); loadNews(); }
-            else if (target === "SERIES") { currentChatId = "SERIES"; chatTitleText.innerText = "📺 Séries Vidéos"; loadSeries(); } // Chaje seri yo
+            else if (target === "SERIES") { currentChatId = "SERIES"; chatTitleText.innerText = "📺 Séries Vidéos"; loadSeries(); } 
             else if (target === "GROUP") { currentChatId = "GROUP"; chatTitleText.innerText = "👥 Groupe"; loadChat("GROUP"); }
             else { currentChatId = getPrivateChatId(currentUser.username, target); chatTitleText.innerText = `👤 ${target}`; loadChat(currentChatId); }
 
@@ -623,10 +591,31 @@
             
             updateBadges();
         };
+        // #endregion
 
-        /* ========================================= */
-        /* LOGIQUE NEWS / ACTUALITÉS                 */
-        /* ========================================= */
+
+        // #region 7 - LOGIQUE ACTUALITÉS (News, Lecture Audio, Admin News)
+        function listenToNewsNotifications() {
+            onValue(ref(db, 'RJFORDROID/ACTUALITE'), (snapshot) => {
+                if (snapshot.exists()) {
+                    const newsData = snapshot.val();
+                    if (!isNewsLoaded) {
+                        for (let key in newsData) initialNewsKeys.add(key);
+                        isNewsLoaded = true;
+                    } else {
+                        for (let key in newsData) {
+                            if (!initialNewsKeys.has(key)) {
+                                initialNewsKeys.add(key);
+                                notifSound.currentTime = 0; notifSound.play().catch(()=>{});
+                                voyeNotifikasyonAndroid("📰 Nouvelle Actualité", newsData[key].title ? newsData[key].title : "Un nouvel article a été publié !");
+                                showBrowserNotification("📰 Nouvelle Actualité", newsData[key].title || "Un nouvel article a été publié !");
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         window.setNewsCategory = (cat) => {
             currentNewsCategory = cat;
             if(currentUser) localStorage.setItem("rjfordroid_last_category_" + currentUser.username, cat);
@@ -684,6 +673,7 @@
                 ${showBtn ? `<button id="btn-${key}" class="read-more-btn" onclick="toggleReadMore('${key}')">Lire la suite...</button>` : ''}
                 <div style="font-size:12px; color:#8696a0; text-align:right; margin-top:10px;">Publié le ${item.date || new Date(item.timestamp).toLocaleString()}</div>
                 <div class="news-actions">
+                    <button id="speak-btn-${key}" onclick="readTextAloud('${key}')">🔊 Lire</button>
                     <button onclick="voteNews('${key}', 'likes')">👍 <span>${item.likes || 0}</span></button>
                     <button onclick="voteNews('${key}', 'dislikes')">👎 <span>${item.dislikes || 0}</span></button>
                     <button onclick="shareNews('${key}', '${(item.title || "Actu").replace(/'/g, "\\'")}')">🔗 Partager <span>${item.shares || 0}</span></button>
@@ -710,6 +700,7 @@
         };
 
         window.deleteNews = (key) => showPopup("Effacer cette actualité ?", true, () => remove(ref(db, `RJFORDROID/ACTUALITE/${key}`)));
+        
         window.voteNews = (key, type) => {
             get(ref(db, `RJFORDROID/ACTUALITE/${key}/voters_${type}/${currentUserKey}`)).then(snap => {
                 if (snap.exists()) showPopup(`Déjà ${type === 'likes' ? 'liké' : 'disliké'}.`);
@@ -720,6 +711,7 @@
                 }
             });
         };
+        
         window.shareNews = (key, title) => {
             const currentNews = allNewsItems.find(i => i.id === key);
             const content = `*${title}*\n\n${currentNews ? currentNews.text : ""}\n\nApp : https://rjfordroid.netlify.app`;
@@ -735,6 +727,28 @@
             });
         };
 
+        window.speakingKey = null;
+        window.readTextAloud = function(key) {
+            if (!('speechSynthesis' in window)) {
+                showPopup("Navigatè ou a pa sipòte lekti odyo a."); return;
+            }
+            if (window.speechSynthesis.speaking && window.speakingKey === key) {
+                window.speechSynthesis.cancel(); window.speakingKey = null;
+                let btn = document.getElementById(`speak-btn-${key}`); if(btn) btn.innerHTML = "🔊 Lire";
+                return;
+            }
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                if(window.speakingKey) { let oldBtn = document.getElementById(`speak-btn-${window.speakingKey}`); if(oldBtn) oldBtn.innerHTML = "🔊 Lire"; }
+            }
+            let textContainer = document.getElementById(`text-${key}`); if (!textContainer) return;
+            let textToRead = textContainer.innerText || textContainer.textContent;
+            const utterance = new SpeechSynthesisUtterance(textToRead); utterance.lang = 'fr-FR'; 
+            utterance.onend = () => { window.speakingKey = null; let btn = document.getElementById(`speak-btn-${key}`); if(btn) btn.innerHTML = "🔊 Lire"; };
+            window.speakingKey = key; let btn = document.getElementById(`speak-btn-${key}`); if(btn) btn.innerHTML = "⏹️ Stop";
+            window.speechSynthesis.speak(utterance);
+        };
+
         sendNewsBtn.addEventListener("click", () => {
             const title = newsTitleInput.value.trim(), category = newsCategoryInput.value, text = newsContentInput.value.trim(), tags = newsTagsInput.value.trim(), file = newsFileInput.files[0];
             if(!title && !text && !file) return showPopup("Remplissez les champs.");
@@ -743,8 +757,7 @@
                 const reader = new FileReader();
                 reader.onload = () => {
                     const formData = new FormData();
-                    formData.append("file", reader.result.split(",")[1]);
-                    formData.append("name", file.name); formData.append("type", file.type);
+                    formData.append("file", reader.result.split(",")[1]); formData.append("name", file.name); formData.append("type", file.type);
                     fetch("https://script.google.com/macros/s/AKfycbxHjVBNTOlj6xBUp_fl-aVbPSFZRiMQB77_YIvFeB79uq2Hx9P_r7HADZTYj9WElsXkug/exec", { method: "POST", body: formData })
                     .then(r => r.json()).then(res => {
                         loader.style.display = "none"; if(!res.success) return showPopup("Erreur upload.");
@@ -757,14 +770,12 @@
                 push(ref(db, `RJFORDROID/ACTUALITE`), { title, category, tags, text, imageUrl: "", fullUrl: "", timestamp: serverTimestamp(), author: currentUser.username, likes: 0, dislikes: 0, shares: 0 }).then(() => { newsTitleInput.value = ""; newsContentInput.value = ""; showPopup("Publié avec succès !"); });
             }
         });
+        // #endregion
 
-        /* ========================================= */
-        /* NOUVO LOGIQUE: SÉRIES VIDÉOS              */
-        /* ========================================= */
+
+        // #region 8 - LOGIQUE SÉRIES VIDÉOS (Series TV)
         window.loadSeries = async function() {
             if (!currentUserKey) return;
-            
-            // Nou rale done konfimasyon ki seri moun sa deboke deja nan pwofil li
             let unlockedSeries = {};
             try {
                 const userSnap = await get(ref(db, `RJFORDROID/USERS/${currentUserKey}/unlockedSeries`));
@@ -780,7 +791,6 @@
                     for(let key in data) {
                         const serie = data[key];
                         const isUnlocked = unlockedSeries[key] === true;
-                        
                         let epCount = 0; let likeCount = 0; let commentCount = 0;
 
                         if (serie.EPISODES) {
@@ -791,14 +801,9 @@
                                 if (ep.comments) commentCount += (typeof ep.comments === 'number') ? ep.comments : Object.keys(ep.comments).length;
                             });
                         }
-
-                        totalG_Ep += epCount;
-                        totalG_Like += likeCount;
-                        totalG_Comm += commentCount;
-
+                        totalG_Ep += epCount; totalG_Like += likeCount; totalG_Comm += commentCount;
                         createSerieCard(key, serie, isUnlocked, epCount, likeCount, commentCount);
                     }
-
                     document.getElementById('globalEpisodes').innerText = totalG_Ep;
                     document.getElementById('globalLikes').innerText = totalG_Like;
                     document.getElementById('globalComments').innerText = totalG_Comm;
@@ -810,7 +815,6 @@
             const card = document.createElement('article');
             card.className = 'serie-card';
             card.onclick = () => handleSerieClick(id, isUnlocked);
-
             card.innerHTML = `
                 <div class="status-badge ${isUnlocked ? 'badge-unlocked' : 'badge-price'}">
                     ${isUnlocked ? '✔️ Deboke' : (data.price || SERIE_COST) + ' 💰'}
@@ -830,11 +834,9 @@
 
         window.handleSerieClick = async function(serieId, alreadyUnlocked) {
             if (alreadyUnlocked) {
-                // Si l deboke deja, al nan paj player a kote l ka jwe videyo yo
                 window.location.href = `player.html?serie=${serieId}`;
                 return;
             }
-
             try {
                 const serieSnap = await get(ref(db, `RJFORDROID/SERIES/${serieId}`));
                 if(!serieSnap.exists()) return;
@@ -842,8 +844,7 @@
                 
                 const episodes = serieData.EPISODES ? Object.keys(serieData.EPISODES) : [];
                 if (episodes.length === 0) {
-                    showPopup("Bientôt disponible: Seri sa a poko gen epizòd ladan l. Rete branche!");
-                    return;
+                    showPopup("Bientôt disponible: Seri sa a poko gen epizòd ladan l. Rete branche!"); return;
                 }
 
                 const REAL_COST = serieData.price || SERIE_COST;
@@ -851,40 +852,57 @@
                 const userCredits = userSnap.val().credits || 0;
 
                 if (userCredits < REAL_COST) {
-                    showPopup(`Kredi Enfisiyan : Ou bezwen ${REAL_COST} kredi pou deboke seri sa a. Ou gen sèlman ${userCredits} kredi.`);
-                    return;
+                    showPopup(`Kredi Enfisiyan : Ou bezwen ${REAL_COST} kredi pou deboke seri sa a. Ou gen sèlman ${userCredits} kredi.`); return;
                 }
 
                 showPopup(`Èske ou vle deboke "${serieData.titre}" pou ${REAL_COST} kredi?`, true, async () => {
-                    // Update user credits ak ajoute seri a nan sa l deboke yo
                     const updates = {};
                     updates[`RJFORDROID/USERS/${currentUserKey}/credits`] = userCredits - REAL_COST;
                     updates[`RJFORDROID/USERS/${currentUserKey}/unlockedSeries/${serieId}`] = true;
-                    
                     await update(ref(db), updates);
                     showPopup("Seri a deboke ak siksè! Prale nan player...");
                     
-                    // Refrechi Info UI a 
                     currentUser.credits = userCredits - REAL_COST;
                     if(!currentUser.unlockedSeries) currentUser.unlockedSeries = {};
                     currentUser.unlockedSeries[serieId] = true;
                     localStorage.setItem("rjfordroid_session", JSON.stringify({ key: currentUserKey, data: currentUser }));
                     refreshMyInfoUI();
 
-                    setTimeout(() => {
-                        window.location.href = `player.html?serie=${serieId}`;
-                    }, 1500);
+                    setTimeout(() => { window.location.href = `player.html?serie=${serieId}`; }, 1500);
                 });
-
-            } catch (e) {
-                console.error(e);
-                showPopup("Erè: Gen yon pwoblèm ki rive. Tanpri eseye ankò.");
-            }
+            } catch (e) { console.error(e); showPopup("Erè: Gen yon pwoblèm ki rive. Tanpri eseye ankò."); }
         };
+        // #endregion
 
-        /* ========================================= */
-        /* LOGIQUE CHAT                              */
-        /* ========================================= */
+
+        // #region 9 - LOGIQUE CHAT & MESSAGERIE (Group & Private)
+        function listenToAllChats() {
+            onValue(ref(db, 'RJFORDROID/CHAT_USERS'), (snapshot) => {
+                allChatsData = snapshot.exists() ? snapshot.val() : {};
+                const now = Date.now();
+                for(let chatId in allChatsData) {
+                    const messages = allChatsData[chatId];
+                    let validMsgs = [];
+                    for(let messageKey in messages) {
+                        const msg = messages[messageKey];
+                        if(msg.timestamp && (now - msg.timestamp > 86400000)) remove(ref(db, `RJFORDROID/CHAT_USERS/${chatId}/${messageKey}`));
+                        else validMsgs.push(msg);
+                    }
+                    const count = validMsgs.length;
+                    if (previousMessageCounts[chatId] !== undefined && count > previousMessageCounts[chatId]) {
+                        const lastMsg = validMsgs[validMsgs.length - 1];
+                        if (isAppLoaded && lastMsg && lastMsg.sender !== currentUser.username) {
+                            notifSound.currentTime = 0; notifSound.play().catch(()=>{});
+                            voyeNotifikasyonAndroid("Mesaj soti nan " + lastMsg.sender, lastMsg.text ? lastMsg.text : "📸 Imaj resevwa");
+                            showBrowserNotification("Nouveau message de " + lastMsg.sender, lastMsg.text ? lastMsg.text : "📸 Image reçue");
+                        }
+                    }
+                    previousMessageCounts[chatId] = count;
+                }
+                updateBadges(); 
+            });
+        }
+
         function loadChat(chatId) {
             onValue(ref(db, `RJFORDROID/CHAT_USERS/${chatId}`), (snapshot) => {
                 if (currentChatId !== chatId) return;
@@ -937,6 +955,28 @@
             };
             reader.readAsDataURL(file);
         });
+        // #endregion
+
+
+        // #region 10 - EMOJI PICKER SETUP
+        const emojis = ['😀','😂','🤣','😊','😍','🥰','😎','🤓','😭','😤','😡','🤬','🤯','🥶','🥵','🥳','🤔','🙄','🤫','🤥','😴','🤢','🤮','🤠','😈','👻','💩','👽','🤖','🎃','🫶','👍','👎','👊','✌️','🤞','🤟','🤘','👌','🤌','🤏','👇','👆','👉','👈','🙏','💪','🧠','👀','👅','💋','🔥','✨','🎉','💯','❤️','💔','🎈','🎁','👑'];
+
+        emojis.forEach(emoji => {
+            let span = document.createElement('span');
+            span.className = 'emoji-item';
+            span.innerText = emoji;
+            span.onclick = () => {
+                messageInput.value += emoji; 
+                emojiPicker.style.display = 'none'; 
+                messageInput.focus();
+            };
+            emojiPicker.appendChild(span);
+        });
+
+        emojiBtn.addEventListener("click", () => {
+            emojiPicker.style.display = emojiPicker.style.display === "grid" ? "none" : "grid";
+        });
+        // #endregion
     </script>
 </body>
 </html>
