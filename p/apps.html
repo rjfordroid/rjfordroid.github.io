@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détails de l'application · RJ4DROID</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  
+  <style>
+      .details-container {
+          max-width: 600px;
+          margin: 40px auto;
+          padding: 30px;
+          text-align: center;
+          background: #fff;
+          border-radius: 15px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      }
+      .details-icon {
+          width: 120px;
+          height: 120px;
+          border-radius: 25px;
+          object-fit: cover;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      }
+      .app-info-meta {
+          display: flex;
+          justify-content: center;
+          gap: 15px;
+          margin: 15px 0;
+          font-size: 0.9rem;
+          color: #666;
+      }
+      .meta-item {
+          background: #f0f2f5;
+          padding: 5px 12px;
+          border-radius: 20px;
+          font-weight: 600;
+      }
+      .btn-download {
+          display: inline-block;
+          margin-top: 25px;
+          padding: 15px 30px;
+          background-color: #28a745;
+          color: white;
+          text-decoration: none;
+          font-weight: bold;
+          border-radius: 10px;
+          font-size: 1.1rem;
+          transition: 0.3s;
+          cursor: pointer;
+      }
+      .btn-download:hover {
+          background-color: #218838;
+          transform: translateY(-2px);
+      }
+      .description-box {
+          text-align: left;
+          margin: 25px 0;
+          line-height: 1.7;
+          color: #444;
+          background: #f9f9f9;
+          padding: 20px;
+          border-radius: 10px;
+          white-space: pre-line;
+      }
+      .btn-back {
+          display: inline-block;
+          margin-top: 20px;
+          color: #007bff;
+          text-decoration: none;
+          font-weight: 600;
+      }
+      .btn-back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
 
+<span>  
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="../js/firebase.js"></script>
+  <script src="../js/userSidebar.js"></script>
+  <script src="../js/layout.js"></script>
+    
+  <header class="app-header" id="header"></header>
+  <div class="sidebar" id="sidebar"></div>
+  <div class="overlay" id="overlay"></div>
+</span> 
+
+<main class="main-content">
+      <div id="app-details" class="details-container">
+          <div class="loading-spinner">
+              <i class="fas fa-spinner fa-spin fa-2x"></i>
+              <p>Chargement des détails...</p>
+          </div>
+      </div>
+</main>
+
+<footer class="app-footer" id="footer"></footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const params = new URLSearchParams(window.location.search);
+        const appNom = params.get('nom');
+        const detailsContainer = document.getElementById('app-details');
+
+        if (!appNom) {
+            detailsContainer.innerHTML = `
+                <i class="fas fa-exclamation-triangle fa-3x" style="color:#dc3545"></i>
+                <h2>Oups ! Aucune application spécifiée.</h2>
+                <a href="../index.html" class="btn-back">Retour à l'accueil</a>`;
+            return;
+        }
+
+        const dbRef = firebase.database().ref('RJFORDROID/APPS');
+        
+        dbRef.orderByChild('Nom').equalTo(appNom).on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                let appData;
+                snapshot.forEach((child) => {
+                    appData = child.val();
+                });
+
+                document.title = appData.Nom + " · Détails RJ4DROID";
+
+                // --- LOGIK POU LYEN APK ---
+                let finalUrl = appData.Url;
+                // Si lyen an pa kòmanse ak http (egz: RJFlash.apk), nou chèche l nan dossier apk sèvè a
+                if (finalUrl && !finalUrl.startsWith('http')) {
+                    finalUrl = "../apk/" + finalUrl;
+                }
+
+                detailsContainer.innerHTML = `
+                    <img src="${appData.Icon}" alt="${appData.Nom}" class="details-icon" onerror="this.src='../image/logo1.png'">
+                    <h1 style="margin: 15px 0 5px;">${appData.Nom}</h1>
+                    
+                    <div class="app-info-meta">
+                        <span class="meta-item"><i class="fas fa-tag"></i> ${appData.Type}</span>
+                        <span class="meta-item"><i class="fas fa-hdd"></i> ${appData.Taille}</span>
+                    </div>
+
+                    <div class="description-box">
+                        <h4 style="margin-top:0;"><i class="fas fa-info-circle"></i> À propos</h4>
+                        ${appData.Desc}
+                    </div>
+
+                    <a href="${finalUrl}" download="${appData.Nom}.apk" target="_blank" class="btn-download">
+                        <i class="fas fa-download"></i> TELECHARGER APK
+                    </a>
+                    <br>
+                    <a href="../index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Retour aux applications</a>
+                `;
+            } else {
+                detailsContainer.innerHTML = `
+                    <i class="fas fa-search fa-3x" style="color:#ccc"></i>
+                    <h2>Application introuvable.</h2>
+                    <a href="../index.html" class="btn-back">Retour à l'accueil</a>`;
+            }
+        }, (error) => {
+            console.error("Firebase Error:", error);
+            detailsContainer.innerHTML = '<h2>Erreur de connexion.</h2>';
+        });
+    });
+</script>
+
+</body>
+</html>
