@@ -919,50 +919,26 @@ window.addEventListener('click', (e) => {
 
 
         window.speakingKey = null;
-       window.readTextAloud = function(key) {
-    if (!('speechSynthesis' in window)) {
-        showPopup("Navigatè ou a pa sipòte lekti odyo a."); 
-        return;
-    }
-
-    // Si on clique alors que ça lit déjà le MEME article, on arrête.
-    if (window.speechSynthesis.speaking && window.speakingKey === key) {
-        window.speechSynthesis.cancel();
-        resetSpeakButton(key);
-        return;
-    }
-
-    // Stopper toute lecture en cours avant d'en commencer une nouvelle
-    window.speechSynthesis.cancel();
-
-    let textContainer = document.getElementById(`text-${key}`);
-    if (!textContainer) return;
-    
-    let textToRead = textContainer.innerText;
-    const utterance = new SpeechSynthesisUtterance(textToRead);
-    
-    // Configurer la langue et la vitesse
-    utterance.lang = 'fr-FR'; 
-    utterance.rate = 0.9; // Un peu plus lent pour une meilleure clarté
-
-    utterance.onstart = () => {
-        window.speakingKey = key;
-        document.getElementById(`speak-btn-${key}`).innerHTML = "⏹️ Stop";
-    };
-
-    utterance.onend = () => {
-        resetSpeakButton(key);
-    };
-
-    window.speechSynthesis.speak(utterance);
-};
-
-function resetSpeakButton(key) {
-    window.speakingKey = null;
-    let btn = document.getElementById(`speak-btn-${key}`);
-    if(btn) btn.innerHTML = "🔊 Lire";
-}
-
+        window.readTextAloud = function(key) {
+            if (!('speechSynthesis' in window)) {
+                showPopup("Navigatè ou a pa sipòte lekti odyo a."); return;
+            }
+            if (window.speechSynthesis.speaking && window.speakingKey === key) {
+                window.speechSynthesis.cancel(); window.speakingKey = null;
+                let btn = document.getElementById(`speak-btn-${key}`); if(btn) btn.innerHTML = "🔊 Lire";
+                return;
+            }
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                if(window.speakingKey) { let oldBtn = document.getElementById(`speak-btn-${window.speakingKey}`); if(oldBtn) oldBtn.innerHTML = "🔊 Lire"; }
+            }
+            let textContainer = document.getElementById(`text-${key}`); if (!textContainer) return;
+            let textToRead = textContainer.innerText || textContainer.textContent;
+            const utterance = new SpeechSynthesisUtterance(textToRead); utterance.lang = 'fr-FR'; 
+            utterance.onend = () => { window.speakingKey = null; let btn = document.getElementById(`speak-btn-${key}`); if(btn) btn.innerHTML = "🔊 Lire"; };
+            window.speakingKey = key; let btn = document.getElementById(`speak-btn-${key}`); if(btn) btn.innerHTML = "⏹️ Stop";
+            window.speechSynthesis.speak(utterance);
+        };
 
         sendNewsBtn.addEventListener("click", () => {
             const title = newsTitleInput.value.trim(), category = newsCategoryInput.value, text = newsContentInput.value.trim(), tags = newsTagsInput.value.trim(), file = newsFileInput.files[0];
