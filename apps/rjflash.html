@@ -550,6 +550,8 @@ window.addEventListener('click', (e) => {
         };
 
         loginBtn.addEventListener("click", () => {
+          window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+          
             const identifier = identifierInput.value.trim();
             const password = passwordInput.value.trim();
             if (identifier === "" || password === "") {
