@@ -714,7 +714,21 @@
         
         window.shareNews = (key, title) => {
             const currentNews = allNewsItems.find(i => i.id === key);
-            const content = `*${title}*\n\n${currentNews ? currentNews.text : ""}\n\nApp : https://rjfordroid.netlify.app`;
+            let fullText = currentNews ? currentNews.text : "";
+            
+            let shortText = "";
+            
+            // Si tèks la gen plis pase 150 lèt, nou koupe l sèk
+            if (fullText.length > 150) {
+                shortText = fullText.substring(0, 150) + "...\n\nTélécharge l'app pour la suite";
+            } else {
+                // Si l pi kout pase 150, nou kite l jan l ye a
+                shortText = fullText;
+            }
+
+            const content = `*${title}*\n\n${shortText}\n\nApp : https://rjfordroid.netlify.app/p/apps.html?nom=RJFlash`;
+            
+            // Lojik Firebase la (Pa chanje)
             get(ref(db, `RJFORDROID/ACTUALITE/${key}/voters_shares/${currentUserKey}`)).then(snap => {
                 if (!snap.exists()) {
                     set(ref(db, `RJFORDROID/ACTUALITE/${key}/voters_shares/${currentUserKey}`), true);
@@ -726,6 +740,8 @@
                 else { navigator.clipboard.writeText(content); showPopup("Lien copié !"); }
             });
         };
+
+
 
         window.speakingKey = null;
         window.readTextAloud = function(key) {
