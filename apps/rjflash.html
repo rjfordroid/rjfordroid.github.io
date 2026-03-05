@@ -81,7 +81,7 @@
         .read-badge { background-color: #8696a0; } 
 
         #chat-area { flex: 1; display: flex; flex-direction: column; background: #efeae2; position: relative; height: 100%; min-width: 0; transition: transform 0.3s ease; }
-        #chat-header { padding: 15px 20px; background: #f0f2f5; font-size: 1.2em; font-weight: bold; border-bottom: 1px solid #ccc; color: #111b21; display: flex; align-items: center; z-index: 10; }
+        #chat-header { padding: 5px 10px; background: #f0f2f5; font-size: 1.2em; font-weight: bold; border-bottom: 1px solid #ccc; color: #111b21; display: flex; align-items: center; z-index: 10; }
         #menu-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #111b21; padding: 5px; margin-right: 15px; display: none; }
         .back-btn { display: none; background: none; border: none; font-size: 20px; cursor: pointer; margin-right: 15px; color: #111b21; padding: 5px;}
         
@@ -166,6 +166,64 @@
             .serie-banner { height: 110px !important; }
             .global-stats-container { gap: 8px; padding: 0 10px; }
         }
+        
+        
+        
+        /* Fon nwa a */
+.overlay {
+  display: none; /* Kache pa defo */
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7); /* Nwa transparan */
+}
+
+/* Bwat blan popup la */
+.popup-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Bouton fèmen an (X) */
+.close-btn {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Style rapid pou input yo */
+#signupForm input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+#signupForm button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
     </style>
 </head>
 <body>
@@ -192,18 +250,26 @@
         <div id="error-msg">Identifiant ou mot de passe incorrect.</div>
         <input type="text" id="identifier-input" placeholder="Username ou Téléphone" />
         <input type="password" id="password-input" placeholder="Mot de passe" />
-        <button id="login-btn">Se connecter</button>
+        <button id="login-btn">Se connecter</button><br><br>
+        <button id="openSignup">Enskri kounye a</button>
     </div>
-   <form style="display:none;" id="signupForm">
-    <input type="text" id="fullName" placeholder="Nom complet" required>
-    <input type="text" id="username" placeholder="Nom d'utilisateur" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="text" id="phone" placeholder="Téléphone">
-    <input type="password" id="password" placeholder="Mot de passe" required>
-    <input type="password" id="confirmPassword" placeholder="Confirmer mot de passe" required>
-    <button type="submit">Créer un compte</button>
-    <div id="signupMessage" class="message"></div>
-  </form>
+<div id="signupOverlay" class="overlay">
+  <div class="popup-content">
+    <span id="closePopup" class="close-btn">&times;</span>
+    <h3>Kreye yon kont</h3>
+    
+    <form id="signupForm">
+        <input type="text" id="fullName" placeholder="Nom complet" required>
+        <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="text" id="phone" placeholder="Téléphone">
+        <input type="password" id="password" placeholder="Mot de passe" required>
+        <input type="password" id="confirmPassword" placeholder="Confirmer mot de passe" required>
+        <button type="submit">Créer un compte</button>
+        <div id="signupMessage" class="message"></div>
+    </form>
+  </div>
+</div>
 
     <div id="app">
         <div id="menu-overlay" onclick="toggleMenu()"></div>
@@ -405,6 +471,33 @@
         // #endregion
 
 
+const signupOverlay = document.getElementById('signupOverlay');
+const openBtn = document.getElementById('openSignup');
+const closeBtn = document.getElementById('closePopup');
+
+// Louvri popup la
+openBtn.addEventListener('click', () => {
+  signupOverlay.style.display = 'block';
+});
+
+// Fèmen popup la lè w klike sou (X)
+closeBtn.addEventListener('click', () => {
+  signupOverlay.style.display = 'none';
+});
+
+// Fèmen popup la si moun nan klike nenpòt kote nan fon nwa a
+window.addEventListener('click', (e) => {
+  if (e.target === signupOverlay) {
+    signupOverlay.style.display = 'none';
+  }
+});
+
+ const signupForm    = document.getElementById('signupForm');
+  const loginMessage  = document.getElementById('loginMessage');
+  const signupMessage = document.getElementById('signupMessage');
+
+
+
         // #region 4 - OUTILS & COMPTES UTILISATEURS (Credits, Info, Roles)
         function getRoleBadge(userObj) {
             if (userObj.role === 'admin' || userObj.isAdmin === true || userObj.isAdmin === "true") return '<span class="role-badge role-admin">Admin</span>';
@@ -486,6 +579,88 @@
                 } else showPopup("Aucun utilisateur trouvé dans la base.");
             }).catch(() => showPopup("Erreur de connexion à la base de données."));
         });
+        
+          /* ===== SIGNUP ===== */
+  /* ===== SIGNUP AK KONEKSYON OTOMATIK ===== */
+    signupForm.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    // 1. Rekipere valè yo nan input yo
+    const uFull = document.getElementById('fullName').value;
+    const uName = document.getElementById('username').value;
+    const uEmail = document.getElementById('email').value;
+    const uPhone = document.getElementById('phone').value;
+    const pass = document.getElementById('password').value;
+    const confirmPass = document.getElementById('confirmPassword').value;
+
+    // 2. Verifikasyon modpass
+    if (pass !== confirmPass) {
+      showPopup("Modpass yo pa menm!", false);
+      return;
+    }
+
+    loader.style.display = "flex"; // Montre loader a
+
+    try {
+        // 3. Tcheke si itilizatè a egziste deja
+        const usersRef = ref(db, "RJFORDROID/USERS");
+        const snap = await get(usersRef);
+        const users = snap.val() || {};
+
+        for (const k in users) {
+          if (users[k].username === uName || users[k].email === uEmail) {
+            loader.style.display = "none";
+            showPopup("Username oswa Email sa a deja itilize.", false);
+            return;
+          }
+        }
+
+        // 4. Kreye nouvo kont lan
+        const newUserRef = push(ref(db, "RJFORDROID/USERS"));
+        const userData = {
+          fullName: uFull,
+          username: uName,
+          email: uEmail,
+          phone: uPhone,
+          password: pass,
+          credits: 10,
+          isAdmin: false,
+          isOnline: true, // Mete l online dirèkteman
+          createdAt: serverTimestamp()
+        };
+
+        await set(newUserRef, userData);
+
+        // 5. KONEKSYON OTOMATIK
+        currentUserKey = newUserRef.key;
+        currentUser = userData;
+        startApp();
+
+        // Sove sesyon an nan LocalStorage
+        localStorage.setItem("rjfordroid_session", JSON.stringify({ 
+            key: currentUserKey, 
+            data: currentUser 
+        }));
+
+        // Jere status Online si li dekonekte sanzatann
+        const statusRef = ref(db, `RJFORDROID/USERS/${currentUserKey}/isOnline`);
+        onDisconnect(statusRef).set(false);
+
+        loader.style.display = "none";
+        showPopup("Kont ou kreye ak siksè! Byenvini.");
+
+        // 6. Fèmen popup la epi demare aplikasyon an
+        signupOverlay.style.display = 'none';
+        signupForm.reset();
+        startApp(); // Sa ap ouvri paj prensipal la dirèkteman
+
+    } catch (error) {
+        loader.style.display = "none";
+        showPopup("Gen yon erè ki rive: " + error.message);
+        console.error(error);
+    }
+  });
+
 
         window.logout = function() {
             if(currentUserKey) {
