@@ -550,7 +550,6 @@ window.addEventListener('click', (e) => {
         };
 
         loginBtn.addEventListener("click", () => {
-          window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
           
             const identifier = identifierInput.value.trim();
             const password = passwordInput.value.trim();
@@ -922,25 +921,30 @@ window.addEventListener('click', (e) => {
 
         window.speakingKey = null;
         window.readTextAloud = function(key) {
-            if (!('speechSynthesis' in window)) {
-                showPopup("Navigatè ou a pa sipòte lekti odyo a."); return;
-            }
-            if (window.speechSynthesis.speaking && window.speakingKey === key) {
-                window.speechSynthesis.cancel(); window.speakingKey = null;
-                let btn = document.getElementById(`speak-btn-${key}`); if(btn) btn.innerHTML = "🔊 Lire";
-                return;
-            }
-            if (window.speechSynthesis.speaking) {
-                window.speechSynthesis.cancel();
-                if(window.speakingKey) { let oldBtn = document.getElementById(`speak-btn-${window.speakingKey}`); if(oldBtn) oldBtn.innerHTML = "🔊 Lire"; }
-            }
-            let textContainer = document.getElementById(`text-${key}`); if (!textContainer) return;
-            let textToRead = textContainer.innerText || textContainer.textContent;
-            const utterance = new SpeechSynthesisUtterance(textToRead); utterance.lang = 'fr-FR'; 
-            utterance.onend = () => { window.speakingKey = null; let btn = document.getElementById(`speak-btn-${key}`); if(btn) btn.innerHTML = "🔊 Lire"; };
-            window.speakingKey = key; let btn = document.getElementById(`speak-btn-${key}`); if(btn) btn.innerHTML = "⏹️ Stop";
-            window.speechSynthesis.speak(utterance);
-        };
+    let textContainer = document.getElementById(`text-${key}`);
+    if (!textContainer) return;
+    
+    let textToRead = textContainer.innerText;
+    let btn = document.getElementById(`speak-btn-${key}`);
+
+    // Si l ap pale deja, nou sispann li
+    if (window.isSpeaking === key) {
+        if (typeof AndroidControler !== "undefined") {
+            AndroidControler.sispannPale();
+        }
+        window.isSpeaking = null;
+        btn.innerHTML = "🔊 Lire";
+    } else {
+        // Nou voye tèks la bay Android
+        if (typeof AndroidControler !== "undefined") {
+            AndroidControler.paleKounye a(textToRead);
+            window.isSpeaking = key;
+            btn.innerHTML = "⏹️ Stop";
+        } else {
+            alert("Android Controler pa disponib");
+        }
+    }
+};
 
         sendNewsBtn.addEventListener("click", () => {
             const title = newsTitleInput.value.trim(), category = newsCategoryInput.value, text = newsContentInput.value.trim(), tags = newsTagsInput.value.trim(), file = newsFileInput.files[0];
