@@ -920,32 +920,22 @@ window.addEventListener('click', (e) => {
 
 
         window.speakingKey = null;
-        window.readTextAloud = function(key) {
-    let textContainer = document.getElementById(`text-${key}`);
-    if (!textContainer) return;
-    
-    let textToRead = textContainer.innerText;
-    let btn = document.getElementById(`speak-btn-${key}`);
+      window.readTextAloud = function(key) {
+            let text = document.getElementById(`text-${key}`).innerText;
+            let btn = document.getElementById(`speak-btn-${key}`);
 
-    // Si l ap pale deja, nou sispann li
-    if (window.isSpeaking === key) {
-        if (typeof AndroidControler !== "undefined") {
-            AndroidControler.sispannPale();
-        }
-        window.isSpeaking = null;
-        btn.innerHTML = "🔊 Lire";
-    } else {
-        // Nou voye tèks la bay Android
-        if (typeof AndroidControler !== "undefined") {
-            AndroidControler.paleKounye a(textToRead);
-            window.isSpeaking = key;
-            btn.innerHTML = "⏹️ Stop";
-        } else {
-            alert("Android Controler pa disponib");
-        }
-    }
-};
-
+            if (window.isSpeaking === key) {
+                if (typeof AndroidControler !== "undefined") AndroidControler.stopSpeak();
+                window.isSpeaking = null;
+                btn.innerHTML = "🔊 Lire";
+            } else {
+                if (typeof AndroidControler !== "undefined") {
+                    AndroidControler.speak(text);
+                    window.isSpeaking = key;
+                    btn.innerHTML = "⏹️ Stop";
+                }
+            }
+        };
         sendNewsBtn.addEventListener("click", () => {
             const title = newsTitleInput.value.trim(), category = newsCategoryInput.value, text = newsContentInput.value.trim(), tags = newsTagsInput.value.trim(), file = newsFileInput.files[0];
             if(!title && !text && !file) return showPopup("Remplissez les champs.");
