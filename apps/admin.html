@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Administration - RJFORDROID</title>
+    <!-- Font Awesome pou Icon yo -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f0f2f5; color: #333; }
@@ -22,6 +25,9 @@
 
         .form-group { display: flex; flex-direction: column; gap: 15px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         input[type="text"], input[type="number"], select { padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; width: 100%; background: #f9f9f9; }
+        input[type="file"]{
+          display: none;
+        }
         
         button.submit-btn { padding: 15px; background: #00a884; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
         button.submit-btn:hover { background: #008f6f; }
@@ -39,7 +45,7 @@
         .spinner { border: 5px solid #f3f3f3; border-top: 5px solid #00a884; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* ======== RICH TEXT EDITOR CSS (ADAPTE POU ANDROID) ======== */
+        /* ======== RICH TEXT EDITOR CSS ======== */
         .editor-container { 
             border: 1px solid #ccc; 
             border-radius: 8px; 
@@ -47,10 +53,13 @@
             background: #fff; 
             display: flex;
             flex-direction: column;
-            /* Fikse wotè a 300px min ak max */
-            min-height: 300px; 
-            max-height: 300px; 
+            min-height: 350px; 
             position: relative;
+        }
+        .flex{
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 5px;
         }
         .editor-toolbar { 
             background: #f0f2f5; 
@@ -58,33 +67,88 @@
             border-bottom: 1px solid #ccc; 
             display: flex; 
             gap: 5px; 
-            flex-wrap: wrap; 
+            flex-wrap: nowrap; 
+            justify-content: start;
             align-items: center;
-            flex-shrink: 0; /* Anpeche toolbar la chanje gwosè */
+            flex-shrink: 0; 
             position: sticky;
             top: 0;
             z-index: 10;
+            overflow-x: auto;
         }
-        .editor-toolbar button, .editor-toolbar input[type="color"] { 
-            padding: 5px 10px; 
+        .editor-toolbar button {
+          min-width: 32px;
+          height: 32px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .editor-toolbar select{
+          width: 60px;
+        }
+        .editor-toolbar button, .editor-toolbar input[type="color"], .editor-toolbar select { 
+            padding: 5px 8px; 
             border: 1px solid #ccc; 
             background: white; 
             cursor: pointer; 
             border-radius: 4px; 
             font-weight: bold; 
-            font-size: 14px; 
-            height: 32px;
+            font-size: 13px; 
+            outline: none;
         }
-        .editor-toolbar button:hover { background: #e0e0e0; }
+        .editor-toolbar button:hover, .editor-toolbar select:hover { background: #e0e0e0; }
+        
+        .editor-toolbar button.active {
+            background-color: #ffeb3b;
+            color: #111b21;
+            border-color: #fbc02d;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .editor-toolbar button.btn-clean {
+            color: #d32f2f;
+            border-color: #ef9a9a;
+            background-color: #ffebee;
+        }
+        .editor-toolbar button.btn-clean:hover {
+            background-color: #ffcdd2;
+        }
+
+        .editor-toolbar button.btn-html {
+            color: #007aff;
+            border-color: #bbdefb;
+            background-color: #e3f2fd;
+        }
+        .editor-toolbar button.btn-html.active {
+            background-color: #111b21 !important;
+            color: #00a884 !important;
+            border-color: #00a884;
+        }
+        .editor-content.code-mode {
+            background-color: #1e1e1e !important;
+            color: #d4d4d4 !important;
+            font-family: 'Courier New', Courier, monospace !important;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
         .editor-content { 
-            flex: 1; /* Pran tout rès espas anba toolbar la */
+            flex: 1; 
             padding: 15px; 
             outline: none; 
-            font-size: 15px; 
-            overflow-y: auto; /* Scroll andedan sèlman */
+            font-size: 16px; 
+            overflow-y: auto; 
             background: white;
-            padding-bottom: 40px; /* Pou evite klavye kache dènye liy lan */
+            padding-bottom: 40px; 
         }
+        
+        .editor-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
         .editor-content:focus { background: #fafafa; }
         .editor-content[placeholder]:empty:before {
             content: attr(placeholder);
@@ -92,6 +156,26 @@
             pointer-events: none;
             display: block; 
         }
+
+        /* ======== EMOJI PICKER TABS CSS ======== */
+        .emoji-dropdown { position: relative; display: inline-block;}
+        .emoji-picker-container { 
+          
+          display: none; position: fixed; top: 0; left: 0; background:
+          white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px
+          10px rgba(0,0,0,0.2); z-index: 99999; width: 100%; flex-direction:
+          column; cursor: default;}
+        .emoji-dropdown.open .emoji-picker-container { display: flex; }
+        .emoji-tabs-header { display: flex; overflow-x: auto; background: #f0f2f5; border-bottom: 1px solid #ccc; padding: 5px; gap: 2px;}
+        .emoji-tabs-header::-webkit-scrollbar { height: 4px; }
+        .emoji-tabs-header::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+        .emoji-tabs-header span { cursor: pointer; padding: 5px; font-size: 16px; border-radius: 4px; transition: 0.2s; user-select: none;}
+        .emoji-tabs-header span.active { background: #d1d7db; }
+        .emoji-tabs-body { padding: 10px; max-height: 160px; overflow-y: auto; background: #fff; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
+        .emoji-tab-content { display: none; flex-wrap: wrap; gap: 8px; }
+        .emoji-tab-content.active { display: flex; }
+        .emoji-item { cursor: pointer; font-size: 20px; transition: transform 0.2s; user-select: none;}
+        .emoji-item:hover { transform: scale(1.3); }
     </style>
 </head>
 <body>
@@ -100,7 +184,7 @@
 
     <div class="header">
         <h1>⚙️ Administration RJFORDROID</h1>
-        <a href="index.html" class="back-btn">⬅️ Retour au site</a>
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Retour</a>
     </div>
 
     <!-- TABS -->
@@ -123,42 +207,242 @@
       navigator.clipboard.writeText(el.innerText);
       alert("Lien Kopye!");
     }
+    
     // Fonction globale pour le Rich Text Editor
     window.formatDoc = function(cmd, value=null) {
         document.execCommand(cmd, false, value);
+        setTimeout(() => checkFormatState(), 50);
     }
+
+    // FONKSYON POU INSERE IMAGE NAN INPUT COVER
+    window.insertEditorImage = function(btn) {
+        const tab = btn.closest('.tab-content');
+        if(tab.id === 'tab-add-news') document.getElementById('news-file').click();
+        if(tab.id === 'tab-add-lang') document.getElementById('lang-file').click();
+        if(tab.id === 'tab-add-ebook') document.getElementById('pdf-file').click();
+    };
+
+    // LOGIQUE EMOJI PICKER DIV
+    document.addEventListener('click', function(e) {
+        // Louvri / Fèmen dropdown lan
+        if (e.target.closest('.btn-emoji-toggle')) {
+            const dropdown = e.target.closest('.emoji-dropdown');
+            dropdown.classList.toggle('open');
+            return;
+        }
+        // Chanje tab kategori emoji
+        if (e.target.closest('.emoji-tabs-header span')) {
+            const span = e.target.closest('.emoji-tabs-header span');
+            const container = span.closest('.emoji-picker-container');
+            container.querySelectorAll('.emoji-tabs-header span').forEach(s => s.classList.remove('active'));
+            container.querySelectorAll('.emoji-tab-content').forEach(c => c.classList.remove('active'));
+            span.classList.add('active');
+            container.querySelector('.' + span.dataset.target).classList.add('active');
+            e.stopPropagation(); 
+            return;
+        }
+        // Klike sou yon emoji pou insere
+        if (e.target.closest('.emoji-item')) {
+            const emoji = e.target.closest('.emoji-item').innerText;
+            window.formatDoc('insertText', emoji);
+            e.target.closest('.emoji-dropdown').classList.remove('open');
+            return;
+        }
+        // Fèmen dropdown siw klike lwenl
+        document.querySelectorAll('.emoji-dropdown').forEach(d => {
+            if (!d.contains(e.target)) d.classList.remove('open');
+        });
+    });
+
+    // FONKSYON POU TOGGLE (CHANJE) MOD HTML VS MOD VIZYEL
+    window.toggleHTMLView = function(btn) {
+        const container = btn.closest('.editor-container');
+        const editor = container.querySelector('.editor-content');
+        
+        if (editor.classList.contains('code-mode')) {
+            editor.innerHTML = editor.textContent;
+            editor.classList.remove('code-mode');
+            btn.classList.remove('active');
+        } else {
+            editor.textContent = editor.innerHTML;
+            editor.classList.add('code-mode');
+            btn.classList.add('active');
+        }
+    }
+
+    // FONKSYON POU PRAN KONTNI AN POU SAVE
+    window.getEditorHTML = function(editorId) {
+        const editor = document.getElementById(editorId);
+        let html = '';
+        
+        if (editor.classList.contains('code-mode')) {
+            html = editor.textContent.trim();
+        } else {
+            html = editor.innerHTML.trim();
+        }
+
+        if (!html) return '';
+
+        let prevHtml;
+        do {
+            prevHtml = html;
+            html = html.replace(/<([a-zA-Z1-6]+)[^>]*>\s*<\/\1>/gi, '');
+        } while (html !== prevHtml);
+
+        return html.trim();
+    }
+
+    // Fonksyon pou verifye ki fòma tèks la genyen
+    function checkFormatState() {
+        const editors = document.querySelectorAll('.editor-content');
+        editors.forEach(editor => {
+            if(document.activeElement !== editor) return;
+
+            const toolbar = editor.previousElementSibling;
+            
+            const cmds = ['bold', 'italic', 'underline', 'insertUnorderedList', 'justifyLeft', 'justifyCenter', 'justifyRight'];
+            cmds.forEach(cmd => {
+                const btn = toolbar.querySelector(`button[data-cmd="${cmd}"]`);
+                if(btn) {
+                    if(document.queryCommandState(cmd)) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                }
+            });
+
+            const formatBlock = document.queryCommandValue('formatBlock');
+            if(formatBlock) {
+                const sel = toolbar.querySelector('.tool-format');
+                let val = formatBlock.toUpperCase();
+                if(!["H1","H2","H3","H4","H5","H6","P"].includes(val)) val = "P";
+                if(sel) sel.value = val;
+            }
+
+            const fontSize = document.queryCommandValue('fontSize');
+            if(fontSize) {
+                const sel = toolbar.querySelector('.tool-size');
+                if(sel) sel.value = fontSize;
+            }
+
+            const fontName = document.queryCommandValue('fontName');
+            if(fontName) {
+                const sel = toolbar.querySelector('.tool-font');
+                if(sel) sel.value = fontName.replace(/['"]/g, ''); 
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('.editor-content').forEach(editor => {
+            ['keyup', 'mouseup', 'click', 'focus'].forEach(evt => {
+                editor.addEventListener(evt, checkFormatState);
+            });
+
+            editor.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    document.execCommand('insertText', false, '\n');
+                }
+            });
+
+            editor.addEventListener('paste', (e) => {
+                e.preventDefault();
+                let text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                document.execCommand('insertText', false, text);
+            });
+        });
+    });
     </script>
-    
+        
     <!-- TAB 1: CREER ACTUALITE -->
     <div id="tab-add-news" class="tab-content active">
         <h2 id="news-form-title">Créer une nouvelle actualité</h2><br>
         <div class="form-group">
+
             <input type="text" id="news-title" placeholder="Titre de l'actualité..." />
-            <select id="news-category">
-                <option value="Amour">❤️ Amour</option>
-                <option value="Politique">🏛️ Politique</option>
-                <option value="Bible">📖 Bible</option>
-                <option value="Informatique">💻 Informatique</option>
-            </select>
-            <input type="text" id="news-tags" placeholder="Tags (ex: android, tech)..." />
-            
+            <div class="flex">
+                <select id="news-category">
+                    <option value="Amour">❤️ Amour</option>
+                    <option value="Politique">🏛️ Politique</option>
+                    <option value="Bible">📖 Bible</option>
+                    <option value="Informatique">💻 Informatique</option>
+                </select>
+                <!-- Datalist pou sijesyon Firebase tags -->
+                <input type="text" id="news-tags" list="news-tags-list" placeholder="Tags (ex: android, tech)..." />
+                <datalist id="news-tags-list"></datalist>
+            </div>
+
             <!-- Editeur pour Actualité -->
             <div class="editor-container">
                 <div class="editor-toolbar">
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('bold')" title="Gras"><b>B</b></button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('italic')" title="Italique"><i>I</i></button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('underline')" title="Souligné"><u>U</u></button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Liste à puces">• Liste</button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyLeft')" title="Aligner à gauche">⬅️</button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyCenter')" title="Centrer">↔️</button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite">➡️</button>
+                    <select onchange="formatDoc('formatBlock', this.value)" class="tool-format" title="Format de texte">
+                        <option value="P" selected>Normal</option>
+                        <option value="H1">Titre 1</option>
+                        <option value="H2">Titre 2</option>
+                        <option value="H3">Titre 3</option>
+                    </select>
+                    <select onchange="formatDoc('fontSize', this.value)" class="tool-size" title="Taille de texte">
+                        <option value="2">Petit</option>
+                        <option value="3" selected>Normal</option>
+                        <option value="4">Moyen</option>
+                        <option value="5">Grand</option>
+                    </select>
+
+                    <button type="button" data-cmd="bold" onmousedown="event.preventDefault(); formatDoc('bold')" title="Gras"><i class="fas fa-bold"></i></button>
+                    <button type="button" data-cmd="italic" onmousedown="event.preventDefault(); formatDoc('italic')" title="Italique"><i class="fas fa-italic"></i></button>
+                    <button type="button" data-cmd="underline" onmousedown="event.preventDefault(); formatDoc('underline')" title="Souligné"><i class="fas fa-underline"></i></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('formatBlock', 'P')" title="Paragraphe"><i class="fas fa-paragraph"></i></button>
+                    <button type="button" data-cmd="insertUnorderedList" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Liste à puces"><i class="fas fa-list-ul"></i></button>
+                    <button type="button" data-cmd="justifyLeft" onmousedown="event.preventDefault(); formatDoc('justifyLeft')" title="Aligner à gauche"><i class="fas fa-align-left"></i></button>
+                    <button type="button" data-cmd="justifyCenter" onmousedown="event.preventDefault(); formatDoc('justifyCenter')" title="Centrer"><i class="fas fa-align-center"></i></button>
+                    <button type="button" data-cmd="justifyRight" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite"><i class="fas fa-align-right"></i></button>
+                    
+                    <button type="button" onclick="insertEditorImage(this)" title="Insérer image cover"><i class="fas fa-image"></i></button>
+
+                    <!-- EMOJI PICKER DIV -->
+                    <div class="emoji-dropdown">
+                        <button type="button" class="btn-emoji-toggle" onmousedown="event.preventDefault()" title="Insérer un Emoji"><i class="fas fa-smile"></i></button>
+                        <div class="emoji-picker-container" onmousedown="event.preventDefault()">
+                            <div class="emoji-tabs-header">
+                                <span data-target="target-faces" class="active">😀</span>
+                                <span data-target="target-body">👍</span>
+                                <span data-target="target-love">❤️</span>
+                                <span data-target="target-nature">🐶</span>
+                                <span data-target="target-food">🍏</span>
+                                <span data-target="target-sports">⚽</span>
+                                <span data-target="target-travel">🚗</span>
+                                <span data-target="target-objects">💻</span>
+                                <span data-target="target-symbols">✔️</span>
+                                <span data-target="target-flags">🇭🇹</span>
+                            </div>
+                            <div class="emoji-tabs-body">
+                                <div class="emoji-tab-content active target-faces"><span class="emoji-item">😀</span><span class="emoji-item">😂</span><span class="emoji-item">🤣</span><span class="emoji-item">😊</span><span class="emoji-item">😇</span><span class="emoji-item">🥰</span><span class="emoji-item">😍</span><span class="emoji-item">😋</span><span class="emoji-item">😎</span><span class="emoji-item">😭</span><span class="emoji-item">😤</span><span class="emoji-item">😡</span><span class="emoji-item">🤯</span><span class="emoji-item">🥶</span><span class="emoji-item">😱</span><span class="emoji-item">😴</span><span class="emoji-item">🤔</span><span class="emoji-item">🤫</span><span class="emoji-item">🥳</span><span class="emoji-item">🥺</span><span class="emoji-item">🙄</span></div>
+                                <div class="emoji-tab-content target-body"><span class="emoji-item">👍</span><span class="emoji-item">👎</span><span class="emoji-item">👌</span><span class="emoji-item">✌️</span><span class="emoji-item">🤞</span><span class="emoji-item">🤟</span><span class="emoji-item">🤘</span><span class="emoji-item">🤙</span><span class="emoji-item">🖐️</span><span class="emoji-item">👋</span><span class="emoji-item">👏</span><span class="emoji-item">🙌</span><span class="emoji-item">👐</span><span class="emoji-item">🤲</span><span class="emoji-item">🤝</span><span class="emoji-item">🙏</span><span class="emoji-item">💪</span><span class="emoji-item">🧠</span><span class="emoji-item">👀</span></div>
+                                <div class="emoji-tab-content target-love"><span class="emoji-item">❤️</span><span class="emoji-item">🧡</span><span class="emoji-item">💛</span><span class="emoji-item">💚</span><span class="emoji-item">💙</span><span class="emoji-item">💜</span><span class="emoji-item">🖤</span><span class="emoji-item">🤍</span><span class="emoji-item">🤎</span><span class="emoji-item">💔</span><span class="emoji-item">❣️</span><span class="emoji-item">💕</span><span class="emoji-item">💞</span><span class="emoji-item">💓</span><span class="emoji-item">💗</span><span class="emoji-item">💖</span><span class="emoji-item">💘</span><span class="emoji-item">💝</span></div>
+                                <div class="emoji-tab-content target-nature"><span class="emoji-item">🐶</span><span class="emoji-item">🐱</span><span class="emoji-item">🐭</span><span class="emoji-item">🦊</span><span class="emoji-item">🐻</span><span class="emoji-item">🐼</span><span class="emoji-item">🦁</span><span class="emoji-item">🐯</span><span class="emoji-item">🐸</span><span class="emoji-item">🐵</span><span class="emoji-item">🦋</span><span class="emoji-item">🌸</span><span class="emoji-item">🌹</span><span class="emoji-item">🌺</span><span class="emoji-item">🌻</span><span class="emoji-item">🌼</span><span class="emoji-item">🌳</span><span class="emoji-item">🌴</span><span class="emoji-item">🌵</span><span class="emoji-item">🌙</span><span class="emoji-item">⭐</span><span class="emoji-item">🔥</span><span class="emoji-item">💧</span><span class="emoji-item">❄️</span><span class="emoji-item">☀️</span><span class="emoji-item">🌈</span></div>
+                                <div class="emoji-tab-content target-food"><span class="emoji-item">🍏</span><span class="emoji-item">🍓</span><span class="emoji-item">🍉</span><span class="emoji-item">🍇</span><span class="emoji-item">🍌</span><span class="emoji-item">🍍</span><span class="emoji-item">🥑</span><span class="emoji-item">🥕</span><span class="emoji-item">🍔</span><span class="emoji-item">🍟</span><span class="emoji-item">🍕</span><span class="emoji-item">🌭</span><span class="emoji-item">🍿</span><span class="emoji-item">🍩</span><span class="emoji-item">🍫</span><span class="emoji-item">🍰</span><span class="emoji-item">🎂</span><span class="emoji-item">☕</span><span class="emoji-item">🍵</span><span class="emoji-item">🧃</span><span class="emoji-item">🍷</span><span class="emoji-item">🍻</span><span class="emoji-item">🥂</span></div>
+                                <div class="emoji-tab-content target-sports"><span class="emoji-item">⚽</span><span class="emoji-item">🏀</span><span class="emoji-item">🏈</span><span class="emoji-item">⚾</span><span class="emoji-item">🎾</span><span class="emoji-item">🏐</span><span class="emoji-item">🏓</span><span class="emoji-item">🥊</span><span class="emoji-item">🎮</span><span class="emoji-item">🎯</span><span class="emoji-item">🎨</span><span class="emoji-item">🎬</span><span class="emoji-item">🎤</span><span class="emoji-item">🎧</span><span class="emoji-item">🎸</span><span class="emoji-item">🎹</span><span class="emoji-item">🥁</span></div>
+                                <div class="emoji-tab-content target-travel"><span class="emoji-item">🚗</span><span class="emoji-item">🚕</span><span class="emoji-item">🚌</span><span class="emoji-item">🚓</span><span class="emoji-item">🚑</span><span class="emoji-item">🚒</span><span class="emoji-item">✈️</span><span class="emoji-item">🚀</span><span class="emoji-item">🛳️</span><span class="emoji-item">🌍</span><span class="emoji-item">🗽</span><span class="emoji-item">🗼</span><span class="emoji-item">🏰</span><span class="emoji-item">🏖️</span><span class="emoji-item">🏕️</span><span class="emoji-item">🏔️</span><span class="emoji-item">🏥</span><span class="emoji-item">🏠</span></div>
+                                <div class="emoji-tab-content target-objects">
+                                    <span class="emoji-item">💻</span><span class="emoji-item">🖥️</span><span class="emoji-item">⌨️</span><span class="emoji-item">🖱️</span><span class="emoji-item">🖨️</span><span class="emoji-item">🖲️</span><span class="emoji-item">💾</span><span class="emoji-item">💿</span><span class="emoji-item">📀</span><span class="emoji-item">💽</span><span class="emoji-item">📱</span><span class="emoji-item">📲</span><span class="emoji-item">📟</span><span class="emoji-item">📠</span><span class="emoji-item">📡</span><span class="emoji-item">🌐</span><span class="emoji-item">📶</span><span class="emoji-item">⌚</span><span class="emoji-item">📷</span><span class="emoji-item">🎥</span><span class="emoji-item">🎙️</span><span class="emoji-item">🔋</span><span class="emoji-item">🔌</span><span class="emoji-item">💡</span><span class="emoji-item">📖</span><span class="emoji-item">📚</span><span class="emoji-item">💸</span><span class="emoji-item">💰</span><span class="emoji-item">💳</span><span class="emoji-item">💎</span><span class="emoji-item">🎁</span><span class="emoji-item">🛍️</span><span class="emoji-item">🕰️</span>
+                                </div>
+                                <div class="emoji-tab-content target-symbols"><span class="emoji-item">✔️</span><span class="emoji-item">❌</span><span class="emoji-item">⚠️</span><span class="emoji-item">✅</span><span class="emoji-item">💯</span><span class="emoji-item">🎵</span><span class="emoji-item">🎶</span><span class="emoji-item">➕</span><span class="emoji-item">➖</span><span class="emoji-item">➗</span><span class="emoji-item">✖️</span><span class="emoji-item">❓</span><span class="emoji-item">❕</span><span class="emoji-item">✝️</span><span class="emoji-item">☪️</span><span class="emoji-item">✡️</span><span class="emoji-item">☸️</span><span class="emoji-item">☮️</span></div>
+                                <div class="emoji-tab-content target-flags"><span class="emoji-item">🇭🇹</span><span class="emoji-item">🇫🇷</span><span class="emoji-item">🇺🇸</span><span class="emoji-item">🇨🇦</span><span class="emoji-item">🇩🇴</span><span class="emoji-item">🇧🇷</span><span class="emoji-item">🇨🇱</span><span class="emoji-item">🇲🇽</span><span class="emoji-item">🇯🇵</span><span class="emoji-item">🇨🇳</span><span class="emoji-item">🇬🇧</span></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <input type="color" onchange="formatDoc('foreColor', this.value)" title="Couleur du texte">
+                    <button type="button" class="btn-clean" onclick="cleanFullHTML(this)" title="Effacer tout kòd HTML"><i class="fas fa-eraser"></i></button>
+                    <button type="button" class="btn-html" onclick="toggleHTMLView(this)" title="Editer le code HTML"><i class="fas fa-code"></i></button>
                 </div>
                 <div id="news-content" class="editor-content" contenteditable="true" placeholder="Contenu de l'actualité..."></div>
             </div>
             
-            <input type="text" id="news-image-link" placeholder="Lien de l'image (auto après upload)..." />
-            <input type="file" id="news-file" accept="image/*" />
+            <input type="text" id="news-image-link" placeholder="Lien de l'image de couverture (auto après upload)..." />
+            <input type="file" id="news-file" accept="image/*" style="display: none;" />
             <button class="submit-btn" id="send-news-btn">Publier l'actualité</button>
         </div>
     </div>
@@ -174,30 +458,86 @@
         <h2 id="lang-form-title">Créer une expression de Langue</h2><br>
         <div class="form-group">
             <input type="text" id="lang-title" placeholder="Titre de l'expression..." />
-            <select id="lang-category">
-                <option value="Anglè">🇬🇧 Anglè</option>
-                <option value="Espanyòl">🇪🇸 Espanyòl</option>
-                <option value="Kreyòl">🇭🇹 Kreyòl</option>
-            </select>
-            <input type="text" id="lang-tags" placeholder="Tags (ex: vocabulaire, verbe)..." />
+            <div class="flex">
+                <select id="lang-category">
+                    <option value="Anglè">🇬🇧 Anglè</option>
+                    <option value="Espanyòl">🇪🇸 Espanyòl</option>
+                    <option value="Kreyòl">🇭🇹 Kreyòl</option>
+                </select>
+                <!-- Datalist pou sijesyon Firebase tags -->
+                <input type="text" id="lang-tags" list="lang-tags-list" placeholder="Tags (ex: vocabulaire, verbe)..." />
+                <datalist id="lang-tags-list"></datalist>
+            </div>
             
             <!-- Editeur pour Lang -->
             <div class="editor-container">
                 <div class="editor-toolbar">
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('bold')" title="Gras"><b>B</b></button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('italic')" title="Italique"><i>I</i></button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('underline')" title="Souligné"><u>U</u></button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Liste à puces">• Liste</button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyLeft')" title="Aligner à gauche">⬅️</button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyCenter')" title="Centrer">↔️</button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite">➡️</button>
+                    <select onchange="formatDoc('formatBlock', this.value)" class="tool-format" title="Format de texte">
+                        <option value="P" selected>Normal</option>
+                        <option value="H1">Titre 1</option>
+                        <option value="H2">Titre 2</option>
+                        <option value="H3">Titre 3</option>
+                    </select>
+                    <select onchange="formatDoc('fontSize', this.value)" class="tool-size" title="Taille de texte">
+                        <option value="2">Petit</option>
+                        <option value="3" selected>Normal</option>
+                        <option value="4">Moyen</option>
+                        <option value="5">Grand</option>
+                    </select>
+
+                    <button type="button" data-cmd="bold" onmousedown="event.preventDefault(); formatDoc('bold')" title="Gras"><i class="fas fa-bold"></i></button>
+                    <button type="button" data-cmd="italic" onmousedown="event.preventDefault(); formatDoc('italic')" title="Italique"><i class="fas fa-italic"></i></button>
+                    <button type="button" data-cmd="underline" onmousedown="event.preventDefault(); formatDoc('underline')" title="Souligné"><i class="fas fa-underline"></i></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('formatBlock', 'P')" title="Paragraphe"><i class="fas fa-paragraph"></i></button>
+                    <button type="button" data-cmd="insertUnorderedList" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Liste à puces"><i class="fas fa-list-ul"></i></button>
+                    <button type="button" data-cmd="justifyLeft" onmousedown="event.preventDefault(); formatDoc('justifyLeft')" title="Aligner à gauche"><i class="fas fa-align-left"></i></button>
+                    <button type="button" data-cmd="justifyCenter" onmousedown="event.preventDefault(); formatDoc('justifyCenter')" title="Centrer"><i class="fas fa-align-center"></i></button>
+                    <button type="button" data-cmd="justifyRight" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite"><i class="fas fa-align-right"></i></button>
+
+                    <button type="button" onclick="insertEditorImage(this)" title="Insérer image cover"><i class="fas fa-image"></i></button>
+
+                    <!-- EMOJI PICKER DIV -->
+                    <div class="emoji-dropdown">
+                        <button type="button" class="btn-emoji-toggle" onmousedown="event.preventDefault()" title="Insérer un Emoji"><i class="fas fa-smile"></i></button>
+                        <div class="emoji-picker-container" onmousedown="event.preventDefault()">
+                            <div class="emoji-tabs-header">
+                                <span data-target="target-faces" class="active">😀</span>
+                                <span data-target="target-body">👍</span>
+                                <span data-target="target-love">❤️</span>
+                                <span data-target="target-nature">🐶</span>
+                                <span data-target="target-food">🍏</span>
+                                <span data-target="target-sports">⚽</span>
+                                <span data-target="target-travel">🚗</span>
+                                <span data-target="target-objects">💻</span>
+                                <span data-target="target-symbols">✔️</span>
+                                <span data-target="target-flags">🇭🇹</span>
+                            </div>
+                            <div class="emoji-tabs-body">
+                                <div class="emoji-tab-content active target-faces"><span class="emoji-item">😀</span><span class="emoji-item">😂</span><span class="emoji-item">🤣</span><span class="emoji-item">😊</span><span class="emoji-item">😇</span><span class="emoji-item">🥰</span><span class="emoji-item">😍</span><span class="emoji-item">😋</span><span class="emoji-item">😎</span><span class="emoji-item">😭</span><span class="emoji-item">😤</span><span class="emoji-item">😡</span><span class="emoji-item">🤯</span><span class="emoji-item">🥶</span><span class="emoji-item">😱</span><span class="emoji-item">😴</span><span class="emoji-item">🤔</span><span class="emoji-item">🤫</span><span class="emoji-item">🥳</span><span class="emoji-item">🥺</span><span class="emoji-item">🙄</span></div>
+                                <div class="emoji-tab-content target-body"><span class="emoji-item">👍</span><span class="emoji-item">👎</span><span class="emoji-item">👌</span><span class="emoji-item">✌️</span><span class="emoji-item">🤞</span><span class="emoji-item">🤟</span><span class="emoji-item">🤘</span><span class="emoji-item">🤙</span><span class="emoji-item">🖐️</span><span class="emoji-item">👋</span><span class="emoji-item">👏</span><span class="emoji-item">🙌</span><span class="emoji-item">👐</span><span class="emoji-item">🤲</span><span class="emoji-item">🤝</span><span class="emoji-item">🙏</span><span class="emoji-item">💪</span><span class="emoji-item">🧠</span><span class="emoji-item">👀</span></div>
+                                <div class="emoji-tab-content target-love"><span class="emoji-item">❤️</span><span class="emoji-item">🧡</span><span class="emoji-item">💛</span><span class="emoji-item">💚</span><span class="emoji-item">💙</span><span class="emoji-item">💜</span><span class="emoji-item">🖤</span><span class="emoji-item">🤍</span><span class="emoji-item">🤎</span><span class="emoji-item">💔</span><span class="emoji-item">❣️</span><span class="emoji-item">💕</span><span class="emoji-item">💞</span><span class="emoji-item">💓</span><span class="emoji-item">💗</span><span class="emoji-item">💖</span><span class="emoji-item">💘</span><span class="emoji-item">💝</span></div>
+                                <div class="emoji-tab-content target-nature"><span class="emoji-item">🐶</span><span class="emoji-item">🐱</span><span class="emoji-item">🐭</span><span class="emoji-item">🦊</span><span class="emoji-item">🐻</span><span class="emoji-item">🐼</span><span class="emoji-item">🦁</span><span class="emoji-item">🐯</span><span class="emoji-item">🐸</span><span class="emoji-item">🐵</span><span class="emoji-item">🦋</span><span class="emoji-item">🌸</span><span class="emoji-item">🌹</span><span class="emoji-item">🌺</span><span class="emoji-item">🌻</span><span class="emoji-item">🌼</span><span class="emoji-item">🌳</span><span class="emoji-item">🌴</span><span class="emoji-item">🌵</span><span class="emoji-item">🌙</span><span class="emoji-item">⭐</span><span class="emoji-item">🔥</span><span class="emoji-item">💧</span><span class="emoji-item">❄️</span><span class="emoji-item">☀️</span><span class="emoji-item">🌈</span></div>
+                                <div class="emoji-tab-content target-food"><span class="emoji-item">🍏</span><span class="emoji-item">🍓</span><span class="emoji-item">🍉</span><span class="emoji-item">🍇</span><span class="emoji-item">🍌</span><span class="emoji-item">🍍</span><span class="emoji-item">🥑</span><span class="emoji-item">🥕</span><span class="emoji-item">🍔</span><span class="emoji-item">🍟</span><span class="emoji-item">🍕</span><span class="emoji-item">🌭</span><span class="emoji-item">🍿</span><span class="emoji-item">🍩</span><span class="emoji-item">🍫</span><span class="emoji-item">🍰</span><span class="emoji-item">🎂</span><span class="emoji-item">☕</span><span class="emoji-item">🍵</span><span class="emoji-item">🧃</span><span class="emoji-item">🍷</span><span class="emoji-item">🍻</span><span class="emoji-item">🥂</span></div>
+                                <div class="emoji-tab-content target-sports"><span class="emoji-item">⚽</span><span class="emoji-item">🏀</span><span class="emoji-item">🏈</span><span class="emoji-item">⚾</span><span class="emoji-item">🎾</span><span class="emoji-item">🏐</span><span class="emoji-item">🏓</span><span class="emoji-item">🥊</span><span class="emoji-item">🎮</span><span class="emoji-item">🎯</span><span class="emoji-item">🎨</span><span class="emoji-item">🎬</span><span class="emoji-item">🎤</span><span class="emoji-item">🎧</span><span class="emoji-item">🎸</span><span class="emoji-item">🎹</span><span class="emoji-item">🥁</span></div>
+                                <div class="emoji-tab-content target-travel"><span class="emoji-item">🚗</span><span class="emoji-item">🚕</span><span class="emoji-item">🚌</span><span class="emoji-item">🚓</span><span class="emoji-item">🚑</span><span class="emoji-item">🚒</span><span class="emoji-item">✈️</span><span class="emoji-item">🚀</span><span class="emoji-item">🛳️</span><span class="emoji-item">🌍</span><span class="emoji-item">🗽</span><span class="emoji-item">🗼</span><span class="emoji-item">🏰</span><span class="emoji-item">🏖️</span><span class="emoji-item">🏕️</span><span class="emoji-item">🏔️</span><span class="emoji-item">🏥</span><span class="emoji-item">🏠</span></div>
+                                <div class="emoji-tab-content target-objects">
+                                    <span class="emoji-item">💻</span><span class="emoji-item">🖥️</span><span class="emoji-item">⌨️</span><span class="emoji-item">🖱️</span><span class="emoji-item">🖨️</span><span class="emoji-item">🖲️</span><span class="emoji-item">💾</span><span class="emoji-item">💿</span><span class="emoji-item">📀</span><span class="emoji-item">💽</span><span class="emoji-item">📱</span><span class="emoji-item">📲</span><span class="emoji-item">📟</span><span class="emoji-item">📠</span><span class="emoji-item">📡</span><span class="emoji-item">🌐</span><span class="emoji-item">📶</span><span class="emoji-item">⌚</span><span class="emoji-item">📷</span><span class="emoji-item">🎥</span><span class="emoji-item">🎙️</span><span class="emoji-item">🔋</span><span class="emoji-item">🔌</span><span class="emoji-item">💡</span><span class="emoji-item">📖</span><span class="emoji-item">📚</span><span class="emoji-item">💸</span><span class="emoji-item">💰</span><span class="emoji-item">💳</span><span class="emoji-item">💎</span><span class="emoji-item">🎁</span><span class="emoji-item">🛍️</span><span class="emoji-item">🕰️</span>
+                                </div>
+                                <div class="emoji-tab-content target-symbols"><span class="emoji-item">✔️</span><span class="emoji-item">❌</span><span class="emoji-item">⚠️</span><span class="emoji-item">✅</span><span class="emoji-item">💯</span><span class="emoji-item">🎵</span><span class="emoji-item">🎶</span><span class="emoji-item">➕</span><span class="emoji-item">➖</span><span class="emoji-item">➗</span><span class="emoji-item">✖️</span><span class="emoji-item">❓</span><span class="emoji-item">❕</span><span class="emoji-item">✝️</span><span class="emoji-item">☪️</span><span class="emoji-item">✡️</span><span class="emoji-item">☸️</span><span class="emoji-item">☮️</span></div>
+                                <div class="emoji-tab-content target-flags"><span class="emoji-item">🇭🇹</span><span class="emoji-item">🇫🇷</span><span class="emoji-item">🇺🇸</span><span class="emoji-item">🇨🇦</span><span class="emoji-item">🇩🇴</span><span class="emoji-item">🇧🇷</span><span class="emoji-item">🇨🇱</span><span class="emoji-item">🇲🇽</span><span class="emoji-item">🇯🇵</span><span class="emoji-item">🇨🇳</span><span class="emoji-item">🇬🇧</span></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <input type="color" onchange="formatDoc('foreColor', this.value)" title="Couleur du texte">
+                    <button type="button" class="btn-clean" onclick="cleanFullHTML(this)" title="Effacer tout kòd HTML"><i class="fas fa-eraser"></i></button>
+                    <button type="button" class="btn-html" onclick="toggleHTMLView(this)" title="Editer le code HTML"><i class="fas fa-code"></i></button>
                 </div>
                 <div id="lang-content" class="editor-content" contenteditable="true" placeholder="Contenu, explication..."></div>
             </div>
             
             <input type="text" id="lang-image-link" placeholder="Lien de l'image (auto après upload)..." />
-            <input type="file" id="lang-file" accept="image/*" />
+            <input type="file" id="lang-file" accept="image/*" style="display: none;" />
             <button class="submit-btn" id="send-lang-btn">Publier l'expression</button>
         </div>
     </div>
@@ -217,14 +557,66 @@
             <!-- Editeur pour Ebook -->
             <div class="editor-container">
                 <div class="editor-toolbar">
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('bold')" title="Gras"><b>B</b></button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('italic')" title="Italique"><i>I</i></button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('underline')" title="Souligné"><u>U</u></button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Liste à puces">• Liste</button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyLeft')" title="Aligner à gauche">⬅️</button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyCenter')" title="Centrer">↔️</button>
-                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite">➡️</button>
+                    <select onchange="formatDoc('formatBlock', this.value)" class="tool-format" title="Format de texte">
+                        <option value="P" selected>Normal</option>
+                        <option value="H1">Titre 1</option>
+                        <option value="H2">Titre 2</option>
+                        <option value="H3">Titre 3</option>
+                    </select>
+                    <select onchange="formatDoc('fontSize', this.value)" class="tool-size" title="Taille de texte">
+                        <option value="2">Petit</option>
+                        <option value="3" selected>Normal</option>
+                        <option value="4">Moyen</option>
+                        <option value="5">Grand</option>
+                    </select>
+
+                    <button type="button" data-cmd="bold" onmousedown="event.preventDefault(); formatDoc('bold')" title="Gras"><i class="fas fa-bold"></i></button>
+                    <button type="button" data-cmd="italic" onmousedown="event.preventDefault(); formatDoc('italic')" title="Italique"><i class="fas fa-italic"></i></button>
+                    <button type="button" data-cmd="underline" onmousedown="event.preventDefault(); formatDoc('underline')" title="Souligné"><i class="fas fa-underline"></i></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('formatBlock', 'P')" title="Paragraphe"><i class="fas fa-paragraph"></i></button>
+                    <button type="button" data-cmd="insertUnorderedList" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Liste à puces"><i class="fas fa-list-ul"></i></button>
+                    <button type="button" data-cmd="justifyLeft" onmousedown="event.preventDefault(); formatDoc('justifyLeft')" title="Aligner à gauche"><i class="fas fa-align-left"></i></button>
+                    <button type="button" data-cmd="justifyCenter" onmousedown="event.preventDefault(); formatDoc('justifyCenter')" title="Centrer"><i class="fas fa-align-center"></i></button>
+                    <button type="button" data-cmd="justifyRight" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite"><i class="fas fa-align-right"></i></button>
+
+                    <button type="button" onclick="insertEditorImage(this)" title="Insérer image cover"><i class="fas fa-image"></i></button>
+
+                    <!-- EMOJI PICKER DIV -->
+                    <div class="emoji-dropdown">
+                        <button type="button" class="btn-emoji-toggle" onmousedown="event.preventDefault()" title="Insérer un Emoji"><i class="fas fa-smile"></i></button>
+                        <div class="emoji-picker-container" onmousedown="event.preventDefault()">
+                            <div class="emoji-tabs-header">
+                                <span data-target="target-faces" class="active">😀</span>
+                                <span data-target="target-body">👍</span>
+                                <span data-target="target-love">❤️</span>
+                                <span data-target="target-nature">🐶</span>
+                                <span data-target="target-food">🍏</span>
+                                <span data-target="target-sports">⚽</span>
+                                <span data-target="target-travel">🚗</span>
+                                <span data-target="target-objects">💻</span>
+                                <span data-target="target-symbols">✔️</span>
+                                <span data-target="target-flags">🇭🇹</span>
+                            </div>
+                            <div class="emoji-tabs-body">
+                                <div class="emoji-tab-content active target-faces"><span class="emoji-item">😀</span><span class="emoji-item">😂</span><span class="emoji-item">🤣</span><span class="emoji-item">😊</span><span class="emoji-item">😇</span><span class="emoji-item">🥰</span><span class="emoji-item">😍</span><span class="emoji-item">😋</span><span class="emoji-item">😎</span><span class="emoji-item">😭</span><span class="emoji-item">😤</span><span class="emoji-item">😡</span><span class="emoji-item">🤯</span><span class="emoji-item">🥶</span><span class="emoji-item">😱</span><span class="emoji-item">😴</span><span class="emoji-item">🤔</span><span class="emoji-item">🤫</span><span class="emoji-item">🥳</span><span class="emoji-item">🥺</span><span class="emoji-item">🙄</span></div>
+                                <div class="emoji-tab-content target-body"><span class="emoji-item">👍</span><span class="emoji-item">👎</span><span class="emoji-item">👌</span><span class="emoji-item">✌️</span><span class="emoji-item">🤞</span><span class="emoji-item">🤟</span><span class="emoji-item">🤘</span><span class="emoji-item">🤙</span><span class="emoji-item">🖐️</span><span class="emoji-item">👋</span><span class="emoji-item">👏</span><span class="emoji-item">🙌</span><span class="emoji-item">👐</span><span class="emoji-item">🤲</span><span class="emoji-item">🤝</span><span class="emoji-item">🙏</span><span class="emoji-item">💪</span><span class="emoji-item">🧠</span><span class="emoji-item">👀</span></div>
+                                <div class="emoji-tab-content target-love"><span class="emoji-item">❤️</span><span class="emoji-item">🧡</span><span class="emoji-item">💛</span><span class="emoji-item">💚</span><span class="emoji-item">💙</span><span class="emoji-item">💜</span><span class="emoji-item">🖤</span><span class="emoji-item">🤍</span><span class="emoji-item">🤎</span><span class="emoji-item">💔</span><span class="emoji-item">❣️</span><span class="emoji-item">💕</span><span class="emoji-item">💞</span><span class="emoji-item">💓</span><span class="emoji-item">💗</span><span class="emoji-item">💖</span><span class="emoji-item">💘</span><span class="emoji-item">💝</span></div>
+                                <div class="emoji-tab-content target-nature"><span class="emoji-item">🐶</span><span class="emoji-item">🐱</span><span class="emoji-item">🐭</span><span class="emoji-item">🦊</span><span class="emoji-item">🐻</span><span class="emoji-item">🐼</span><span class="emoji-item">🦁</span><span class="emoji-item">🐯</span><span class="emoji-item">🐸</span><span class="emoji-item">🐵</span><span class="emoji-item">🦋</span><span class="emoji-item">🌸</span><span class="emoji-item">🌹</span><span class="emoji-item">🌺</span><span class="emoji-item">🌻</span><span class="emoji-item">🌼</span><span class="emoji-item">🌳</span><span class="emoji-item">🌴</span><span class="emoji-item">🌵</span><span class="emoji-item">🌙</span><span class="emoji-item">⭐</span><span class="emoji-item">🔥</span><span class="emoji-item">💧</span><span class="emoji-item">❄️</span><span class="emoji-item">☀️</span><span class="emoji-item">🌈</span></div>
+                                <div class="emoji-tab-content target-food"><span class="emoji-item">🍏</span><span class="emoji-item">🍓</span><span class="emoji-item">🍉</span><span class="emoji-item">🍇</span><span class="emoji-item">🍌</span><span class="emoji-item">🍍</span><span class="emoji-item">🥑</span><span class="emoji-item">🥕</span><span class="emoji-item">🍔</span><span class="emoji-item">🍟</span><span class="emoji-item">🍕</span><span class="emoji-item">🌭</span><span class="emoji-item">🍿</span><span class="emoji-item">🍩</span><span class="emoji-item">🍫</span><span class="emoji-item">🍰</span><span class="emoji-item">🎂</span><span class="emoji-item">☕</span><span class="emoji-item">🍵</span><span class="emoji-item">🧃</span><span class="emoji-item">🍷</span><span class="emoji-item">🍻</span><span class="emoji-item">🥂</span></div>
+                                <div class="emoji-tab-content target-sports"><span class="emoji-item">⚽</span><span class="emoji-item">🏀</span><span class="emoji-item">🏈</span><span class="emoji-item">⚾</span><span class="emoji-item">🎾</span><span class="emoji-item">🏐</span><span class="emoji-item">🏓</span><span class="emoji-item">🥊</span><span class="emoji-item">🎮</span><span class="emoji-item">🎯</span><span class="emoji-item">🎨</span><span class="emoji-item">🎬</span><span class="emoji-item">🎤</span><span class="emoji-item">🎧</span><span class="emoji-item">🎸</span><span class="emoji-item">🎹</span><span class="emoji-item">🥁</span></div>
+                                <div class="emoji-tab-content target-travel"><span class="emoji-item">🚗</span><span class="emoji-item">🚕</span><span class="emoji-item">🚌</span><span class="emoji-item">🚓</span><span class="emoji-item">🚑</span><span class="emoji-item">🚒</span><span class="emoji-item">✈️</span><span class="emoji-item">🚀</span><span class="emoji-item">🛳️</span><span class="emoji-item">🌍</span><span class="emoji-item">🗽</span><span class="emoji-item">🗼</span><span class="emoji-item">🏰</span><span class="emoji-item">🏖️</span><span class="emoji-item">🏕️</span><span class="emoji-item">🏔️</span><span class="emoji-item">🏥</span><span class="emoji-item">🏠</span></div>
+                                <div class="emoji-tab-content target-objects">
+                                    <span class="emoji-item">💻</span><span class="emoji-item">🖥️</span><span class="emoji-item">⌨️</span><span class="emoji-item">🖱️</span><span class="emoji-item">🖨️</span><span class="emoji-item">🖲️</span><span class="emoji-item">💾</span><span class="emoji-item">💿</span><span class="emoji-item">📀</span><span class="emoji-item">💽</span><span class="emoji-item">📱</span><span class="emoji-item">📲</span><span class="emoji-item">📟</span><span class="emoji-item">📠</span><span class="emoji-item">📡</span><span class="emoji-item">🌐</span><span class="emoji-item">📶</span><span class="emoji-item">⌚</span><span class="emoji-item">📷</span><span class="emoji-item">🎥</span><span class="emoji-item">🎙️</span><span class="emoji-item">🔋</span><span class="emoji-item">🔌</span><span class="emoji-item">💡</span><span class="emoji-item">📖</span><span class="emoji-item">📚</span><span class="emoji-item">💸</span><span class="emoji-item">💰</span><span class="emoji-item">💳</span><span class="emoji-item">💎</span><span class="emoji-item">🎁</span><span class="emoji-item">🛍️</span><span class="emoji-item">🕰️</span>
+                                </div>
+                                <div class="emoji-tab-content target-symbols"><span class="emoji-item">✔️</span><span class="emoji-item">❌</span><span class="emoji-item">⚠️</span><span class="emoji-item">✅</span><span class="emoji-item">💯</span><span class="emoji-item">🎵</span><span class="emoji-item">🎶</span><span class="emoji-item">➕</span><span class="emoji-item">➖</span><span class="emoji-item">➗</span><span class="emoji-item">✖️</span><span class="emoji-item">❓</span><span class="emoji-item">❕</span><span class="emoji-item">✝️</span><span class="emoji-item">☪️</span><span class="emoji-item">✡️</span><span class="emoji-item">☸️</span><span class="emoji-item">☮️</span></div>
+                                <div class="emoji-tab-content target-flags"><span class="emoji-item">🇭🇹</span><span class="emoji-item">🇫🇷</span><span class="emoji-item">🇺🇸</span><span class="emoji-item">🇨🇦</span><span class="emoji-item">🇩🇴</span><span class="emoji-item">🇧🇷</span><span class="emoji-item">🇨🇱</span><span class="emoji-item">🇲🇽</span><span class="emoji-item">🇯🇵</span><span class="emoji-item">🇨🇳</span><span class="emoji-item">🇬🇧</span></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <input type="color" onchange="formatDoc('foreColor', this.value)" title="Couleur du texte">
+                    <button type="button" class="btn-clean" onclick="cleanFullHTML(this)" title="Effacer tout kòd HTML"><i class="fas fa-eraser"></i></button>
+                    <button type="button" class="btn-html" onclick="toggleHTMLView(this)" title="Editer le code HTML"><i class="fas fa-code"></i></button>
                 </div>
                 <div id="pdf-desc" class="editor-content" contenteditable="true" placeholder="Description du document..."></div>
             </div>
@@ -232,7 +624,7 @@
             <input type="number" id="pdf-price" placeholder="Prix (ex: 100 ou 0 pour gratuit)" value="0" />
             <input type="text" id="pdf-image" placeholder="ID Drive de l'image de couverture (optionnel)" />
             <input type="text" id="pdf-lenk" placeholder="Lien Drive du document pdf" />
-            <input type="file" id="pdf-file" accept=".pdf, image/*" />
+            <input type="file" id="pdf-file" accept=".pdf, image/*" style="display: none;" />
             <button class="submit-btn" id="send-pdf-btn">Publier le Document PDF</button>
         </div>
     </div>
@@ -261,7 +653,6 @@
         let editingLangKey = null;
         let editingPdfKey = null;
 
-        // VERIFICATION SESSION ADMIN
         window.onload = () => {
             const savedSession = localStorage.getItem("rjfordroid_session");
             if(savedSession) {
@@ -278,12 +669,32 @@
             }
         };
 
-        // GESTION DES TABS
+        function resetEditorMode(editorId) {
+            const editor = document.getElementById(editorId);
+            if(editor && editor.classList.contains('code-mode')) {
+                editor.classList.remove('code-mode');
+                const btn = editor.parentElement.querySelector('.btn-html');
+                if(btn) btn.classList.remove('active');
+            }
+        }
+        
+        window.cleanFullHTML = function(btn) {
+            const container = btn.closest('.editor-container');
+            const editor = container.querySelector('.editor-content');
+            let plainText = editor.innerText || editor.textContent;
+            editor.innerHTML = plainText.trim();
+            if (editor.classList.contains('code-mode')) {
+                editor.classList.remove('code-mode');
+                const htmlBtn = container.querySelector('.btn-html');
+                if(htmlBtn) htmlBtn.classList.remove('active');
+            }
+            alert("Kontni an netwaye (HTML retire)!");
+        }
+
         window.openTab = function(tabId, isEditMode = false) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            
             const btn = document.querySelector(`button[onclick="openTab('${tabId}')"]`);
             if(btn) btn.classList.add('active');
 
@@ -294,8 +705,7 @@
             }
         };
 
-        // ====== FONCTION COMMUNE POUR UPLOAD ======
-        function uploadFileToDrive(file, onSuccess) {
+        window.uploadFileToDrive = function(file, onSuccess) {
             loader.style.display = "flex";
             const reader = new FileReader();
             reader.onload = () => {
@@ -316,7 +726,6 @@
             reader.readAsDataURL(file);
         }
 
-        // ====== UPLOAD ONCHANGE ACTUALITE ======
         document.getElementById("news-file").addEventListener("change", (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -329,7 +738,6 @@
             });
         });
 
-        // ====== UPLOAD ONCHANGE LANG ======
         document.getElementById("lang-file").addEventListener("change", (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -342,7 +750,6 @@
             });
         });
 
-        // ====== UPLOAD ONCHANGE EBOOK (IMAGE OU PDF) ======
         document.getElementById("pdf-file").addEventListener("change", (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -359,13 +766,10 @@
             });
         });
 
-        // ==========================================
-        // TAB 1: ACTUALITES
-        // ==========================================
         document.getElementById("send-news-btn").addEventListener("click", () => {
             const title = document.getElementById("news-title").value.trim(), 
                   category = document.getElementById("news-category").value, 
-                  text = document.getElementById("news-content").innerHTML.trim(), 
+                  text = window.getEditorHTML("news-content"),
                   tags = document.getElementById("news-tags").value.trim();
                   
             const imageLink = document.getElementById("news-image-link").value.trim();
@@ -391,6 +795,7 @@
 
         function resetNewsForm(redirect = false) {
             document.getElementById("news-title").value = "";
+            resetEditorMode("news-content");
             document.getElementById("news-content").innerHTML = ""; 
             document.getElementById("news-tags").value = "";
             document.getElementById("news-category").value = "Amour";
@@ -402,13 +807,10 @@
             if(redirect) openTab('tab-list-news');
         }
 
-        // ==========================================
-        // TAB 2: LANG EKSPRESYON
-        // ==========================================
         document.getElementById("send-lang-btn").addEventListener("click", () => {
             const title = document.getElementById("lang-title").value.trim(), 
                   category = document.getElementById("lang-category").value, 
-                  text = document.getElementById("lang-content").innerHTML.trim(), 
+                  text = window.getEditorHTML("lang-content"),
                   tags = document.getElementById("lang-tags").value.trim();
                   
             const imageLink = document.getElementById("lang-image-link").value.trim();
@@ -434,6 +836,7 @@
 
         function resetLangForm(redirect = false) {
             document.getElementById("lang-title").value = "";
+            resetEditorMode("lang-content");
             document.getElementById("lang-content").innerHTML = ""; 
             document.getElementById("lang-tags").value = "";
             document.getElementById("lang-category").value = "Anglè";
@@ -445,12 +848,9 @@
             if(redirect) openTab('tab-list-lang');
         }
 
-        // ==========================================
-        // TAB 3: EBOOKS & PDF
-        // ==========================================
         document.getElementById("send-pdf-btn").addEventListener("click", () => {
             const title = document.getElementById("pdf-title").value.trim(), 
-                  desc = document.getElementById("pdf-desc").innerHTML.trim(), 
+                  desc = window.getEditorHTML("pdf-desc"),
                   price = document.getElementById("pdf-price").value.trim(), 
                   imageId = document.getElementById("pdf-image").value.trim(), 
                   pdfLenk = document.getElementById("pdf-lenk").value.trim();
@@ -474,6 +874,7 @@
 
         function resetPdfForm(redirect = false) {
             document.getElementById("pdf-title").value = "";
+            resetEditorMode("pdf-desc");
             document.getElementById("pdf-desc").innerHTML = ""; 
             document.getElementById("pdf-price").value = "0";
             document.getElementById("pdf-image").value = "";
@@ -484,15 +885,22 @@
             if(redirect) openTab('tab-list-ebook');
         }
 
-        // ====== CHARGER LES LISTES ======
         function loadLists() {
-            // Liste Actualités
             onValue(ref(db, 'RJFORDROID/ACTUALITE'), (snapshot) => {
                 const container = document.getElementById("news-list-container"); container.innerHTML = "";
+                const datalist = document.getElementById("news-tags-list");
+                let allTags = new Set();
+
                 if (snapshot.exists()) {
                     newsDataMap = snapshot.val(); 
                     Object.keys(newsDataMap).reverse().forEach(key => {
                         const item = newsDataMap[key];
+                        
+                        // Ekstrè Tags pou Datalist la
+                        if(item.tags) {
+                            item.tags.split(',').forEach(t => allTags.add(t.trim()));
+                        }
+
                         container.innerHTML += `
                             <div class="list-item">
                                 <div class="item-info"><h4>${item.title || "Sans Titre"}</h4><p>Catégorie: ${item.category} | Auteur: ${item.author}</p></div>
@@ -503,15 +911,28 @@
                             </div>`;
                     });
                 } else { newsDataMap = {}; container.innerHTML = "<p>Aucune actualité trouvée.</p>"; }
+                
+                // Moute Tags yo nan input kom Sijesyon
+                if(datalist) {
+                    datalist.innerHTML = Array.from(allTags).filter(t => t).map(t => `<option value="${t}">`).join('');
+                }
             });
 
-            // Liste Lang
             onValue(ref(db, 'RJFORDROID/LANG'), (snapshot) => {
                 const container = document.getElementById("lang-list-container"); container.innerHTML = "";
+                const datalist = document.getElementById("lang-tags-list");
+                let allTags = new Set();
+
                 if (snapshot.exists()) {
                     langDataMap = snapshot.val(); 
                     Object.keys(langDataMap).reverse().forEach(key => {
                         const item = langDataMap[key];
+
+                        // Ekstrè Tags pou Datalist la
+                        if(item.tags) {
+                            item.tags.split(',').forEach(t => allTags.add(t.trim()));
+                        }
+
                         container.innerHTML += `
                             <div class="list-item">
                                 <div class="item-info"><h4>${item.title || "Sans Titre"}</h4><p>Langue: ${item.category} | Auteur: ${item.author}</p></div>
@@ -522,9 +943,13 @@
                             </div>`;
                     });
                 } else { langDataMap = {}; container.innerHTML = "<p>Aucune expression trouvée.</p>"; }
+                
+                // Moute Tags yo nan input kom Sijesyon
+                if(datalist) {
+                    datalist.innerHTML = Array.from(allTags).filter(t => t).map(t => `<option value="${t}">`).join('');
+                }
             });
 
-            // Liste Ebooks/PDF
             onValue(ref(db, 'RJFORDROID/pdf'), (snapshot) => {
                 const container = document.getElementById("ebook-list-container"); container.innerHTML = "";
                 if (snapshot.exists()) {
@@ -544,9 +969,6 @@
             });
         }
 
-        // ====== FONCTIONS EDIT ET DELETE ======
-        
-        // Actualité
         window.deleteNews = (key) => { if(confirm("Voulez-vous vraiment supprimer cette actualité ?")) remove(ref(db, `RJFORDROID/ACTUALITE/${key}`)); };
         window.editNews = (key) => {
             const item = newsDataMap[key]; if(!item) return;
@@ -554,15 +976,16 @@
             document.getElementById("news-title").value = item.title || "";
             document.getElementById("news-category").value = item.category || "Amour";
             document.getElementById("news-tags").value = item.tags || "";
+            resetEditorMode("news-content");
             document.getElementById("news-content").innerHTML = item.text || ""; 
             document.getElementById("news-image-link").value = item.imageUrl || "";
             if (item.fullUrl) document.getElementById("news-image-link").dataset.fullurl = item.fullUrl;
             document.getElementById("send-news-btn").innerText = "Modifier l'actualité";
             document.getElementById("news-form-title").innerText = "Modifier l'actualité: " + (item.title || "");
             openTab('tab-add-news', true); window.scrollTo(0, 0);
+            setTimeout(checkFormatState, 100);
         };
 
-        // Lang Eksprèsyon
         window.deleteLang = (key) => { if(confirm("Voulez-vous vraiment supprimer cette expression ?")) remove(ref(db, `RJFORDROID/LANG/${key}`)); };
         window.editLang = (key) => {
             const item = langDataMap[key]; if(!item) return;
@@ -570,20 +993,22 @@
             document.getElementById("lang-title").value = item.title || "";
             document.getElementById("lang-category").value = item.category || "Anglè";
             document.getElementById("lang-tags").value = item.tags || "";
+            resetEditorMode("lang-content");
             document.getElementById("lang-content").innerHTML = item.text || ""; 
             document.getElementById("lang-image-link").value = item.imageUrl || "";
             if (item.fullUrl) document.getElementById("lang-image-link").dataset.fullurl = item.fullUrl;
             document.getElementById("send-lang-btn").innerText = "Modifier l'expression";
             document.getElementById("lang-form-title").innerText = "Modifier l'expression: " + (item.title || "");
             openTab('tab-add-lang', true); window.scrollTo(0, 0);
+            setTimeout(checkFormatState, 100);
         };
 
-        // Ebook / PDF
         window.deletePdf = (key) => { if(confirm("Voulez-vous vraiment supprimer ce PDF/Ebook ?")) remove(ref(db, `RJFORDROID/pdf/${key}`)); };
         window.editPdf = (key) => {
             const doc = pdfDataMap[key]; if(!doc) return;
             editingPdfKey = key; 
             document.getElementById("pdf-title").value = doc.Titre || "";
+            resetEditorMode("pdf-desc");
             document.getElementById("pdf-desc").innerHTML = doc.desc || ""; 
             document.getElementById("pdf-price").value = doc.prix || "0";
             document.getElementById("pdf-image").value = (doc.image && doc.image !== "None") ? doc.image : "";
@@ -591,6 +1016,7 @@
             document.getElementById("send-pdf-btn").innerText = "Modifier le Document PDF";
             document.getElementById("pdf-form-title").innerText = "Modifier le Document PDF: " + (doc.Titre || "");
             openTab('tab-add-ebook', true); window.scrollTo(0, 0);
+            setTimeout(checkFormatState, 100);
         };
     </script>
 </body>
