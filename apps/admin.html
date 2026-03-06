@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Administration - RJFORDROID</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; }
+        
+        .header { background: #111b21; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 20px; }
+        .back-btn { background: #ff3b30; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        
+        .tabs { display: flex; background: white; border-bottom: 2px solid #ccc; overflow-x: auto;}
+        .tab-btn { flex: 1; padding: 15px; border: none; background: white; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; white-space: nowrap;}
+        .tab-btn.active { background: #00a884; color: white; border-bottom: 3px solid #005f4b; }
+        .tab-btn:hover:not(.active) { background: #e0e0e0; }
+
+        .tab-content { display: none; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .tab-content.active { display: block; }
+
+        .form-group { display: flex; flex-direction: column; gap: 15px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input[type="text"], input[type="number"], select { padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; width: 100%; background: #f9f9f9; }
+        
+        button.submit-btn { padding: 15px; background: #00a884; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        button.submit-btn:hover { background: #008f6f; }
+
+        .list-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .item-info h4 { margin-bottom: 5px; color: #111b21; }
+        .item-info p { font-size: 12px; color: #666; }
+        .action-btns { display: flex; gap: 10px; }
+        .action-btns button { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
+        .btn-edit { background: #007aff; }
+        .btn-delete { background: #ff3b30; }
+
+        /* Loader */
+        #loader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; color: white; }
+        .spinner { border: 5px solid #f3f3f3; border-top: 5px solid #00a884; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* ======== RICH TEXT EDITOR CSS (ADAPTE POU ANDROID) ======== */
+        .editor-container { 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            background: #fff; 
+            display: flex;
+            flex-direction: column;
+            /* Fikse wotè a 300px min ak max */
+            min-height: 300px; 
+            max-height: 300px; 
+            position: relative;
+        }
+        .editor-toolbar { 
+            background: #f0f2f5; 
+            padding: 8px; 
+            border-bottom: 1px solid #ccc; 
+            display: flex; 
+            gap: 5px; 
+            flex-wrap: wrap; 
+            align-items: center;
+            flex-shrink: 0; /* Anpeche toolbar la chanje gwosè */
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .editor-toolbar button, .editor-toolbar input[type="color"] { 
+            padding: 5px 10px; 
+            border: 1px solid #ccc; 
+            background: white; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            height: 32px;
+        }
+        .editor-toolbar button:hover { background: #e0e0e0; }
+        .editor-content { 
+            flex: 1; /* Pran tout rès espas anba toolbar la */
+            padding: 15px; 
+            outline: none; 
+            font-size: 15px; 
+            overflow-y: auto; /* Scroll andedan sèlman */
+            background: white;
+            padding-bottom: 40px; /* Pou evite klavye kache dènye liy lan */
+        }
+        .editor-content:focus { background: #fafafa; }
+        .editor-content[placeholder]:empty:before {
+            content: attr(placeholder);
+            color: #999;
+            pointer-events: none;
+            display: block; 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader"><div class="spinner"></div><p>Chargement...</p></div>
+
+    <div class="header">
+        <h1>⚙️ Administration RJFORDROID</h1>
+        <a href="index.html" class="back-btn">⬅️ Retour au site</a>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('tab-add-news')">📰 Adm Actu</button>
+        <button class="tab-btn" onclick="openTab('tab-list-news')">📋 List Actu</button>
+        <button class="tab-btn" onclick="openTab('tab-add-lang')">🗣️ Adm Lang</button>
+        <button class="tab-btn" onclick="openTab('tab-list-lang')">📋 List Lang</button>
+        <button class="tab-btn" onclick="openTab('tab-add-ebook')">📚 Adm Ebook</button>
+        <button class="tab-btn" onclick="openTab('tab-list-ebook')">📄 List Ebook</button>
+    </div>
+
+    <div style="padding: 10px 20px; font-size: 13px;">
+        <span style="cursor:pointer; color:#007aff; margin-right:15px; font-weight:bold;" onclick="copyText(this)">https://drive.google.com/uc?export=download&id=</span>
+        <span style="cursor:pointer; color:#007aff; font-weight:bold;" onclick="copyText(this)">https://drive.google.com/thumbnail?id=ID_FICHIER</span>
+    </div>
+
+    <script>
+    function copyText(el){
+      navigator.clipboard.writeText(el.innerText);
+      alert("Lien Kopye!");
+    }
+    // Fonction globale pour le Rich Text Editor
+    window.formatDoc = function(cmd, value=null) {
+        document.execCommand(cmd, false, value);
+    }
+    </script>
+    
+    <!-- TAB 1: CREER ACTUALITE -->
+    <div id="tab-add-news" class="tab-content active">
+        <h2 id="news-form-title">Créer une nouvelle actualité</h2><br>
+        <div class="form-group">
+            <input type="text" id="news-title" placeholder="Titre de l'actualité..." />
+            <select id="news-category">
+                <option value="Amour">❤️ Amour</option>
+                <option value="Politique">🏛️ Politique</option>
+                <option value="Bible">📖 Bible</option>
+                <option value="Informatique">💻 Informatique</option>
+            </select>
+            <input type="text" id="news-tags" placeholder="Tags (ex: android, tech)..." />
+            
+            <!-- Editeur pour Actualité -->
+            <div class="editor-container">
+                <div class="editor-toolbar">
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('bold')" title="Gras"><b>B</b></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('italic')" title="Italique"><i>I</i></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('underline')" title="Souligné"><u>U</u></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Liste à puces">• Liste</button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyLeft')" title="Aligner à gauche">⬅️</button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyCenter')" title="Centrer">↔️</button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite">➡️</button>
+                    <input type="color" onchange="formatDoc('foreColor', this.value)" title="Couleur du texte">
+                </div>
+                <div id="news-content" class="editor-content" contenteditable="true" placeholder="Contenu de l'actualité..."></div>
+            </div>
+            
+            <input type="text" id="news-image-link" placeholder="Lien de l'image (auto après upload)..." />
+            <input type="file" id="news-file" accept="image/*" />
+            <button class="submit-btn" id="send-news-btn">Publier l'actualité</button>
+        </div>
+    </div>
+
+    <!-- TAB 2: LISTE ACTUALITES -->
+    <div id="tab-list-news" class="tab-content">
+        <h2>Gérer les Actualités</h2><br>
+        <div id="news-list-container"></div>
+    </div>
+
+    <!-- TAB 3: CREER LANG EKSPRESYON -->
+    <div id="tab-add-lang" class="tab-content">
+        <h2 id="lang-form-title">Créer une expression de Langue</h2><br>
+        <div class="form-group">
+            <input type="text" id="lang-title" placeholder="Titre de l'expression..." />
+            <select id="lang-category">
+                <option value="Anglè">🇬🇧 Anglè</option>
+                <option value="Espanyòl">🇪🇸 Espanyòl</option>
+                <option value="Kreyòl">🇭🇹 Kreyòl</option>
+            </select>
+            <input type="text" id="lang-tags" placeholder="Tags (ex: vocabulaire, verbe)..." />
+            
+            <!-- Editeur pour Lang -->
+            <div class="editor-container">
+                <div class="editor-toolbar">
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('bold')" title="Gras"><b>B</b></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('italic')" title="Italique"><i>I</i></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('underline')" title="Souligné"><u>U</u></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Liste à puces">• Liste</button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyLeft')" title="Aligner à gauche">⬅️</button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyCenter')" title="Centrer">↔️</button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite">➡️</button>
+                    <input type="color" onchange="formatDoc('foreColor', this.value)" title="Couleur du texte">
+                </div>
+                <div id="lang-content" class="editor-content" contenteditable="true" placeholder="Contenu, explication..."></div>
+            </div>
+            
+            <input type="text" id="lang-image-link" placeholder="Lien de l'image (auto après upload)..." />
+            <input type="file" id="lang-file" accept="image/*" />
+            <button class="submit-btn" id="send-lang-btn">Publier l'expression</button>
+        </div>
+    </div>
+
+    <!-- TAB 4: LISTE LANG EKSPRESYON -->
+    <div id="tab-list-lang" class="tab-content">
+        <h2>Gérer Langues et Expressions</h2><br>
+        <div id="lang-list-container"></div>
+    </div>
+
+    <!-- TAB 5: CREER EBOOK -->
+    <div id="tab-add-ebook" class="tab-content">
+        <h2 id="pdf-form-title">Ajouter un Document PDF (Ebook)</h2><br>
+        <div class="form-group">
+            <input type="text" id="pdf-title" placeholder="Titre du document..." />
+            
+            <!-- Editeur pour Ebook -->
+            <div class="editor-container">
+                <div class="editor-toolbar">
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('bold')" title="Gras"><b>B</b></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('italic')" title="Italique"><i>I</i></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('underline')" title="Souligné"><u>U</u></button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" title="Liste à puces">• Liste</button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyLeft')" title="Aligner à gauche">⬅️</button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyCenter')" title="Centrer">↔️</button>
+                    <button type="button" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite">➡️</button>
+                    <input type="color" onchange="formatDoc('foreColor', this.value)" title="Couleur du texte">
+                </div>
+                <div id="pdf-desc" class="editor-content" contenteditable="true" placeholder="Description du document..."></div>
+            </div>
+
+            <input type="number" id="pdf-price" placeholder="Prix (ex: 100 ou 0 pour gratuit)" value="0" />
+            <input type="text" id="pdf-image" placeholder="ID Drive de l'image de couverture (optionnel)" />
+            <input type="text" id="pdf-lenk" placeholder="Lien Drive du document pdf" />
+            <input type="file" id="pdf-file" accept=".pdf, image/*" />
+            <button class="submit-btn" id="send-pdf-btn">Publier le Document PDF</button>
+        </div>
+    </div>
+
+    <!-- TAB 6: LISTE EBOOKS -->
+    <div id="tab-list-ebook" class="tab-content">
+        <h2>Gérer les Ebooks / PDF</h2><br>
+        <div id="ebook-list-container"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, get, set, push, update, remove, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyAQeHWr_vUiQmVVgJJ_cOF9qrCCLd7IJNc", authDomain: "ayiweb.firebaseapp.com", databaseURL: "https://ayiweb-default-rtdb.firebaseio.com", projectId: "ayiweb", storageBucket: "ayiweb.appspot.com", messagingSenderId: "115054504556", appId: "1:115054504556:web:ccd713ba01dd8f02830649" };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        const loader = document.getElementById("loader");
+
+        let newsDataMap = {};
+        let langDataMap = {};
+        let pdfDataMap = {};
+        let editingNewsKey = null;
+        let editingLangKey = null;
+        let editingPdfKey = null;
+
+        // VERIFICATION SESSION ADMIN
+        window.onload = () => {
+            const savedSession = localStorage.getItem("rjfordroid_session");
+            if(savedSession) {
+                const sessionData = JSON.parse(savedSession);
+                currentUser = sessionData.data;
+                if(currentUser.role !== 'admin' && currentUser.isAdmin !== true && currentUser.isAdmin !== "true") {
+                    alert("Accès refusé ! Vous n'êtes pas administrateur.");
+                    window.location.href = "index.html";
+                } else {
+                    loadLists();
+                }
+            } else {
+                window.location.href = "index.html";
+            }
+        };
+
+        // GESTION DES TABS
+        window.openTab = function(tabId, isEditMode = false) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            const btn = document.querySelector(`button[onclick="openTab('${tabId}')"]`);
+            if(btn) btn.classList.add('active');
+
+            if(!isEditMode) {
+                if(tabId === 'tab-add-news') resetNewsForm(false);
+                if(tabId === 'tab-add-lang') resetLangForm(false);
+                if(tabId === 'tab-add-ebook') resetPdfForm(false);
+            }
+        };
+
+        // ====== FONCTION COMMUNE POUR UPLOAD ======
+        function uploadFileToDrive(file, onSuccess) {
+            loader.style.display = "flex";
+            const reader = new FileReader();
+            reader.onload = () => {
+                const formData = new FormData(); 
+                formData.append("file", reader.result.split(",")[1]); 
+                formData.append("name", file.name); 
+                formData.append("type", file.type);
+                fetch("https://script.google.com/macros/s/AKfycbxHjVBNTOlj6xBUp_fl-aVbPSFZRiMQB77_YIvFeB79uq2Hx9P_r7HADZTYj9WElsXkug/exec", { method: "POST", body: formData })
+                .then(r => r.json()).then(res => {
+                    loader.style.display = "none"; 
+                    if(!res.success) return alert("Erreur upload.");
+                    onSuccess(res.url);
+                }).catch(() => { 
+                    loader.style.display = "none"; 
+                    alert("Erreur serveur Google Drive."); 
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ====== UPLOAD ONCHANGE ACTUALITE ======
+        document.getElementById("news-file").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            uploadFileToDrive(file, (url) => {
+                const id = url.match(/\/d\/([^\/]+)/)?.[1] || "";
+                document.getElementById("news-image-link").value = id ? `https://drive.google.com/thumbnail?id=${id}&sz=w600` : url;
+                document.getElementById("news-image-link").dataset.fullurl = url; 
+                alert("Image uploadée avec succès !");
+                e.target.value = ""; 
+            });
+        });
+
+        // ====== UPLOAD ONCHANGE LANG ======
+        document.getElementById("lang-file").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            uploadFileToDrive(file, (url) => {
+                const id = url.match(/\/d\/([^\/]+)/)?.[1] || "";
+                document.getElementById("lang-image-link").value = id ? `https://drive.google.com/thumbnail?id=${id}&sz=w600` : url;
+                document.getElementById("lang-image-link").dataset.fullurl = url; 
+                alert("Image pour langue uploadée !");
+                e.target.value = ""; 
+            });
+        });
+
+        // ====== UPLOAD ONCHANGE EBOOK (IMAGE OU PDF) ======
+        document.getElementById("pdf-file").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            uploadFileToDrive(file, (url) => {
+                if (file.type.startsWith('image/')) {
+                    const id = url.match(/\/d\/([^\/]+)/)?.[1] || "";
+                    document.getElementById("pdf-image").value = id || url;
+                    alert("Image de couverture uploadée !");
+                } else {
+                    document.getElementById("pdf-lenk").value = url;
+                    alert("Document PDF uploadé !");
+                }
+                e.target.value = ""; 
+            });
+        });
+
+        // ==========================================
+        // TAB 1: ACTUALITES
+        // ==========================================
+        document.getElementById("send-news-btn").addEventListener("click", () => {
+            const title = document.getElementById("news-title").value.trim(), 
+                  category = document.getElementById("news-category").value, 
+                  text = document.getElementById("news-content").innerHTML.trim(), 
+                  tags = document.getElementById("news-tags").value.trim();
+                  
+            const imageLink = document.getElementById("news-image-link").value.trim();
+            const fullUrl = document.getElementById("news-image-link").dataset.fullurl || imageLink;
+            
+            if(!title && !text && !imageLink) return alert("Remplissez les champs (Titre, Contenu, Image) !");
+            
+            const dataToSave = { title, category, tags, text };
+            if (imageLink) { dataToSave.imageUrl = imageLink; dataToSave.fullUrl = fullUrl; }
+            
+            if (editingNewsKey) {
+                update(ref(db, `RJFORDROID/ACTUALITE/${editingNewsKey}`), dataToSave).then(() => {
+                    alert("Actualité modifiée avec succès !"); resetNewsForm(true);
+                }).catch(e => alert("Erreur: " + e));
+            } else {
+                dataToSave.timestamp = serverTimestamp(); dataToSave.author = currentUser.username;
+                dataToSave.likes = 0; dataToSave.dislikes = 0; dataToSave.shares = 0;
+                push(ref(db, `RJFORDROID/ACTUALITE`), dataToSave).then(() => { 
+                    alert("Publié avec succès !"); resetNewsForm(true); 
+                }).catch(e => alert("Erreur: " + e));
+            }
+        });
+
+        function resetNewsForm(redirect = false) {
+            document.getElementById("news-title").value = "";
+            document.getElementById("news-content").innerHTML = ""; 
+            document.getElementById("news-tags").value = "";
+            document.getElementById("news-category").value = "Amour";
+            document.getElementById("news-image-link").value = "";
+            delete document.getElementById("news-image-link").dataset.fullurl;
+            document.getElementById("send-news-btn").innerText = "Publier l'actualité";
+            document.getElementById("news-form-title").innerText = "Créer une nouvelle actualité";
+            editingNewsKey = null;
+            if(redirect) openTab('tab-list-news');
+        }
+
+        // ==========================================
+        // TAB 2: LANG EKSPRESYON
+        // ==========================================
+        document.getElementById("send-lang-btn").addEventListener("click", () => {
+            const title = document.getElementById("lang-title").value.trim(), 
+                  category = document.getElementById("lang-category").value, 
+                  text = document.getElementById("lang-content").innerHTML.trim(), 
+                  tags = document.getElementById("lang-tags").value.trim();
+                  
+            const imageLink = document.getElementById("lang-image-link").value.trim();
+            const fullUrl = document.getElementById("lang-image-link").dataset.fullurl || imageLink;
+            
+            if(!title && !text && !imageLink) return alert("Remplissez les champs !");
+            
+            const dataToSave = { title, category, tags, text };
+            if (imageLink) { dataToSave.imageUrl = imageLink; dataToSave.fullUrl = fullUrl; }
+            
+            if (editingLangKey) {
+                update(ref(db, `RJFORDROID/LANG/${editingLangKey}`), dataToSave).then(() => {
+                    alert("Expression modifiée avec succès !"); resetLangForm(true);
+                }).catch(e => alert("Erreur: " + e));
+            } else {
+                dataToSave.timestamp = serverTimestamp(); dataToSave.author = currentUser.username;
+                dataToSave.likes = 0; dataToSave.dislikes = 0; dataToSave.shares = 0;
+                push(ref(db, `RJFORDROID/LANG`), dataToSave).then(() => { 
+                    alert("Expression publiée avec succès !"); resetLangForm(true); 
+                }).catch(e => alert("Erreur: " + e));
+            }
+        });
+
+        function resetLangForm(redirect = false) {
+            document.getElementById("lang-title").value = "";
+            document.getElementById("lang-content").innerHTML = ""; 
+            document.getElementById("lang-tags").value = "";
+            document.getElementById("lang-category").value = "Anglè";
+            document.getElementById("lang-image-link").value = "";
+            delete document.getElementById("lang-image-link").dataset.fullurl;
+            document.getElementById("send-lang-btn").innerText = "Publier l'expression";
+            document.getElementById("lang-form-title").innerText = "Créer une expression de Langue";
+            editingLangKey = null;
+            if(redirect) openTab('tab-list-lang');
+        }
+
+        // ==========================================
+        // TAB 3: EBOOKS & PDF
+        // ==========================================
+        document.getElementById("send-pdf-btn").addEventListener("click", () => {
+            const title = document.getElementById("pdf-title").value.trim(), 
+                  desc = document.getElementById("pdf-desc").innerHTML.trim(), 
+                  price = document.getElementById("pdf-price").value.trim(), 
+                  imageId = document.getElementById("pdf-image").value.trim(), 
+                  pdfLenk = document.getElementById("pdf-lenk").value.trim();
+            
+            if(!title) return alert("Le titre est obligatoire.");
+            
+            const dataToSave = { Titre: title, desc: desc, image: imageId || "None", prix: price || "0" };
+            if (pdfLenk) dataToSave.Url = pdfLenk;
+
+            if (editingPdfKey) {
+                update(ref(db, `RJFORDROID/pdf/${editingPdfKey}`), dataToSave).then(() => {
+                    alert("Document PDF modifié avec succès !"); resetPdfForm(true);
+                }).catch(e => alert("Erreur: " + e));
+            } else {
+                dataToSave.type = "Document"; dataToSave.online = true; dataToSave.Date = new Date().toISOString().split('T')[0];
+                push(ref(db, `RJFORDROID/pdf`), dataToSave).then(() => {
+                    alert("Document PDF publié avec succès !"); resetPdfForm(true);
+                }).catch(e => alert("Erreur: " + e));
+            }
+        });
+
+        function resetPdfForm(redirect = false) {
+            document.getElementById("pdf-title").value = "";
+            document.getElementById("pdf-desc").innerHTML = ""; 
+            document.getElementById("pdf-price").value = "0";
+            document.getElementById("pdf-image").value = "";
+            document.getElementById("pdf-lenk").value = "";
+            document.getElementById("send-pdf-btn").innerText = "Publier le Document PDF";
+            document.getElementById("pdf-form-title").innerText = "Ajouter un Document PDF (Ebook)";
+            editingPdfKey = null;
+            if(redirect) openTab('tab-list-ebook');
+        }
+
+        // ====== CHARGER LES LISTES ======
+        function loadLists() {
+            // Liste Actualités
+            onValue(ref(db, 'RJFORDROID/ACTUALITE'), (snapshot) => {
+                const container = document.getElementById("news-list-container"); container.innerHTML = "";
+                if (snapshot.exists()) {
+                    newsDataMap = snapshot.val(); 
+                    Object.keys(newsDataMap).reverse().forEach(key => {
+                        const item = newsDataMap[key];
+                        container.innerHTML += `
+                            <div class="list-item">
+                                <div class="item-info"><h4>${item.title || "Sans Titre"}</h4><p>Catégorie: ${item.category} | Auteur: ${item.author}</p></div>
+                                <div class="action-btns">
+                                    <button class="btn-edit" onclick="editNews('${key}')">Edit</button>
+                                    <button class="btn-delete" onclick="deleteNews('${key}')">Delete</button>
+                                </div>
+                            </div>`;
+                    });
+                } else { newsDataMap = {}; container.innerHTML = "<p>Aucune actualité trouvée.</p>"; }
+            });
+
+            // Liste Lang
+            onValue(ref(db, 'RJFORDROID/LANG'), (snapshot) => {
+                const container = document.getElementById("lang-list-container"); container.innerHTML = "";
+                if (snapshot.exists()) {
+                    langDataMap = snapshot.val(); 
+                    Object.keys(langDataMap).reverse().forEach(key => {
+                        const item = langDataMap[key];
+                        container.innerHTML += `
+                            <div class="list-item">
+                                <div class="item-info"><h4>${item.title || "Sans Titre"}</h4><p>Langue: ${item.category} | Auteur: ${item.author}</p></div>
+                                <div class="action-btns">
+                                    <button class="btn-edit" onclick="editLang('${key}')">Edit</button>
+                                    <button class="btn-delete" onclick="deleteLang('${key}')">Delete</button>
+                                </div>
+                            </div>`;
+                    });
+                } else { langDataMap = {}; container.innerHTML = "<p>Aucune expression trouvée.</p>"; }
+            });
+
+            // Liste Ebooks/PDF
+            onValue(ref(db, 'RJFORDROID/pdf'), (snapshot) => {
+                const container = document.getElementById("ebook-list-container"); container.innerHTML = "";
+                if (snapshot.exists()) {
+                    pdfDataMap = snapshot.val(); 
+                    Object.keys(pdfDataMap).reverse().forEach(key => {
+                        const doc = pdfDataMap[key];
+                        container.innerHTML += `
+                            <div class="list-item">
+                                <div class="item-info"><h4>${doc.Titre || "Sans Titre"}</h4><p>Prix: ${doc.prix} | Date: ${doc.Date}</p></div>
+                                <div class="action-btns">
+                                    <button class="btn-edit" onclick="editPdf('${key}')">Edit</button>
+                                    <button class="btn-delete" onclick="deletePdf('${key}')">Delete</button>
+                                </div>
+                            </div>`;
+                    });
+                } else { pdfDataMap = {}; container.innerHTML = "<p>Aucun document trouvé.</p>"; }
+            });
+        }
+
+        // ====== FONCTIONS EDIT ET DELETE ======
+        
+        // Actualité
+        window.deleteNews = (key) => { if(confirm("Voulez-vous vraiment supprimer cette actualité ?")) remove(ref(db, `RJFORDROID/ACTUALITE/${key}`)); };
+        window.editNews = (key) => {
+            const item = newsDataMap[key]; if(!item) return;
+            editingNewsKey = key; 
+            document.getElementById("news-title").value = item.title || "";
+            document.getElementById("news-category").value = item.category || "Amour";
+            document.getElementById("news-tags").value = item.tags || "";
+            document.getElementById("news-content").innerHTML = item.text || ""; 
+            document.getElementById("news-image-link").value = item.imageUrl || "";
+            if (item.fullUrl) document.getElementById("news-image-link").dataset.fullurl = item.fullUrl;
+            document.getElementById("send-news-btn").innerText = "Modifier l'actualité";
+            document.getElementById("news-form-title").innerText = "Modifier l'actualité: " + (item.title || "");
+            openTab('tab-add-news', true); window.scrollTo(0, 0);
+        };
+
+        // Lang Eksprèsyon
+        window.deleteLang = (key) => { if(confirm("Voulez-vous vraiment supprimer cette expression ?")) remove(ref(db, `RJFORDROID/LANG/${key}`)); };
+        window.editLang = (key) => {
+            const item = langDataMap[key]; if(!item) return;
+            editingLangKey = key; 
+            document.getElementById("lang-title").value = item.title || "";
+            document.getElementById("lang-category").value = item.category || "Anglè";
+            document.getElementById("lang-tags").value = item.tags || "";
+            document.getElementById("lang-content").innerHTML = item.text || ""; 
+            document.getElementById("lang-image-link").value = item.imageUrl || "";
+            if (item.fullUrl) document.getElementById("lang-image-link").dataset.fullurl = item.fullUrl;
+            document.getElementById("send-lang-btn").innerText = "Modifier l'expression";
+            document.getElementById("lang-form-title").innerText = "Modifier l'expression: " + (item.title || "");
+            openTab('tab-add-lang', true); window.scrollTo(0, 0);
+        };
+
+        // Ebook / PDF
+        window.deletePdf = (key) => { if(confirm("Voulez-vous vraiment supprimer ce PDF/Ebook ?")) remove(ref(db, `RJFORDROID/pdf/${key}`)); };
+        window.editPdf = (key) => {
+            const doc = pdfDataMap[key]; if(!doc) return;
+            editingPdfKey = key; 
+            document.getElementById("pdf-title").value = doc.Titre || "";
+            document.getElementById("pdf-desc").innerHTML = doc.desc || ""; 
+            document.getElementById("pdf-price").value = doc.prix || "0";
+            document.getElementById("pdf-image").value = (doc.image && doc.image !== "None") ? doc.image : "";
+            document.getElementById("pdf-lenk").value = doc.Url || "";
+            document.getElementById("send-pdf-btn").innerText = "Modifier le Document PDF";
+            document.getElementById("pdf-form-title").innerText = "Modifier le Document PDF: " + (doc.Titre || "");
+            openTab('tab-add-ebook', true); window.scrollTo(0, 0);
+        };
+    </script>
+</body>
+</html>
