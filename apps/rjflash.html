@@ -5,24 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RJFORDROID Chat & Actualités</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        line-height: normal;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: normal; }
         body, html { height: 100%; width: 100%; background-color: #f0f2f5; overflow: hidden; position: relative; }
         
-        h1,h2,h3,h4,h5,h6{
-          margin:5px
-        }
-        p{
-         margin:0px;
-         padding:0px;
-         line-height: normal;
-        }
+        h1,h2,h3,h4,h5,h6{ margin:5px; }
+        p{ margin:0px; padding:0px; line-height: normal; }
+        ul{ margin: 0px 10px; padding:0px 10px; }
         
-        ul{
-        margin: 0px 10px;
-        padding:0px 10px;
-        }
         /* Styles du Popup Personnalisé */
         #custom-popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 5000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         #custom-popup { background: white; width: 90%; max-width: 400px; border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: popupShow 0.3s ease; }
@@ -97,7 +86,6 @@
         .filter-btn:hover { background: #e0e0e0; }
         .filter-btn.active { background: #00a884; color: white; }
 
-        /* NOUVO: Filtre pou Lang Eksprèsyon */
         #lang-filters { display: none; padding: 10px 15px; background: white; border-bottom: 1px solid #ccc; justify-content: space-between; gap: 10px; flex-shrink: 0; z-index: 9; overflow-x: auto;}
 
         #messages { flex: 1; padding: 2px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
@@ -143,7 +131,7 @@
         .series-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 0 20px; }
         .serie-card { background: white; border-radius: 15px; overflow: hidden; cursor: pointer; transition: transform 0.3s; border: 1px solid #eee; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
         .serie-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
-        .serie-banner { width: 100%; height: 160px; background: #000; object-fit: cover; display: block; }
+        .serie-banner { width: 100%; height: auto; background: #000; object-fit: cover; display: block; }
         .serie-info { padding: 12px; }
         .serie-info h3 { margin: 0 0 10px 0; color: #333; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .serie-stats { display: flex; gap: 15px; font-size: 0.8rem; color: #555; border-top: 1px solid #f9f9f9; padding-top: 10px; }
@@ -157,6 +145,21 @@
         .pdf-header-banner { background: #005bb5; border-radius: 0 0 25px 25px; padding: 30px 20px; text-align: center; color: white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .pdf-header-banner h1 { color: #fff; font-size: 1.8rem; margin: 0; }
         .pdf-header-banner p { font-size: 0.85rem; opacity: 0.9; margin-top: 5px; }
+
+        .pdf-action-btns { display: flex; gap: 10px; margin-bottom: 15px; }
+        .pdf-action-btns button { flex: 1; padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; font-size: 14px;}
+        .btn-read { background: #007aff; }
+        .btn-read:hover { background: #005bb5; }
+        .btn-download { background: #00a884; }
+        .btn-download:hover { background: #008f6f; }
+        .pdf-social { display: flex; justify-content: space-around; margin-bottom: 15px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .pdf-social button { background: none; border: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; gap: 5px; color: #555; font-weight:bold; outline: none;}
+        .pdf-comments-section { text-align: left; max-height: 180px; overflow-y: auto; background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #eee;}
+        .pdf-comment { margin-bottom: 8px; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 5px; word-wrap: break-word;}
+        .pdf-comment strong { color: #00a884; }
+        .pdf-comment-input-area { display: flex; gap: 5px; }
+        .pdf-comment-input-area input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; outline:none; font-size: 13px;}
+        .pdf-comment-input-area button { padding: 10px 15px; background: #00a884; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight:bold;}
 
         #input-area { padding: 10px 5px; background: #f0f2f5; display: flex; gap: 2px; align-items: center; position: relative; border-top: 1px solid #ccc; box-sizing: border-box; }
         .icon-btn { background: none; border: none; font-size: 24px; cursor: pointer; outline: none; transition: transform 0.2s; padding: 5px; color: #54656f;}
@@ -174,7 +177,7 @@
             #app.menu-active #menu-overlay { display: block; }
             #menu-btn { display: block; }
             .series-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 10px; }
-            .serie-banner { height: 110px !important; }
+            .serie-banner { height: auto !important; min-height:250px; }
             .global-stats-container { gap: 8px; padding: 0 10px; }
         }
         
@@ -197,15 +200,59 @@
         </div>
     </div>
 
-    <!-- Popup Detay Ebook la -->
+    <!-- Popup Ebook / PDF Refait avec Nouvelles Options 100vh wote ak laje epi scroll -->
     <div id="ebookModal" class="overlay">
-        <div class="popup-content" style="text-align: center; max-height: 90vh; overflow-y: auto;">
-            <span id="closeEbookModal" class="close-btn">&times;</span>
+        <div class="popup-content" style="text-align: center; margin: 0; width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; border-radius: 0; overflow-y: auto; display: block; box-sizing: border-box; background: white; padding-bottom: 30px;">
+            
+            <!-- Sticky header with Back button logic untouched -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; position: sticky; top: 0; background: #fff; padding: 15px 0; z-index: 20; border-bottom: 1px solid #eee;">
+                <span id="closeEbookModal" style="font-size: 24px; cursor: pointer; color: #333; margin-left: 5px;">⬅️</span>
+                <span style="font-weight: bold; font-size: 16px;">Détails du document</span>
+                <div style="width: 24px; margin-right: 5px;"></div>
+            </div>
+            
             <img id="ebookModalImg" src="" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; background: #e0e0e0;">
             <h3 id="ebookModalTitle" style="margin-bottom: 10px; color: #111b21;"></h3>
             <p id="ebookModalDesc" style="font-size: 14px; color: #555; margin-bottom: 15px; white-space: pre-wrap; text-align: left;"></p>
-            <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px;" id="ebookModalPrice"></div>
-            <button id="ebookModalActionBtn" style="width: 100%; padding: 12px; background: #00a884; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; transition: background 0.3s;"></button>
+            
+            <div id="ebookLockedView">
+                <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px;" id="ebookModalPrice"></div>
+                <button id="ebookModalActionBtn" style="width: 100%; padding: 12px; background: #00a884; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer;"></button>
+            </div>
+
+            <div id="ebookUnlockedView" style="display:none;">
+                <div class="pdf-action-btns">
+                    <button class="btn-read" id="btn-read-pdf">📖 Lire sur l'app</button>
+                    <button class="btn-download" id="btn-download-pdf">📥 Télécharger</button>
+                </div>
+
+                <div class="pdf-social">
+                    <button id="btn-like-pdf">👍 <span id="pdf-likes-count">0</span></button>
+                    <button id="btn-dislike-pdf">👎 <span id="pdf-dislikes-count">0</span></button>
+                </div>
+
+                <div class="pdf-comments-section" id="pdf-comments-list"></div>
+                
+                <div class="pdf-comment-input-area">
+                    <input type="text" id="pdf-comment-input" placeholder="Ajouter un commentaire...">
+                    <button id="btn-send-pdf-comment">Envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interface Plein Écran pour Lire le PDF 100vh ak defileman -->
+    <div id="pdf-reader-overlay" class="overlay" style="z-index: 6000; padding: 0; margin: 0; width: 100vw; height: 100vh;">
+        <div style="width:100%; height:100%; display:flex; flex-direction:column; background:white;">
+            <div id="pdf-reader-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #111b21; color: white; flex-shrink: 0;">
+                <button onclick="closePdfReader()" style="background: transparent; color: white; border: none; font-size: 20px; cursor: pointer; margin-right: 10px;">⬅️</button>
+                <span id="pdf-reader-title" style="font-size: 16px; font-weight: bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 70%; text-align: center; flex: 1;">Document</span>
+                <div style="width: 30px;"></div>
+            </div>
+            <!-- Div scrollable pour l'iframe -->
+            <div style="flex:1; width:100%; overflow-y:auto; -webkit-overflow-scrolling: touch;">
+                <iframe id="pdf-iframe" src="" style="border:none; width:100%; height:100%; min-height: 100vh; background: #f0f2f5;"></iframe>
+            </div>
         </div>
     </div>
 
@@ -346,10 +393,8 @@
 
         let currentUser = null, currentUserKey = "", currentChatId = "ACTUALITE", isAppLoaded = false, allChatsData = {}, previousMessageCounts = {}; 
         
-        // Variables pou Actualités
         let currentNewsCategory = "Amour", allNewsItems = [], currentNewsPage = 1, allKnownTags = new Set(), isNewsLoaded = false, initialNewsKeys = new Set();
         
-        // NOUVO: Variables pou Lang Eksprèsyon, Series ak PDF
         let currentLangCategory = "Anglè", allLangItems = [], currentLangPage = 1;
         let isLangLoaded = false, initialLangKeys = new Set();
         let isSeriesLoaded = false, initialSeriesKeys = new Set();
@@ -363,8 +408,7 @@
 
         const popupOverlay = document.getElementById("custom-popup-overlay"), popupMsg = document.getElementById("popup-message"), popupConfirmBtn = document.getElementById("popup-confirm-btn"), popupCancelBtn = document.getElementById("popup-cancel-btn");
 
-        // --- NOUVO: Lojik Meni Deroulant Sèvis la ---
-        window.isServicesOpen = true; // Par défaut louvri l pou itilizatè a ka wè sèvis yo
+        window.isServicesOpen = true; 
         window.toggleServices = function() {
             window.isServicesOpen = !window.isServicesOpen;
             const dropdown = document.getElementById('services-dropdown');
@@ -374,7 +418,6 @@
                 arrow.innerText = window.isServicesOpen ? '🔼' : '🔽';
             }
         };
-        // ---------------------------------------------
 
         window.showPopup = function(message, isConfirm = false, onConfirm = null) {
             popupMsg.innerText = message; popupOverlay.style.display = "flex"; popupCancelBtn.style.display = isConfirm ? "inline-block" : "none";
@@ -393,8 +436,16 @@
         // ===== POPUP EBOOK EVENTS =====
         const ebookModal = document.getElementById('ebookModal');
         const closeEbookModal = document.getElementById('closeEbookModal');
-        closeEbookModal.addEventListener('click', () => { ebookModal.style.display = 'none'; });
-        window.addEventListener('click', (e) => { if (e.target === ebookModal) ebookModal.style.display = 'none'; });
+        closeEbookModal.addEventListener('click', () => { 
+            ebookModal.style.display = 'none'; 
+            if(window.pdfRealtimeUnsubscribe) window.pdfRealtimeUnsubscribe(); 
+        });
+        window.addEventListener('click', (e) => { 
+            if (e.target === ebookModal) { 
+                ebookModal.style.display = 'none'; 
+                if(window.pdfRealtimeUnsubscribe) window.pdfRealtimeUnsubscribe(); 
+            } 
+        });
 
         function getRoleBadge(userObj) {
             if (userObj.role === 'admin' || userObj.isAdmin === true || userObj.isAdmin === "true") return '<span class="role-badge role-admin">Admin</span>';
@@ -409,12 +460,16 @@
                 <div class="user-details"><div class="user-name">${currentUser.username} ${getRoleBadge(currentUser)}</div><div class="user-sub">📱 ${currentUser.phone || "N/A"} • 💰 ${currentUser.credits !== undefined ? currentUser.credits : 0} cr</div></div>`;
         }
 
-        function addCredits(amount) {
+        window.addCredits = function(amount) {
             if (!currentUserKey) return;
             const creditsRef = ref(db, `RJFORDROID/USERS/${currentUserKey}/credits`);
             get(creditsRef).then(snapshot => {
                 let currentCredits = snapshot.exists() ? snapshot.val() : 0;
-                set(creditsRef, currentCredits + amount).then(() => { currentUser.credits = currentCredits + amount; localStorage.setItem("rjfordroid_session", JSON.stringify({ key: currentUserKey, data: currentUser })); refreshMyInfoUI(); });
+                set(creditsRef, currentCredits + amount).then(() => { 
+                    currentUser.credits = currentCredits + amount; 
+                    localStorage.setItem("rjfordroid_session", JSON.stringify({ key: currentUserKey, data: currentUser })); 
+                    refreshMyInfoUI(); 
+                });
             });
         }
 
@@ -487,11 +542,9 @@
             onValue(ref(db, 'RJFORDROID/USERS'), (snapshot) => {
                 const isAdmin = (currentUser && (currentUser.role === 'admin' || currentUser.isAdmin === true || currentUser.isAdmin === "true"));
                 
-                // --- NOUVO STRUKTI AK MENI DEROULANT LA ---
                 userListDiv.innerHTML = `
                     ${isAdmin ? `<div class="user-item" onclick="window.location.href='admin.html'"><div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #ff3b30, #cc2f26);">⚙️</div><div class="user-details"><div class="user-name">Administration</div><div class="user-sub">Gérer les contenus</div></div></div></div>` : ''}
                     
-                    <!-- BOUTON POU DEPLIYE SÈVIS YO -->
                     <div class="user-item dropdown-btn" onclick="toggleServices()">
                         <div class="user-info">
                             <div class="avatar avatar-group" style="background: linear-gradient(135deg, #00a884, #008f6f);">📂</div>
@@ -504,7 +557,6 @@
                         </div>
                     </div>
 
-                    <!-- KONTENI DEROULANT LA -->
                     <div id="services-dropdown" class="dropdown-container" style="display: ${window.isServicesOpen ? 'block' : 'none'};">
                         <div class="user-item ${currentChatId === 'ACTUALITE' ? 'active' : ''}" data-chatid="ACTUALITE" onclick="switchChat('ACTUALITE')">
                             <div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #f5a623, #f5d328);">📰</div><div class="user-details"><div class="user-name">Actualités</div><div class="user-sub">RJFORDROID Infos</div></div></div><span class="badge" style="display:none;"></span>
@@ -578,7 +630,6 @@
             backBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS") ? "none" : "block";
             menuBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS") ? "block" : "none";
             
-            // NOUVO: Mete klass active dirèkteman sou sa ki klike a pou bay yon meyè vizyèl
             document.querySelectorAll('.user-item').forEach(el => {
                 if (el.getAttribute('data-chatid') === target) {
                     el.classList.add('active');
@@ -662,19 +713,14 @@
             });
         }
 
-        // ================= ACTUALITES LOGIC =================
         window.setNewsCategory = (cat) => { currentNewsCategory = cat; if(currentUser) localStorage.setItem("rjfordroid_last_category_" + currentUser.username, cat); currentNewsPage = 1; updateFilterUI(); loadNews(); };
         window.updateFilterUI = () => { newsFilters.querySelectorAll('.filter-btn').forEach(btn => { btn.classList.toggle('active', btn.innerText.includes(currentNewsCategory) || (currentNewsCategory === 'Informatique' && btn.innerText.includes('Info'))); }); };
 
-        // FONKSYON POU NETWAYE TOUT BALIZ VID LÈ Y AP AFICHE TÈKS LA
         window.cleanEmptyTags = function(htmlContent) {
             if (!htmlContent) return "";
             let html = htmlContent;
             let prevHtml;
-            do {
-                prevHtml = html;
-                html = html.replace(/<([a-zA-Z1-6]+)[^>]*>\s*<\/\1>/gi, '');
-            } while (html !== prevHtml);
+            do { prevHtml = html; html = html.replace(/<([a-zA-Z1-6]+)[^>]*>\s*<\/\1>/gi, ''); } while (html !== prevHtml);
             return html.trim();
         };
 
@@ -704,15 +750,12 @@
             paginationControls.style.display = totalPages > 1 ? "flex" : "none";
             if(totalPages > 1) paginationControls.innerHTML = `<button onclick="changeNewsPage(-1)" ${currentNewsPage === 1 ? 'disabled' : ''}>Précédent</button><span>Page ${currentNewsPage}/${totalPages}</span><button onclick="changeNewsPage(1)" ${currentNewsPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
         }
-
         window.changeNewsPage = (d) => { currentNewsPage += d; renderNewsPage(); messagesDiv.scrollTop = 0; };
 
         function displayNews(item, key) {
             const div = document.createElement("div"); div.className = `news-card`; 
             let tagsHtml = item.tags ? item.tags.split(',').map(t => `<span class="news-tag">#${t.trim()}</span>`).join('') : "";
             let imgHtml = item.imageUrl ? `<img src="${item.imageUrl}" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin-bottom:10px;" loading="lazy" />` : "";
-            
-            // LA NOU APLIKE NETWAYAJ LA POU LI PA GEN BALIZ VID
             let textContent = window.cleanEmptyTags(item.text || ""); 
             let showBtn = textContent.length > 80;
 
@@ -741,7 +784,6 @@
         };
 
         window.deleteNews = (key) => showPopup("Effacer cette actualité ?", true, () => remove(ref(db, `RJFORDROID/ACTUALITE/${key}`)));
-        
         window.voteNews = (key, type) => {
             get(ref(db, `RJFORDROID/ACTUALITE/${key}/voters_${type}/${currentUserKey}`)).then(snap => {
                 if (snap.exists()) showPopup(`Déjà ${type === 'likes' ? 'liké' : 'disliké'}.`);
@@ -752,12 +794,7 @@
         window.shareNews = (key, title) => {
             const currentNews = allNewsItems.find(i => i.id === key); 
             let fullText = currentNews ? currentNews.text : "";
-            
-            // NOUVO KÒD: RETIRE HTML AVAN NOU PATAJE L
-            let tmp = document.createElement("div");
-            tmp.innerHTML = fullText;
-            fullText = tmp.textContent || tmp.innerText || "";
-            
+            let tmp = document.createElement("div"); tmp.innerHTML = fullText; fullText = tmp.textContent || tmp.innerText || "";
             let shortText = fullText.length > 150 ? fullText.substring(0, 150) + "...\n\nTélécharge l'app pour la suite" : fullText;
             const content = `*${title}*\n\n${shortText}\n\nApp : https://rjfordroid.netlify.app/p/apps.html?nom=RJFlash`;
             
@@ -774,10 +811,8 @@
             else { if (typeof AndroidControler !== "undefined") { AndroidControler.speak(text); window.isSpeaking = key; btn.innerHTML = "⏹️ Stop"; } }
         };
 
-        // ================= NOUVO: LANG EKSPRESYON LOGIC =================
         window.setLangCategory = (cat) => { currentLangCategory = cat; currentLangPage = 1; updateLangFilterUI(); loadLang(); };
         window.updateLangFilterUI = () => { langFilters.querySelectorAll('.filter-btn').forEach(btn => { btn.classList.toggle('active', btn.innerText.includes(currentLangCategory)); }); };
-
         function loadLang() {
             onValue(ref(db, `RJFORDROID/LANG`), (snapshot) => {
                 if (currentChatId !== "LANG") return; 
@@ -793,7 +828,6 @@
                 renderLangPage();
             });
         }
-
         function renderLangPage() {
             if (currentChatId !== "LANG") return;
             messagesDiv.innerHTML = allLangItems.length === 0 ? "<div style='text-align:center; color:#8696a0; margin-top:20px;'>Pa gen done pou lang sa a.</div>" : "";
@@ -803,18 +837,13 @@
             paginationControls.style.display = totalPages > 1 ? "flex" : "none";
             if(totalPages > 1) paginationControls.innerHTML = `<button onclick="changeLangPage(-1)" ${currentLangPage === 1 ? 'disabled' : ''}>Précédent</button><span>Page ${currentLangPage}/${totalPages}</span><button onclick="changeLangPage(1)" ${currentLangPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
         }
-
         window.changeLangPage = (d) => { currentLangPage += d; renderLangPage(); messagesDiv.scrollTop = 0; };
-
         function displayLang(item, key) {
             const div = document.createElement("div"); div.className = `news-card`; 
             let tagsHtml = item.tags ? item.tags.split(',').map(t => `<span class="news-tag">#${t.trim()}</span>`).join('') : "";
             let imgHtml = item.imageUrl ? `<img src="${item.imageUrl}" style="width:100%; max-height:300px; object-fit:cover; border-radius:8px; margin-bottom:10px;" loading="lazy" />` : "";
-            
-            // LA NOU APLIKE NETWAYAJ LA TOU POU LANG LAN PA GEN BALIZ VID
             let textContent = window.cleanEmptyTags(item.text || ""); 
             let showBtn = textContent.length > 80;
-
             div.innerHTML = `
                 <div style="margin-bottom:12px;"><span class="news-category-tag" style="background:#059669;">${item.category}</span>${tagsHtml}</div>
                 <div style="font-weight:bold; font-size:18px; margin-bottom:10px; color:#111b21;">${item.title || ""}</div>
@@ -831,49 +860,37 @@
                 ${(currentUser && (currentUser.isAdmin || currentUser.role === 'admin')) ? `<button onclick="deleteLang('${key}')" style="background:#ff3b30; color:white; border:none; padding:8px 10px; border-radius:5px; margin-top:15px; cursor:pointer; font-size:13px; width: 100%;">Supprimer</button>` : ''}`;
             messagesDiv.appendChild(div);
         }
-
         window.toggleReadMoreLang = function(key) {
             document.querySelectorAll('.news-text.text-expanded').forEach(el => { if (el.id !== `text-lang-${key}`) { el.classList.remove('text-expanded'); el.classList.add('text-truncated'); let btn = document.getElementById(el.id.replace('text-', 'btn-')); if (btn) btn.innerText = "Lire la suite..."; } });
             let textContainer = document.getElementById(`text-lang-${key}`), btn = document.getElementById(`btn-lang-${key}`);
             if (textContainer.classList.contains('text-truncated')) { textContainer.classList.remove('text-truncated'); textContainer.classList.add('text-expanded'); btn.innerText = "Voir moins"; } 
             else { textContainer.classList.add('text-truncated'); textContainer.classList.remove('text-expanded'); btn.innerText = "Lire la suite..."; }
         };
-
         window.deleteLang = (key) => showPopup("Effacer cette expression ?", true, () => remove(ref(db, `RJFORDROID/LANG/${key}`)));
-        
         window.voteLang = (key, type) => {
             get(ref(db, `RJFORDROID/LANG/${key}/voters_${type}/${currentUserKey}`)).then(snap => {
                 if (snap.exists()) showPopup(`Déjà ${type === 'likes' ? 'liké' : 'disliké'}.`);
                 else { set(ref(db, `RJFORDROID/LANG/${key}/voters_${type}/${currentUserKey}`), true); const countRef = ref(db, `RJFORDROID/LANG/${key}/${type}`); get(countRef).then(s => set(countRef, (s.val() || 0) + 1)); addCredits(1); }
             });
         };
-        
         window.shareLang = (key, title) => {
             const currentLang = allLangItems.find(i => i.id === key); 
             let fullText = currentLang ? currentLang.text : "";
-            
-            // NOUVO KÒD: RETIRE HTML AVAN NOU PATAJE L
-            let tmp = document.createElement("div");
-            tmp.innerHTML = fullText;
-            fullText = tmp.textContent || tmp.innerText || "";
-            
+            let tmp = document.createElement("div"); tmp.innerHTML = fullText; fullText = tmp.textContent || tmp.innerText || "";
             let shortText = fullText.length > 150 ? fullText.substring(0, 150) + "...\n\nTélécharge l'app pour la suite" : fullText;
             const content = `*${title}*\n\n${shortText}\n\nApp : https://rjfordroid.netlify.app/p/apps.html?nom=RJFlash`;
-            
             get(ref(db, `RJFORDROID/LANG/${key}/voters_shares/${currentUserKey}`)).then(snap => {
                 if (!snap.exists()) { set(ref(db, `RJFORDROID/LANG/${key}/voters_shares/${currentUserKey}`), true); const sRef = ref(db, `RJFORDROID/LANG/${key}/shares`); get(sRef).then(s => set(sRef, (s.val() || 0) + 1)); addCredits(5); }
                 if (typeof AndroidControler !== "undefined" && AndroidControler.shareToAndroid) AndroidControler.shareToAndroid(title, content); else if (navigator.share) navigator.share({ title, text: content }).catch(() => {}); else { navigator.clipboard.writeText(content); showPopup("Lien copié !"); }
             });
         };
-
         window.readTextAloudLang = function(key) {
             let text = document.getElementById(`text-lang-${key}`).innerText; let btn = document.getElementById(`speak-btn-lang-${key}`);
             if (window.isSpeaking === key) { if (typeof AndroidControler !== "undefined") AndroidControler.stopSpeak(); window.isSpeaking = null; btn.innerHTML = "🔊 Lire"; } 
             else { if (typeof AndroidControler !== "undefined") { AndroidControler.speak(text); window.isSpeaking = key; btn.innerHTML = "⏹️ Stop"; } }
         };
 
-
-        // ================= SERIES ET PDF LOGIC =================
+        // ================= SERIES LOGIC =================
         window.loadSeries = async function() {
             if (!currentUserKey) return;
             let unlockedSeries = {};
@@ -893,7 +910,6 @@
                 }
             });
         };
-
         function createSerieCard(id, data, isUnlocked, epCount, likeCount, commentCount) {
             const card = document.createElement('article'); card.className = 'serie-card'; card.onclick = () => handleSerieClick(id, isUnlocked);
             card.innerHTML = `
@@ -902,7 +918,6 @@
                 <div class="serie-info"><h3>${data.titre}</h3><div class="serie-stats"><div class="stat-item">▶️ ${epCount}</div><div class="stat-item">❤️ ${likeCount}</div><div class="stat-item">💬 ${commentCount}</div></div></div>`;
             seriesContainer.appendChild(card);
         }
-
         window.handleSerieClick = async function(serieId, alreadyUnlocked) {
             if (alreadyUnlocked) { window.location.href = `player.html?serie=${serieId}`; return; }
             try {
@@ -920,6 +935,7 @@
             } catch (e) { showPopup("Erè: Gen yon pwoblèm ki rive. Tanpri eseye ankò."); }
         };
 
+        // ================= PDF ET EBOOKS LOGIC (NOUVEAU) =================
         window.loadPDFs = async function() {
             if (!currentUserKey) return;
             let unlockedPdfs = {};
@@ -935,7 +951,7 @@
                         const card = document.createElement('article'); card.className = 'serie-card'; card.onclick = () => handlePdfClick(key, doc, isUnlocked, REAL_COST);
                         let imgSrc = 'https://via.placeholder.com/300x160?text=PDF+DOC';
                         if (doc.image && doc.image !== "None") { if (doc.image.startsWith('http')) imgSrc = doc.image; else imgSrc = `https://drive.google.com/thumbnail?id=${doc.image}&sz=w300`; }
-                        card.innerHTML = `<div class="status-badge ${isUnlocked ? 'badge-unlocked' : 'badge-price'}">${isUnlocked ? '✔️ Telechaje' : REAL_COST + ' 💰'}</div><img src="${imgSrc}" class="serie-banner"><div class="serie-info"><h3>${doc.Titre}</h3><p style="font-size: 12px; color: #666; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.desc || ''}</p><div style="font-size: 11px; color: #888;">Publié le: ${doc.Date || ''}</div></div>`;
+                        card.innerHTML = `<div class="status-badge ${isUnlocked ? 'badge-unlocked' : 'badge-price'}">${isUnlocked ? '✔️ Deboke' : REAL_COST + ' 💰'}</div><img src="${imgSrc}" class="serie-banner"><div class="serie-info"><h3>${doc.Titre}</h3><p style="font-size: 12px; color: #666; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.desc || ''}</p><div style="font-size: 11px; color: #888;">Publié le: ${doc.Date || ''}</div></div>`;
                         pdfContainer.appendChild(card);
                     }
                 } else pdfContainer.innerHTML = "<p style='text-align:center; width:100%; grid-column: 1 / -1;'>Aucun document disponible.</p>";
@@ -947,8 +963,17 @@
             const img = document.getElementById("ebookModalImg");
             const title = document.getElementById("ebookModalTitle");
             const desc = document.getElementById("ebookModalDesc");
+            
+            const lockedView = document.getElementById("ebookLockedView");
+            const unlockedView = document.getElementById("ebookUnlockedView");
             const priceDiv = document.getElementById("ebookModalPrice");
             const actionBtn = document.getElementById("ebookModalActionBtn");
+
+            // Nettoyage de l'ancien listener realtime
+            if(window.pdfRealtimeUnsubscribe) {
+                window.pdfRealtimeUnsubscribe();
+                window.pdfRealtimeUnsubscribe = null;
+            }
 
             let imgSrc = 'https://via.placeholder.com/300x160?text=PDF+DOC';
             if (doc.image && doc.image !== "None") {
@@ -960,14 +985,42 @@
             desc.innerText = doc.desc || "Pa gen deskripsyon pou dokiman sa a.";
 
             if (alreadyUnlocked) {
-                priceDiv.innerHTML = `<span style="color: #00a884;">✔️ Ou deja deboke dokiman sa a (oswa li gratis)</span>`;
-                actionBtn.innerText = "📥 Telechaje kounye a";
-                actionBtn.onclick = () => {
-                    modal.style.display = "none";
-                    if (doc.Url && doc.Url !== "None") window.open(doc.Url, '_blank');
-                    else showPopup("Dokiman sa pa gen yon lyen valab.");
-                };
+                // AFFICHAGE DEBLOQUÉ
+                lockedView.style.display = "none";
+                unlockedView.style.display = "block";
+                img.style.maxHeight = "150px"; 
+                
+                document.getElementById('btn-read-pdf').onclick = () => readPdfInApp(doc.Url, doc.Titre);
+                document.getElementById('btn-download-pdf').onclick = () => window.open(doc.Url, '_blank');
+                document.getElementById('btn-like-pdf').onclick = () => votePdf(pdfId, 'like');
+                document.getElementById('btn-dislike-pdf').onclick = () => votePdf(pdfId, 'dislike');
+                document.getElementById('btn-send-pdf-comment').onclick = () => sendPdfComment(pdfId);
+
+                // Écouteur en temps réel pour Likes et Commentaires du PDF
+                const pdfRef = ref(db, `RJFORDROID/pdf/${pdfId}`);
+                window.pdfRealtimeUnsubscribe = onValue(pdfRef, (snap) => {
+                    if (!snap.exists()) return;
+                    const data = snap.val();
+                    document.getElementById('pdf-likes-count').innerText = data.likes || 0;
+                    document.getElementById('pdf-dislikes-count').innerText = data.dislikes || 0;
+                    
+                    const commentsList = document.getElementById('pdf-comments-list');
+                    if (data.comments) {
+                        commentsList.innerHTML = Object.values(data.comments).map(c => `
+                            <div class="pdf-comment"><strong>${c.user}</strong>: ${c.text}</div>
+                        `).join('');
+                        
+                    } else {
+                        commentsList.innerHTML = "<div style='color:#888; font-size:12px; padding:10px;'>Aucun commentaire. Soyez le premier!</div>";
+                    }
+                });
+
             } else {
+                // AFFICHAGE VERROUILLÉ
+                lockedView.style.display = "block";
+                unlockedView.style.display = "none";
+                img.style.maxHeight = "250px";
+                
                 priceDiv.innerHTML = `Pri: <span style="color: #ff3b30;">${cost} Kredi 💰</span>`;
                 actionBtn.innerText = `🔓 Peye pou Deboke (${cost} cr)`;
                 actionBtn.onclick = async () => {
@@ -987,15 +1040,13 @@
                             updates[`RJFORDROID/USERS/${currentUserKey}/unlockedPdfs/${pdfId}`] = true;
                             await update(ref(db), updates);
                             
-                            showPopup("Dokiman deboke ak siksè! Klike sou li ankò pou wè opsyon telechaje a.");
+                            showPopup("Dokiman deboke ak siksè! Klike sou li ankò pou wè opsyon yo.");
                             
                             currentUser.credits = userCredits - cost;
                             if(!currentUser.unlockedPdfs) currentUser.unlockedPdfs = {};
                             currentUser.unlockedPdfs[pdfId] = true;
                             localStorage.setItem("rjfordroid_session", JSON.stringify({ key: currentUserKey, data: currentUser }));
                             refreshMyInfoUI();
-
-                            if (doc.Url && doc.Url !== "None") window.open(doc.Url, '_blank');
                             loadPDFs(); 
                         });
                     } catch (e) { showPopup("Erè: Gen yon pwoblèm ki rive. Tanpri eseye ankò."); }
@@ -1003,6 +1054,126 @@
             }
 
             modal.style.display = "block";
+        };
+
+        // Fonctionnalité Liker/Disliker un Ebook (+1 Crédit sur le premier vote)
+        window.votePdf = async function(pdfId, type) {
+            if(!currentUserKey) return;
+            const pdfRef = ref(db, `RJFORDROID/pdf/${pdfId}`);
+            try {
+                const snap = await get(pdfRef);
+                if (!snap.exists()) return;
+                let data = snap.val();
+                let voters = data.voters || {};
+                let currentVote = voters[currentUserKey];
+                
+                if (currentVote === type) return; 
+                
+                let likes = data.likes || 0;
+                let dislikes = data.dislikes || 0;
+                
+                if (type === 'like') {
+                    likes++;
+                    if (currentVote === 'dislike') dislikes--;
+                } else if (type === 'dislike') {
+                    dislikes++;
+                    if (currentVote === 'like') likes--;
+                }
+                
+                voters[currentUserKey] = type;
+                
+                const updates = {};
+                updates[`RJFORDROID/pdf/${pdfId}/likes`] = likes;
+                updates[`RJFORDROID/pdf/${pdfId}/dislikes`] = dislikes;
+                updates[`RJFORDROID/pdf/${pdfId}/voters`] = voters;
+                
+                await update(ref(db), updates);
+                
+                if (!currentVote) {
+                    addCredits(1);
+                    showPopup("+1 Crédit pour votre vote !");
+                }
+            } catch(e) { console.error(e); }
+        };
+
+        // Commenter un PDF (+10 Crédit 1er comment, +2 suivants)
+        window.sendPdfComment = async function(pdfId) {
+            const input = document.getElementById('pdf-comment-input');
+            const text = input.value.trim();
+            if(!text || !currentUserKey) return;
+            
+            input.value = "";
+            
+            try {
+                const commenterRef = ref(db, `RJFORDROID/pdf/${pdfId}/commenters/${currentUserKey}`);
+                const snap = await get(commenterRef);
+                const isFirst = !snap.exists();
+                
+                if (isFirst) {
+                    await set(commenterRef, true);
+                    addCredits(10);
+                    showPopup("+10 Crédits pour votre premier commentaire !");
+                } else {
+                    addCredits(2);
+                    let toast = document.createElement("div");
+                    toast.innerText = "💬 +2 Crédits !";
+                    toast.style.cssText = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#00a884; color:white; padding:10px 20px; border-radius:20px; font-weight:bold; z-index:10000; box-shadow:0 4px 10px rgba(0,0,0,0.3);";
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 2000);
+                }
+                
+                await push(ref(db, `RJFORDROID/pdf/${pdfId}/comments`), {
+                    user: currentUser.username,
+                    text: text,
+                    timestamp: serverTimestamp()
+                });
+                
+            } catch(e) { console.error(e); }
+        };
+
+        // Lire le PDF sur l'App (+10 Crédit toutes les 15s) MIZAJOU POU LINK DRIVE
+        window.pdfTimer = null;
+        window.readPdfInApp = function(url, title) {
+            // Fermer le modal précédent
+            document.getElementById('ebookModal').style.display = 'none';
+            if(window.pdfRealtimeUnsubscribe) window.pdfRealtimeUnsubscribe();
+            
+            // Corriger l'URL Google Drive pour forcer l'aperçu/afichaj (Drive link fix)
+            let embedUrl = url;
+            if (url && (url.includes("drive.google.com") || url.includes("docs.google.com"))) {
+                const idMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (idMatch && idMatch[1]) {
+                    embedUrl = `https://drive.google.com/file/d/${idMatch[1]}/preview`;
+                } else {
+                    const queryMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                    if (queryMatch && queryMatch[1]) {
+                        embedUrl = `https://drive.google.com/file/d/${queryMatch[1]}/preview`;
+                    }
+                }
+            }
+
+            document.getElementById('pdf-reader-title').innerText = title;
+            document.getElementById('pdf-iframe').src = embedUrl;
+            document.getElementById('pdf-reader-overlay').style.display = 'block';
+            
+            // Démarrer la Minuterie (15 secondes = 10 crédits)
+            window.pdfTimer = setInterval(() => {
+                addCredits(10);
+                let toast = document.createElement("div");
+                toast.innerText = "⏱️ Lecture : +10 Crédits gagnés !";
+                toast.style.cssText = "position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#00a884; color:white; padding:10px 20px; border-radius:20px; font-weight:bold; z-index:10000; box-shadow:0 4px 10px rgba(0,0,0,0.3);";
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }, 15000);
+        };
+        
+        window.closePdfReader = function() {
+            document.getElementById('pdf-reader-overlay').style.display = 'none';
+            document.getElementById('pdf-iframe').src = "";
+            if (window.pdfTimer) {
+                clearInterval(window.pdfTimer);
+                window.pdfTimer = null;
+            }
         };
 
         function listenToAllChats() {
@@ -1057,22 +1228,15 @@
     </script>
     
    <script type="module">
-    // Nou enpòte fonksyon nou bezwen yo sèlman
     import { getDatabase, ref, child, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-    // Vèsyon app sa a
     const CURRENT_APP_VERSION = "1.0.0"; 
 
     async function checkForUpdates() {
         try {
-            // Olye nou itilize "app" dirèkteman ki ka bay erè
-            // Nou rekonekte ak database la piske Firebase Config la deja nan memwa paj la
             const firebaseConfig = { 
                 apiKey: "AIzaSyAQeHWr_vUiQmVVgJJ_cOF9qrCCLd7IJNc", 
                 databaseURL: "https://ayiweb-default-rtdb.firebaseio.com" 
             };
-            
-            // Nou kreye yon referans tanporè pou tcheke vèsyon an sèlman
             const db = getDatabase(); 
             const dbRef = ref(db);
             const snapshot = await get(child(dbRef, 'appConfig/versionInfo'));
@@ -1116,7 +1280,6 @@
         }
     }
 
-    // Nou lanse tcheke a apre 2 segonn pou n kite paj la fin chaje nòmalman
     setTimeout(checkForUpdates, 2000);
 </script>
 
