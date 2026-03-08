@@ -188,6 +188,7 @@
         #signupForm button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
+ 
 <body>
 
     <div id="custom-popup-overlay">
@@ -382,6 +383,64 @@
             </div>
         </div>
     </div>
+    
+    <script>
+      window.handleAndroidBack = function() {
+            // 1. Tcheke si Dokiman PDF la louvri (Full screen)
+            let pdfReader = document.getElementById('pdf-reader-overlay');
+            if (pdfReader && pdfReader.style.display === 'block') {
+                if(window.closePdfReader) window.closePdfReader();
+                return true;
+            }
+
+            // 2. Tcheke si Popup Ebook la louvri
+            let ebookModal = document.getElementById('ebookModal');
+            if (ebookModal && ebookModal.style.display === 'block') {
+                ebookModal.style.display = 'none';
+                if(window.pdfRealtimeUnsubscribe) window.pdfRealtimeUnsubscribe();
+                return true;
+            }
+
+            // 3. Tcheke si Popup Kreye Kont lan louvri
+            let signup = document.getElementById('signupOverlay');
+            if (signup && signup.style.display === 'block') {
+                signup.style.display = 'none';
+                return true;
+            }
+
+            // 4. Tcheke si gen yon Popup Custom kap afiche (ek: konfimasyon)
+            let customPopup = document.getElementById('custom-popup-overlay');
+            if (customPopup && customPopup.style.display === 'flex') {
+                customPopup.style.display = 'none';
+                return true;
+            }
+
+            // 5. Tcheke si Meni bò a (Sidebar) louvri sou ti ekran
+            let appDiv = document.getElementById('app');
+            if (appDiv && appDiv.classList.contains('menu-active')) {
+                if(window.toggleMenu) window.toggleMenu();
+                return true;
+            }
+
+            // 6. Tcheke si yo andedan App la e yo pa sou paj prensipal (Accueil)
+            let loginScreen = document.getElementById('login-screen');
+            if (loginScreen && loginScreen.style.display === 'none') {
+                let chatTitle = document.getElementById('chat-title-text');
+                // Si tit la pa gen mo "Accueil" ladann, sa vle di yo sou yon lòt paj
+                if (chatTitle && !chatTitle.innerText.includes("Accueil")) {
+                    if(window.goHome) window.goHome(); // Retounen nan ACTUALITE
+                    return true;
+                }
+            }
+
+            // 7. Si tout bagay anfòm epi yo sou paj Akèy la oswa paj Login lan
+            // Fè Android fèmen app la nèt
+            if (typeof AndroidControler !== "undefined" && AndroidControler.exitApp) {
+                AndroidControler.exitApp();
+            }
+            return false;
+        };
+    </script>
 
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
