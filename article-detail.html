@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chargement... - RJ4DROID</title>
+    <meta name="description" id="meta-desc" content="Lire l'article complet sur RJ4DROID.">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:title" id="og-title" content="RJ4DROID Article">
+    <meta property="og:description" id="og-desc" content="Chargement de l'actualité...">
+    <meta property="og:image" id="og-img" content="">
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075" crossorigin="anonymous"></script>
+
+    <style>
+        :root { --primary: #007bff; }
+        .full-article-img { width: 100%; height: 250px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; }
+        .article-meta { font-size: 13px; color: #777; margin-bottom: 10px; display: flex; gap: 15px; }
+        .article-content { line-height: 1.7; font-size: 16px; color: #333; }
+        .article-content p { margin-bottom: 15px; }
+        #loader-detail { text-align: center; padding: 50px; }
+
+        /* NOUVO CSS POU LIKES & COMMENTS */
+        .interaction-bar { display: flex; gap: 10px; margin: 20px 0; padding-top: 15px; border-top: 1px solid #eee; flex-wrap: wrap; }
+        .interaction-bar button { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; background: #f0f0f0; transition: 0.3s; }
+        .interaction-bar button i { font-size: 16px; }
+        .btn-share { background: #25D366 !important; color: white !important; }
+        .btn-active-like { background: #e0f0ff !important; color: var(--primary) !important; border: 1px solid var(--primary); }
+        .btn-active-dislike { background: #ffe0e0 !important; color: red !important; border: 1px solid red; }
+        
+        .comments-section { margin-top: 30px; background: #f9f9f9; padding: 15px; border-radius: 10px; }
+        .comment-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .comment-form input, .comment-form textarea { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; font-family: inherit; }
+        .comment-form button { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .comment-item { background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid var(--primary); }
+        .comment-item small { color: gray; font-size: 11px; float: right; }
+    </style>
+</head>
+<body>
+
+    <div id="app-content" style="display: none;">
+        <main class="container" style="padding: 1px; margin-top: 5px; padding-bottom: 80px;">
+            <div id="loader-detail"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Chargement...</div>
+            
+            <article id="article-view" style="display: none; margin: 5px 10px">
+                <img id="det-img" src="" class="full-article-img" alt="Illustration de l'article">
+                
+                <h1 id="det-title" style="font-size: 24px; margin-bottom: 10px; color: #222;"></h1>
+                
+                <div class="article-meta">
+                    <span><i class="far fa-calendar-alt"></i> <span id="det-date"></span></span>
+                    <span><i class="far fa-user"></i> <span id="det-author"></span></span>
+                    <span><i class="far fa-eye"></i> <span id="det-views"></span> vues</span>
+                </div>
+
+                <div class="ad-slot" style="margin: 15px 0;">
+                    <ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article" data-ad-format="fluid" data-ad-client="ca-pub-4800728968697075" data-ad-slot="7183756643"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
+
+                <div id="det-content" class="article-content"></div>
+
+                <div class="interaction-bar">
+                    <button id="btn-like" onclick="handleVote('like')"><i class="far fa-thumbs-up"></i> <span id="count-like">0</span></button>
+                    <button id="btn-dislike" onclick="handleVote('dislike')"><i class="far fa-thumbs-down"></i> <span id="count-dislike">0</span></button>
+                    <button class="btn-share" onclick="shareArticleWhatsApp()"><i class="fab fa-whatsapp"></i> Partager</button>
+                </div>
+
+                <div class="comments-section">
+                    <h3>Commentaires (<span id="count-comments-title">0</span>)</h3>
+                    
+                    <div class="comment-form">
+                        <input type="text" id="comment-name" placeholder="Votre Nom / Pseudo" required>
+                        <textarea id="comment-text" placeholder="Ajouter un commentaire..." rows="3" required></textarea>
+                        <button onclick="postComment()">Publier le commentaire</button>
+                    </div>
+
+                    <div id="comments-list">
+                        <p style="color: gray; font-size: 14px;">Chargement des commentaires...</p>
+                    </div>
+                </div>
+
+                <div class="ad-slot" style="margin: 20px 0; border-top: 1px solid #eee; padding-top: 15px;">
+                    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4800728968697075" data-ad-slot="7183756643" data-ad-format="auto" data-full-width-responsive="true"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script src="../js/components.js"></script>
+    <script>
+        // --- JESTYON ITILIZATÈ INIK (POU LIKE/DISLIKE) ---
+        function getUserID() {
+            let uid = localStorage.getItem('connectedUID') || localStorage.getItem('guestUID');
+            if (!uid) {
+                uid = 'guest_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('guestUID', uid);
+            }
+            return uid;
+        }
+        const currentUID = getUserID();
+        let currentVote = null; // Sere vòt itilizatè a
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const articleID = localStorage.getItem('currentArticleID');
+            if (!articleID) { window.location.href = "actus.html"; return; }
+            loadFullArticle(articleID);
+        });
+
+        async function loadFullArticle(id) {
+            try {
+                const snapshot = await firebase.database().ref(`RJFORDROID/ARTICLES/${id}`).once('value');
+                const art = snapshot.val();
+
+                if (!art) { window.location.href = "actus.html"; return; }
+
+                // --- SEO OPTIMISATION AUTOMATIQUE ---
+                document.title = `${art.title} - RJ4DROID`;
+                const cleanSummary = art.summary ? art.summary.replace(/<[^>]*>?/gm, '').substring(0, 160) : "Lire l'article complet sur RJ4DROID.";
+                
+                document.querySelector('meta[name="description"]').setAttribute("content", cleanSummary);
+                document.getElementById('og-title').setAttribute("content", art.title);
+                document.getElementById('og-desc').setAttribute("content", cleanSummary);
+                document.getElementById('og-img').setAttribute("content", art.image);
+
+                // --- AFICHAJ DONE YO ---
+                document.getElementById('det-img').src = art.image || 'https://via.placeholder.com/400';
+                document.getElementById('det-title').textContent = art.title;
+                document.getElementById('det-date').textContent = art.date;
+                document.getElementById('det-author').textContent = art.author || "RJ4DROID";
+                document.getElementById('det-views').textContent = art.views || 0;
+                document.getElementById('det-content').innerHTML = art.description;
+
+                document.getElementById('loader-detail').style.display = 'none';
+                document.getElementById('article-view').style.display = 'block';
+
+                firebase.database().ref(`RJFORDROID/ARTICLES/${id}/views`).set((art.views || 0) + 1);
+
+                // --- CHAJE LIKES AK COMMENTS ---
+                loadInteractions(id);
+                loadComments(id);
+
+            } catch (error) {
+                console.error("Erreur:", error);
+            }
+        }
+
+        // ================== LOGIQUE LIKES & DISLIKES ==================
+        function loadInteractions(articleID) {
+            firebase.database().ref(`RJFORDROID/ARTICLE_VOTES/${articleID}`).on('value', snap => {
+                const votes = snap.val() || {};
+                let likesCount = 0;
+                let dislikesCount = 0;
+                
+                currentVote = votes[currentUID] || null; // Tcheke sa itilizatè sa te vote
+
+                // Konte total la
+                for(let key in votes) {
+                    if(votes[key] === 'like') likesCount++;
+                    if(votes[key] === 'dislike') dislikesCount++;
+                }
+
+                document.getElementById('count-like').textContent = likesCount;
+                document.getElementById('count-dislike').textContent = dislikesCount;
+
+                // Chanje koulè bouton yo selon vòt la
+                const btnLike = document.getElementById('btn-like');
+                const btnDislike = document.getElementById('btn-dislike');
+                
+                btnLike.className = currentVote === 'like' ? 'btn-active-like' : '';
+                btnDislike.className = currentVote === 'dislike' ? 'btn-active-dislike' : '';
+            });
+        }
+
+        function handleVote(type) {
+            const articleID = localStorage.getItem('currentArticleID');
+            if(!articleID) return;
+
+            let newVote = type;
+            // Si l te deja klike sou li, sa vle di l ap retire vòt li a
+            if(currentVote === type) {
+                newVote = null; 
+            }
+
+            // Firebase ap mete a jou oswa retire (si se null) vòt la pou ID sa
+            firebase.database().ref(`RJFORDROID/ARTICLE_VOTES/${articleID}/${currentUID}`).set(newVote);
+        }
+
+        // ================== LOGIQUE COMMENTAIRES ==================
+        function loadComments(articleID) {
+            firebase.database().ref(`RJFORDROID/COMMENTS/${articleID}`).on('value', snap => {
+                const comments = snap.val();
+                const list = document.getElementById('comments-list');
+                const titleCount = document.getElementById('count-comments-title');
+                
+                if(!comments) {
+                    list.innerHTML = "<p style='color:gray; font-size:14px;'>Soyez le premier à commenter !</p>";
+                    titleCount.textContent = "0";
+                    return;
+                }
+
+                list.innerHTML = "";
+                const keys = Object.keys(comments).reverse(); // Pi resan yo anwo
+                titleCount.textContent = keys.length; // Kontè
+
+                keys.forEach(key => {
+                    const c = comments[key];
+                    list.insertAdjacentHTML('beforeend', `
+                        <div class="comment-item">
+                            <small>${c.date}</small>
+                            <b style="color: var(--primary);">${c.name}</b>
+                            <p style="margin-top: 5px; font-size: 14px;">${c.text}</p>
+                        </div>
+                    `);
+                });
+            });
+        }
+
+        function postComment() {
+            const articleID = localStorage.getItem('currentArticleID');
+            const nameInput = document.getElementById('comment-name');
+            const textInput = document.getElementById('comment-text');
+            
+            if(!nameInput.value.trim() || !textInput.value.trim()) {
+                return alert("Veuillez remplir votre nom et votre commentaire.");
+            }
+            
+            const newComment = {
+                name: nameInput.value.trim(),
+                text: textInput.value.trim(),
+                date: new Date().toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })
+            };
+            
+            // Sove nan Firebase
+            firebase.database().ref(`RJFORDROID/COMMENTS/${articleID}`).push(newComment)
+            .then(() => {
+                textInput.value = ""; // Vide bwat tèks la sèlman
+            })
+            .catch(err => alert("Erreur: " + err));
+        }
+
+        // ================== LOGIQUE PARTAGE ==================
+        function shareArticleWhatsApp() {
+            const title = document.getElementById('det-title').textContent;
+            const url = window.location.href; // Lyen paj atik la
+            // Fòmate mesaj la pou WhatsApp (Tit an fonse, epi lyen an)
+            const whatsappUrl = `https://api.whatsapp.com/send?text=*${encodeURIComponent(title)}*%0A%0ACliquez ici pour lire l'article : %0A${encodeURIComponent(url)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+</body>
+</html>

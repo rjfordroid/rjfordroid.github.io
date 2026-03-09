@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - RJ4DROID</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        :root { --primary: #007bff; --unread: #fff4f4; --danger: #dc3545; }
+        .admin-tabs { display: flex; background: #eee; margin: 10px; border-radius: 8px; overflow: hidden; position: relative; }
+        .tab-btn { flex: 1; padding: 12px; border: none; cursor: pointer; font-weight: bold; background: #eee; transition: 0.3s; position: relative; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        
+        .badge { position: absolute; top: 5px; right: 5px; background: red; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; display: none; }
+
+        .tab-content { display: none; padding: 15px; }
+        .tab-content.active { display: block; }
+
+        .admin-form input, .admin-form textarea, .admin-form select {
+            width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; font-family: inherit;
+        }
+        .btn-save { background: #28a745; color: white; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        
+        #loader { display: none; text-align: center; color: var(--primary); font-weight: bold; margin: 10px 0; }
+        
+        .msg-card { background: white; border-left: 5px solid var(--primary); padding: 12px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; }
+        .msg-card.unread { background: var(--unread); border-left-color: red; }
+        .msg-card b { display: flex; justify-content: space-between; }
+        .unread-dot { color: red; font-size: 10px; }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 4px solid var(--primary); }
+        .stat-card i { font-size: 20px; color: var(--primary); margin-bottom: 5px; }
+        .stat-card h4 { font-size: 11px; color: gray; margin: 5px 0; text-transform: uppercase; }
+        .stat-card h2 { font-size: 20px; margin: 0; }
+        
+        .btn-reset { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 12px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; }
+        
+        .analytics-table { width: 100%; background: white; border-radius: 10px; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        .analytics-table th, .analytics-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+
+        .art-item {
+            display: flex; align-items: center; justify-content: space-between; background: white;
+            padding: 10px; margin-bottom: 8px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            gap: 10px; overflow: hidden;
+        }
+        .art-item div div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .art-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; }
+        .status-btn { padding: 5px 10px; border-radius: 5px; border: none; color: white; cursor: pointer; font-size: 12px; }
+        .status-online { background: #28a745; }
+        .status-offline { background: #6c757d; }
+    </style>
+</head>
+<body>
+    <div id="app-content">
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-stats')">Visites</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-msg')">
+                Messages <span id="msgCount" class="badge">0</span>
+            </button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-art')">Ajouter</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-list')">Liste Atik</button>
+        </div>
+
+        <div id="tab-stats" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin:0;"><i class="fas fa-chart-bar"></i> Statistik RJ4DROID</h3>
+                <button class="btn-reset" style="width: auto; margin: 0;" onclick="resetAnalytics()">
+                    <i class="fas fa-trash"></i> Netwaye
+                </button>
+            </div>
+            
+            <div class="stat-grid">
+                <div class="stat-card"><i><i class="fas fa-users"></i></i><h4>En Ligne</h4><h2 id="count-online">0</h2></div>
+                <div class="stat-card"><i><i class="fas fa-eye"></i></i><h4>Vues</h4><h2 id="count-views">0</h2></div>
+                <div class="stat-card"><i><i class="fas fa-user-check"></i></i><h4>Uniques</h4><h2 id="count-visitors">0</h2></div>
+                <div class="stat-card"><i><i class="fas fa-flag"></i></i><h4>Top Pays</h4><h2 id="top-country">--</h2></div>
+            </div>
+            
+            <h4>Derniers Visiteurs</h4>
+            <table class="analytics-table">
+                <thead><tr><th>Pays</th><th>Browser</th><th>Visites</th></tr></thead>
+                <tbody id="visitor-list"></tbody>
+            </table>
+        </div>
+
+        <div id="tab-msg" class="tab-content">
+            <h3 style="margin-bottom:15px;"><i class="fas fa-envelope"></i> Mesaj Resevwa</h3>
+            <div id="adminMessagesList">Chaje...</div>
+        </div>
+
+        <div id="tab-art" class="tab-content">
+            <h3><i class="fas fa-plus-circle"></i> Pibliye yon Atik</h3>
+            <div class="admin-form">
+                <input type="text" id="artTitle" placeholder="Tit atik la" required>
+                <textarea id="artSummary" placeholder="Ti rezime kout (Summary)" rows="2"></textarea>
+                <textarea id="artDesc" placeholder="Tout kontni atik la (HTML pèmèt)" rows="6"></textarea>
+                <label>Foto Atik (Drive):</label>
+                <input type="file" id="file" accept="image/*">
+                <div id="loader"><i class="fas fa-spinner fa-spin"></i> Ap moute nan Drive...</div>
+                <input type="text" id="artLabels" placeholder="Kategori (ex: Sekirite, Apps)">
+                <button type="button" class="btn-save" onclick="uploadAndSave()">Pibliye Atik la</button>
+            </div>
+        </div>
+
+        <div id="tab-list" class="tab-content">
+            <h3><i class="fas fa-list"></i> Jere Atik yo</h3>
+            <div id="adminArticlesList">Chaje...</div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/components.js"></script>
+    <script>
+      
+
+        function openTab(evt, tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+            
+            if(tabName === 'tab-stats') loadAnalyticsAdmin();
+            if(tabName === 'tab-list') loadArticlesAdmin();
+            if(tabName === 'tab-msg') loadMessages();
+        }
+
+        function loadAnalyticsAdmin() {
+            database.ref('RJFORDROID/ONLINE_USERS').on('value', s => { document.getElementById('count-online').innerText = s.numChildren(); });
+            database.ref('RJFORDROID/ANALYTICS').on('value', s => {
+                const d = s.val(); 
+                if(!d) {
+                    document.getElementById('count-views').innerText = 0;
+                    document.getElementById('count-visitors').innerText = 0;
+                    document.getElementById('visitor-list').innerHTML = "";
+                    document.getElementById('top-country').innerText = "--";
+                    return;
+                }
+                document.getElementById('count-views').innerText = d.GLOBAL?.total_page_views || 0;
+                document.getElementById('count-visitors').innerText = d.GLOBAL?.total_unique_visitors || 0;
+                const visitors = d.VISITORS || {};
+                const list = document.getElementById('visitor-list'); list.innerHTML = "";
+                let countries = {};
+                Object.keys(visitors).reverse().slice(0, 10).forEach(id => {
+                    const v = visitors[id];
+                    countries[v.country] = (countries[v.country] || 0) + 1;
+                    list.insertAdjacentHTML('beforeend', `<tr><td>${v.country}</td><td>${v.browser}</td><td>${v.visitCount}</td></tr>`);
+                });
+                let top = Object.entries(countries).sort((a,b)=>b[1]-a[1])[0];
+                document.getElementById('top-country').innerText = top ? top[0].substring(0,8) : "--";
+            });
+        }
+
+        // --- FONKSYON POU NETWAYE DONE YO ---
+        function resetAnalytics() {
+            if(confirm("⚠ Èske w sèten ou vle efase tout statistik yo? Sa pap efase mesaj ni atik yo.")) {
+                database.ref('RJFORDROID/ANALYTICS').remove().then(() => {
+                    alert("✅ Statistik yo netwaye!");
+                });
+            }
+        }
+
+        function loadMessages() {
+            const list = document.getElementById('adminMessagesList');
+            const badge = document.getElementById('msgCount');
+            database.ref('RJFORDROID/CONTACT').on('value', snap => {
+                const data = snap.val();
+                if(!data) { list.innerHTML = "Pa gen mesaj."; badge.style.display="none"; return; }
+                list.innerHTML = "";
+                let unreadCount = 0;
+                Object.keys(data).reverse().forEach(id => {
+                    const m = data[id];
+                    const isUnread = m.status === "nouveau" || !m.status;
+                    if(isUnread) unreadCount++;
+                    list.insertAdjacentHTML('beforeend', `
+                        <div class="msg-card ${isUnread ? 'unread' : ''}" onclick="markAsRead('${id}')">
+                            <b>${m.nom} ${isUnread ? '<span class="unread-dot">● Nouveau</span>' : ''}</b>
+                            <small>${m.email}</small>
+                            <p style="margin:5px 0;">${m.message}</p>
+                            <button onclick="deleteMsg(event, '${id}')" style="color:red; border:none; background:none; cursor:pointer;"><i class="fas fa-trash"></i> Efase</button>
+                        </div>
+                    `);
+                });
+                badge.textContent = unreadCount; badge.style.display = unreadCount > 0 ? "block" : "none";
+            });
+        }
+
+        function markAsRead(id) { database.ref(`RJFORDROID/CONTACT/${id}`).update({ status: "lu" }); }
+        function deleteMsg(e, id) { e.stopPropagation(); if(confirm("Efase mesaj sa?")) database.ref(`RJFORDROID/CONTACT/${id}`).remove(); }
+
+        function loadArticlesAdmin() {
+            const list = document.getElementById('adminArticlesList');
+            if (!list) return;
+            database.ref('RJFORDROID/ARTICLES').on('value', snap => {
+                const data = snap.val();
+                if (!data) { list.innerHTML = "<p>Pa gen atik.</p>"; return; }
+                list.innerHTML = "";
+                Object.keys(data).reverse().forEach(id => {
+                    const art = data[id];
+                    if (!art || !art.title) return;
+                    let displayImg = art.image || 'https://via.placeholder.com/50';
+                    const itemHTML = `<div class="art-item">
+                        <div style="display:flex; align-items:center; gap:10px; flex: 1;">
+                            <img src="${displayImg}" onerror="this.src='https://via.placeholder.com/50'">
+                            <div><div style="font-weight:bold;">${art.title}</div><div style="font-size:10px; color:gray;">${art.date}</div></div>
+                        </div>
+                        <button class="status-btn ${art.online ? 'status-online' : 'status-offline'}" onclick="toggleStatus('${id}', ${art.online})">
+                            ${art.online ? 'En ligne' : 'Hors ligne'}
+                        </button>
+                    </div>`;
+                    list.insertAdjacentHTML('beforeend', itemHTML);
+                });
+            });
+        }
+
+        function toggleStatus(id, currentStatus) { database.ref(`RJFORDROID/ARTICLES/${id}`).update({ online: !currentStatus }); }
+
+        async function uploadAndSave() {
+            const title = document.getElementById("artTitle").value;
+            const file = document.getElementById("file").files[0];
+            if (!title || !file) return alert("Mete tit ak foto!");
+            document.getElementById("loader").style.display = "block";
+            const reader = new FileReader();
+            reader.onload = function () {
+                const formData = new FormData();
+                formData.append("file", reader.result.split(",")[1]);
+                formData.append("name", file.name);
+                formData.append("type", file.type);
+                fetch("https://script.google.com/macros/s/AKfycbxHjVBNTOlj6xBUp_fl-aVbPSFZRiMQB77_YIvFeB79uq2Hx9P_r7HADZTYj9WElsXkug/exec", { method: "POST", body: formData })
+                .then(r => r.json()).then(res => {
+                    const driveId = res.url.match(/\/d\/([^\/]+)/)?.[1] || "";
+                    saveToFirebase(`https://lh3.googleusercontent.com/d/$$${driveId}`);
+                }).catch(err => { document.getElementById("loader").style.display = "none"; alert("Erreur Drive"); });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveToFirebase(imgUrl) {
+            const newArt = { title: document.getElementById("artTitle").value, summary: document.getElementById("artSummary").value, description: document.getElementById("artDesc").value, image: imgUrl, labels: document.getElementById("artLabels").value || "Général", date: new Date().toLocaleDateString('fr-FR'), online: true, author: "RJFORDROID", views: 0 };
+            database.ref('RJFORDROID/ARTICLES').push(newArt).then(() => { location.reload(); });
+        }
+
+        window.onload = () => { loadAnalyticsAdmin(); loadMessages(); };
+    </script>
+</body>
+</html>

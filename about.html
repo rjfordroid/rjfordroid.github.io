@@ -1,207 +1,35 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <meta name="google-adsense-account" content="ca-pub-4800728968697075">
-  <title>RJ4DROID · app mobile</title>
-  <!-- Font Awesome Icons (v6) + Google Font Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075"
-     crossorigin="anonymous"></script>
-  
-  
-  
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/home.css">
-  
-<style>
-
-  /* ===== CARTE ABOUT (style moderne) ===== */
-  .about-card {
-    background: #10212e;
-    border-radius: 2.5rem;
-    padding: 2.5rem 2rem;
-    border: 1px solid #264a66;
-    box-shadow: 0 20px 30px -12px #00000080;
-    margin-bottom: 2rem;
-  }
-
-  .about-icon {
-    background: #1e3a57;
-    width: 80px;
-    height: 80px;
-    border-radius: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    color: #8bc8ff;
-    margin: 0 auto 1.5rem;
-    border: 1px solid #34699a;
-  }
-
-  .about-card h1 {
-    font-size: 2.2rem;
-    font-weight: 700;
-    text-align: center;
-    background: linear-gradient(130deg, #b3e0ff, #6eb6ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1.5rem;
-  }
-
-  .about-text {
-    color: #d1e4f5;
-    font-size: 1.05rem;
-    line-height: 1.7;
-    margin-bottom: 2rem;
-  }
-
-  .about-text p {
-    margin-bottom: 1.2rem;
-  }
-
-  .about-text strong {
-    color: #9acbff;
-    font-weight: 600;
-  }
-
-  .mission-box {
-    background: #0d1f2e;
-    border-radius: 2rem;
-    padding: 1.8rem;
-    border-left: 6px solid #ff8c42;
-    margin-top: 2rem;
-  }
-
-  .mission-box h3 {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-    color: #ffb347;
-  }
-
-  .mission-box p {
-    color: #c2dcf5;
-    margin: 0;
-  }
-
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin: 2rem 0 1rem;
-  }
-
-  .feature-item {
-    background: #1a3349;
-    border-radius: 1.5rem;
-    padding: 1.2rem;
-    text-align: center;
-    border: 1px solid #345f88;
-  }
-
-  .feature-item i {
-    font-size: 2rem;
-    color: #6bb5ff;
-    margin-bottom: 0.5rem;
-  }
-
-  .feature-item span {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #c3defa;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RJ4DROID - Apps & Actualité Informatique</title>
+    <meta name="description" content="Téléchargez les meilleures applications Android et suivez toute l'actualité informatique en temps réel sur RJ4DROID.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- AdSense Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-METE_ID_OU_LA" crossorigin="anonymous"></script>
+    
+     <!-- FIREBASE SDK (Obligatwa pou chaje done yo) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 </head>
 <body>
-      <!--config-->
-<span>  
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="js/firebase.js"></script>
-  <script src="js/userSidebar.js"></script>
-  <script src="js/layout.js"></script>
-    
-  <header class="app-header" id="header"></header>
-  <div class="sidebar" id="sidebar"></div>
-  <div class="overlay" id="overlay"></div>
-  <footer class="app-footer" id="footer">
-  </footer>
-</span>
-  <!-- CONTENU PRINCIPAL-->
-<main class="main-content">
-  <div class="about-card">
-    <div class="about-icon">
-      <i class="fa-brands fa-android"></i>
-    </div>
-    <div class="ad-space">
-<!-- Bloc AdSense 2 -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-4800728968697075"
-     data-ad-slot="XXXXXXX"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-</div>
-    <h1>À propos de RJForDroid</h1>
-    
-    <div class="about-text">
-      <p>
-        Bienvenue sur <strong>RJForDroid</strong>, votre plateforme dédiée à l'apprentissage de l'informatique et du développement sur Android. 
-        Nous proposons des articles, tutoriels, astuces, et guides complets pour vous aider à maîtriser le web, la programmation et les technologies mobiles.
-      </p>
-      <p>
-        Notre mission est simple : rendre l'informatique accessible à tous, que vous soyez débutant ou déjà expérimenté. 
-        Nous croyons que la connaissance doit être partagée et que chaque utilisateur mérite un apprentissage pratique et concret.
-      </p>
-      <p>
-        Grâce à nos articles détaillés, nos vidéos et nos ressources interactives, vous pouvez apprendre à votre rythme et mettre vos compétences en pratique immédiatement.
-      </p>
+
+    <!-- KONTNI APP LA -->
+    <div id="app-content" style="display: none;">
+       
+        <main class="container">
+            <h2 class="page-title">À propos de RJ4DROID</h2>
+            <div class="text-content">
+                <p>Bienvenue sur <strong>RJ4DROID</strong>, votre plateforme mobile dédiée aux passionnés d'informatique et d'applications Android.</p>
+                <p>Créé par <strong>Ruban Joseph</strong>, notre objectif est de fournir un accès rapide et sécurisé aux meilleures applications mobiles, tout en partageant les dernières actualités et astuces du monde de la technologie et du développement.</p>
+                <p>Nous croyons en une technologie accessible à tous. C'est pourquoi cette plateforme a été optimisée spécifiquement pour une expérience mobile fluide et intuitive.</p>
+            </div>
+        </main>
     </div>
 
-    <div class="features-grid">
-      <div class="feature-item">
-        <i class="fas fa-code"></i>
-        <span>Programmation</span>
-      </div>
-      <div class="feature-item">
-        <i class="fas fa-mobile-alt"></i>
-        <span>Développement Android</span>
-      </div>
-      <div class="feature-item">
-        <i class="fas fa-shield-alt"></i>
-        <span>Sécurité</span>
-      </div>
-      <div class="feature-item">
-        <i class="fas fa-graduation-cap"></i>
-        <span>Formations</span>
-      </div>
-    </div>
-
-    <div class="mission-box">
-      <h3>
-        <i class="fas fa-bullseye"></i>
-        Notre mission
-      </h3>
-      <p>
-        Démocratiser l'accès à la connaissance informatique sur Android en proposant du contenu de qualité, régulier et accessible à tous, partout dans le monde.
-      </p>
-    </div>
-  </div>
-</main>
+    <script src="js/app.js"></script>
 </body>
 </html>

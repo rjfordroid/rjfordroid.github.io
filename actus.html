@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="google-adsense-account" content="ca-pub-4800728968697075">
+    <title>RJ4DROID - Apps & Actualité Informatique</title>
+    <meta name="description" content="Téléchargez les meilleures applications Android et suivez toute l'actualité informatique en temps réel sur RJ4DROID.">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="RJ4DROID - Apps & Actualité Informatique">
+    <meta property="og:description" content="Découvrez les meilleures applications, astuces et actualités tech en temps réel.">
+    <meta property="og:image" content="img/default.jpg"> <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075" crossorigin="anonymous"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        .article-card { background: white; border-radius: 12px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .article-img { position: relative; height: 180px; }
+        .article-img img { width: 100%; height: 100%; object-fit: cover; }
+        .category-badge { position: absolute; top: 10px; right: 10px; background: #007bff; color: white; padding: 4px 10px; border-radius: 5px; font-size: 12px; }
+        .article-info { padding: 15px; }
+        .article-info h3 { margin: 0 0 10px; font-size: 18px; color: #333; }
+        .article-info p { font-size: 14px; color: #666; line-height: 1.4; margin-bottom: 15px; }
+        .article-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px; font-size: 12px; color: #888; }
+        .read-btn { background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
+
+        /* Style pou Loader a */
+        #main-loader { text-align: center; padding: 40px 20px; color: #007bff; }
+        #main-loader i { font-size: 30px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="app-content" style="display: none;"> <main class="container">
+            
+            <div id="main-loader">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <p>Chargement des articles...</p>
+            </div>
+
+            <div id="lisgArticle"></div>
+
+            <div id="ad-container-1" class="ad-slot" style="display: none; margin-top: 20px;">
+                <p style="font-size: 10px; color: #ccc; text-align: center; margin-bottom: 5px;">SPONSORISÉ</p>
+                <ins class="adsbygoogle"
+                     style="display:block; text-align:center;"
+                     data-ad-layout="in-article"
+                     data-ad-format="fluid"
+                     data-ad-client="ca-pub-4800728968697075"
+                     data-ad-slot="7183756643"></ins>
+            </div>
+            
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+      /* ================= GESTION DES ARTICLES ================= */
+
+        async function loadArticles() {
+            const container = document.getElementById('lisgArticle');
+            const loader = document.getElementById('main-loader');
+            const adContainer = document.getElementById('ad-container-1');
+            
+            if (!container) return; 
+
+            try {
+                // Nou vize chemen Firebase la
+                const snapshot = await firebase.database().ref('RJFORDROID/ARTICLES').once('value');
+                const articles = snapshot.val();
+
+                if (!articles) {
+                    loader.style.display = "none";
+                    container.innerHTML = "<p style='text-align:center;'>Pa gen okenn atik ki disponib pou kounye a.</p>";
+                    return;
+                }
+
+                // Vide lis la anvan nou mete nouvo yo
+                container.innerHTML = ""; 
+
+                // Boucle sou tout ID atik yo (nou mete reverse() pou pi nouvo atik la parèt anlè)
+                Object.keys(articles).reverse().forEach(id => {
+                    const art = articles[id];
+
+                    // Si atik la pa anliy, nou sote li
+                    if (art.online !== true) return;
+
+                    const articleHTML = `
+                        <div class="article-card">
+                            <div class="article-img">
+                                <img src="${art.image || 'img/default.jpg'}" onerror="this.src='https://via.placeholder.com/400'" alt="${art.title}">
+                                <span class="category-badge">${art.labels || 'Info'}</span>
+                            </div>
+                            <div class="article-info">
+                                <h3>${art.title}</h3>
+                                <p>${art.summary || 'Klike pou li plis...'}</p>
+                                <div class="article-footer">
+                                    <span><i class="far fa-calendar-alt"></i> ${art.date}</span>
+                                    <button onclick="viewArticle('${id}')" class="read-btn">Lire la suite</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', articleHTML);
+                });
+
+                // 1. Kache Loader a lè atik yo fin chaje
+                loader.style.display = "none";
+
+                // 2. Afiche container piblisite a epi pouse AdSense la anreta
+                if (adContainer) {
+                    adContainer.style.display = "block";
+                    try {
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    } catch (e) {
+                        console.error("Erreur AdSense:", e);
+                    }
+                }
+
+            } catch (error) {
+                console.error("Erreur chargement articles:", error);
+                loader.style.display = "none";
+                container.innerHTML = "<p style='text-align:center;'>Erreur de connexion au serveur.</p>";
+            }
+        }
+
+        // Fonksyon pou voye itilizatè a nan paj detay la
+        function viewArticle(id) {
+            localStorage.setItem('currentArticleID', id);
+            window.location.href = "article-detail.html"; 
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadArticles();
+        });
+
+    </script>
+</body>
+</html>

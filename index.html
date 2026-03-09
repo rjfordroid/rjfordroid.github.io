@@ -1,352 +1,464 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  
-  <!-- BALISES SEO AJOUTÉES -->
-  <title>RJ4DROID · Création d'applications et sites web par Ruban Joseph</title>
-  <meta name="description" content="Développeur web et mobile en Haïti. Formation Android, création de blog professionnel et conversion site web en application mobile Android.">
-  <meta name="keywords" content="création application, développement web, blog personnel, formulaire inscription, conversion site en APK, développeur Haïti, Ruban Joseph">
-  <meta name="author" content="Ruban Joseph">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://rjfordroid.netlify.app">
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://rjfordroid.netlify.app">
-  <meta property="og:title" content="RJ4DROID · Création d'applications mobiles et sites web">
-  <meta property="og:description" content="Développeur web et mobile en Haïti. Formation Android, création de blog professionnel et conversion site web en application mobile Android.">
-  <meta property="og:image" content="image/home.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="google-adsense-account" content="ca-pub-4800728968697075">
+    
+    <title id="page-title">RJ4DROID - Services Tech & Formations Android</title>
+    <meta id="meta-desc" name="description" content="RJ4DROID : Expert en création de sites web, blogs, conversion APK et formations informatiques sur Android.">
+    <meta name="keywords" content="Android, APK, Création Web, Formation Informatique, Haiti Tech">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075" crossorigin="anonymous"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://rjfordroid.netlify.app">
-  <meta property="twitter:title" content="RJ4DROID · Création d'applications mobiles et sites web">
-  <meta property="twitter:description" content="Développeur web et mobile en Haïti. Formation Android, création de blog professionnel et conversion site web en application mobile Android.">
-  <meta property="twitter:image" content="image/home.png">
+    <style>
+        /* Style rapid pou nouvo seksyon yo */
+        .hero-section { background: linear-gradient(45deg, #007bff, #00c6ff); color: white; padding: 30px 20px; text-align: center; border-radius: 15px; margin-bottom: 25px; }
+        .service-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .service-card { background: #f8f9fa; border: 1px solid #eee; padding: 15px; border-radius: 12px; text-align: center; transition: 0.3s; display: flex; flex-direction: column; justify-content: space-between; }
+        .service-card:nth-child(5) { grid-column: span 2; } 
+        .service-card i { font-size: 24px; color: #007bff; margin-bottom: 10px; }
+        .service-card h4 { font-size: 14px; margin-bottom: 5px; color: #333; }
+        .formation-banner { background: #343a40; color: white; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .formation-banner img { width: 60px; height: 60px; border-radius: 8px; }
 
-  <!-- Balise de langue alternative -->
-  <link rel="alternate" hreflang="fr" href="https://rjfordroid.netlify.app">
-  <link rel="alternate" hreflang="x-default" href="https://rjfordroid.netlify.app">
+        .btn-order { background: #007bff; color: white; border: none; padding: 8px; border-radius: 5px; margin-top: 10px; cursor: pointer; font-size: 12px; width: 100%; font-weight: bold; }
 
-  <!-- Favicon (à ajouter si vous en avez un) -->
-  <link rel="icon" type="image/png" href="image/logo1.png">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        /* Avis Clients */
+        .reviews-container { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 15px; margin-bottom: 25px; scrollbar-width: none; }
+        .reviews-container::-webkit-scrollbar { display: none; }
+        .review-card { background: #fff; padding: 15px; border-radius: 10px; min-width: 250px; border: 1px solid #e0e0e0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .review-stars { color: #ffc107; font-size: 12px; margin-bottom: 8px; }
+        .review-name { font-size: 14px; font-weight: bold; margin-bottom: 5px; color: #333; }
+        .review-text { font-size: 12px; color: #666; font-style: italic; }
 
-  <!-- Google AdSense -->
-  <meta name="google-adsense-account" content="ca-pub-4800728968697075">
-  
-  <!-- Font Awesome Icons (v6) + Google Font Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075" crossorigin="anonymous"></script>
-  
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/home.css">
+        /* --- NOUVO STYLES POU PAJ DETAY SÈVIS LA (ASPE APP) --- */
+        .service-detail-view { display: none; background: #f8f9fa; min-height: 100vh; width: 100%; padding-bottom: 40px; }
+        .top-nav-bar { background: #007bff; color: white; padding: 15px 20px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .btn-back-nav { background: none; border: none; color: white; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        
+        .detail-card-container { padding: 20px; margin-top: 10px; }
+        .detail-card { background: white; padding: 30px 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eaeaea; }
+        .detail-card i.main-icon { font-size: 60px; color: #007bff; margin-bottom: 20px; }
+        .detail-title { font-size: 22px; margin-bottom: 15px; color: #333; }
+        .detail-desc { font-size: 15px; color: #555; margin-bottom: 25px; line-height: 1.6; }
+        
+        .price-container { margin-bottom: 25px; background: #f1f8ff; padding: 15px; border-radius: 10px; border: 1px dashed #007bff; }
+        .price-tag { font-size: 26px; font-weight: bold; color: #28a745; }
+        .old-price { text-decoration: line-through; color: #dc3545; font-size: 15px; margin-left: 10px; }
+        .discount-badge { background: #ffc107; color: #000; font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: bold; vertical-align: top; margin-left: 8px; display: inline-block; }
+        
+        /* Boutons Actions (Commander & Partager) */
+        .action-buttons { display: flex; gap: 10px; width: 100%; }
+        .btn-whatsapp, .btn-share { flex: 1; display: flex; justify-content: center; align-items: center; padding: 12px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; border: none; }
+        .btn-whatsapp { background: #25D366; color: white; }
+        .btn-share { background: #6c757d; color: white; }
+        .btn-whatsapp i, .btn-share i { font-size: 18px; margin-right: 6px; }
 
-  <!-- Données structurées JSON-LD (SEO avancé) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Ruban Joseph",
-    "url": "https://rj4droid.com",
-    "image": "https://rj4droid.com/img/profile.jpg",
-    "sameAs": [
-      "https://www.linkedin.com/in/rubanjoseph",
-      "https://twitter.com/rubanjoseph"
-    ],
-    "jobTitle": "Développeur web et mobile",
-    "worksFor": {
-      "@type": "Organization",
-      "name": "RJ4DROID"
-    },
-    "description": "Développeur web depuis 7 ans, je crée des applications Android, sites web et formulaires d'inscription sur mesure.",
-    "knowsAbout": ["Développement Android", "Développement web", "Firebase", "PWA", "APK"],
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "HT"
-    }
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    "name": "RJ4DROID",
-    "description": "Services de développement d'applications mobiles et sites web sur mesure",
-    "url": "https://rj4droid.com",
-    "logo": "https://rj4droid.com/img/logo.png",
-    "priceRange": "$$",
-    "areaServed": {
-      "@type": "Country",
-      "name": "HT"
-    },
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": "Services de développement",
-      "itemListElement": [
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": "Création de blog personnel"
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": "Formulaire d'inscription"
-          }
-        },
-        {
-          "@type": "Offer",
-          "itemOffered": {
-            "@type": "Service",
-            "name": "Conversion site web en APK"
-          }
-        }
-      ]
-    }
-  }
-  </script>
+        /* --- STYLES POU MODAL ALERTE PERSONNALISE LA --- */
+        .custom-alert-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .custom-alert-content { background: white; padding: 30px 20px; border-radius: 15px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); animation: popIn 0.3s ease; }
+        .custom-alert-content i { font-size: 50px; margin-bottom: 15px; }
+        .custom-alert-message { font-size: 15px; color: #333; margin-bottom: 25px; line-height: 1.5; }
+        .btn-custom-alert { background: #007bff; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; width: 100%; }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
 </head>
 <body>
-      <!--config-->
-<span>  
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="js/firebase.js"></script>
-  <script src="js/userSidebar.js"></script>
-  <script src="js/layout.js"></script>
+
+    <!-- PAJ AKEY LA -->
+    <div id="app-content" style="display: none;">
+        <main class="container">
+            
+            <section class="hero-section">
+                <h1>Bienvenue sur RJ4DROID</h1>
+                <p>Votre partenaire digital spécialisé dans le développement mobile et web sur Android.</p>
+            </section>
+
+            <h2 class="page-title">Nos Services Digitaux</h2>
+            <div class="service-grid">
+                <!-- Sèvis 1 -->
+                <div class="service-card">
+                    <div>
+                        <i class="fas fa-file-alt"></i>
+                        <h4>Formulaires Pro</h4>
+                        <p style="font-size: 11px;">Création de formulaires personnalisés pour collecter des données.</p>
+                    </div>
+                    <button class="btn-order" onclick="openServiceView('formulaires-pro')">Commander</button>
+                </div>
+                
+                <!-- Sèvis 2 -->
+                <div class="service-card">
+                    <div>
+                        <i class="fas fa-code"></i>
+                        <h4>Web Statique</h4>
+                        <p style="font-size: 11px;">Pages web rapides, modernes et responsives.</p>
+                    </div>
+                    <button class="btn-order" onclick="openServiceView('web-statique')">Commander</button>
+                </div>
+                
+                <!-- Sèvis 3 -->
+                <div class="service-card">
+                    <div>
+                        <i class="fas fa-blog"></i>
+                        <h4>Blogs Perso</h4>
+                        <p style="font-size: 11px;">Design de blogs professionnels sur mesure.</p>
+                    </div>
+                    <button class="btn-order" onclick="openServiceView('blogs-perso')">Commander</button>
+                </div>
+                
+                <!-- Sèvis 4 -->
+                <div class="service-card">
+                    <div>
+                        <i class="fas fa-robot"></i>
+                        <h4>Web to APK</h4>
+                        <p style="font-size: 11px;">Convertissez votre site web en application Android.</p>
+                    </div>
+                    <button class="btn-order" onclick="openServiceView('web-to-apk')">Commander</button>
+                </div>
+
+                <!-- Sèvis 5 -->
+                <div class="service-card">
+                    <div>
+                        <i class="fas fa-tools"></i>
+                        <h4>Maintenance & SEO</h4>
+                        <p style="font-size: 11px;">Optimisation et gestion technique de vos plateformes.</p>
+                    </div>
+                    <button class="btn-order" onclick="openServiceView('maintenance-seo')">Commander</button>
+                </div>
+            </div>
+
+            <!-- ESPAS POU AVIS KLIYAN YO -->
+            <h2 class="page-title" style="margin-top: 30px;">Avis de nos clients</h2>
+            <div class="reviews-container">
+                <div class="review-card">
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <div class="review-name">Marc Antoine</div>
+                    <div class="review-text">"Le service Web to APK est incroyable. J'ai eu mon application en un temps record et ça marche super bien !"</div>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <div class="review-name">Stéphanie P.</div>
+                    <div class="review-text">"J'ai commandé un formulaire pro pour mon entreprise. Très satisfait du design et de la sécurité. Je recommande RJ4DROID."</div>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    </div>
+                    <div class="review-name">Garry Tech</div>
+                    <div class="review-text">"Un travail de professionnel. Mon blog personnel est magnifique et l'équipe est très à l'écoute sur WhatsApp."</div>
+                </div>
+            </div>
+
+            <h2 class="page-title">Top Applications</h2>
+            <div class="card">
+                <img src="image/logoflash.png" alt="RJFlash App Icon">
+                <div class="card-info">
+                    <h3>RJFlash</h3>
+                    <p>L'application tout-en-un : Chat, documents PDF, et séries de formations exclusives.</p>
+                    <a href="#" class="btn-download">Télécharger APK</a>
+                </div>
+            </div>
+
+            <h2 class="page-title" style="margin-top: 20px;">Formation Android</h2>
+            <div class="formation-banner">
+                <i class="fas fa-graduation-cap" style="font-size: 40px; color: #ffc107;"></i>
+                <div>
+                    <h4>Apprendre l'Informatique</h4>
+                    <p style="font-size: 12px; opacity: 0.9;">Maîtrisez le développement et le dépannage informatique directement depuis votre smartphone Android.</p>
+                </div>
+            </div>
+
+           <h2 class="page-title">Actualité Informatique</h2>
+            <div id="latest-news-container">
+                <p style="text-align: center; font-size: 14px; color: gray;">Chargement des actualités...</p>
+            </div>
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="actus.html" style="color: #007bff; text-decoration: none; font-weight: bold; font-size: 14px;">
+                    Voir tout <i class="fas fa-plus-circle"></i>
+                </a>
+            </div>
+
+           <div class="ad-slot" style="margin-top: 30px;">
+                <ins class="adsbygoogle"
+                     style="display:block; text-align:center;"
+                     data-ad-layout="in-article"
+                     data-ad-format="fluid"
+                     data-ad-client="ca-pub-4800728968697075"
+                     data-ad-slot="7183756643"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- NOUVO PAJ POU DETAY SÈVIS LA (DIV NOMAL, SAN POPUP) -->
+    <div id="serviceDetailView" class="service-detail-view">
+        <div class="top-nav-bar">
+            <button class="btn-back-nav" onclick="closeServiceView()">
+                <i class="fas fa-arrow-left"></i> Retour à l'accueil
+            </button>
+        </div>
+        
+        <div class="detail-card-container">
+            <div class="detail-card">
+                <i id="detailIcon" class="fas main-icon"></i>
+                <h2 id="detailTitle" class="detail-title">Titre du service</h2>
+                <p id="detailDesc" class="detail-desc">Description complète du service...</p>
+                
+                <div class="price-container">
+                    <span style="font-size: 13px; color: #555; display: block; margin-bottom: 8px;">Offre Spéciale</span>
+                    <span id="detailPrice" class="price-tag"></span> 
+                    <span id="detailOldPrice" class="old-price"></span>
+                    <span class="discount-badge">PROMO</span>
+                </div>
+
+                <!-- Bouton kòmand ak Pataj kote a kote -->
+                <div class="action-buttons">
+                    <a id="detailWaBtn" href="#" class="btn-whatsapp" target="_blank">
+                        <i class="fab fa-whatsapp"></i> Commander
+                    </a>
+                    <button class="btn-share" onclick="shareCurrentService()">
+                        <i class="fas fa-share-alt"></i> Partager
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ALERTE PERSONNALISE -->
+    <div id="customAlert" class="custom-alert-modal">
+        <div class="custom-alert-content">
+            <i id="customAlertIcon" class="fas fa-check-circle" style="color: #28a745;"></i>
+            <p id="customAlertMessage" class="custom-alert-message">Message ici</p>
+            <button class="btn-custom-alert" onclick="closeCustomAlert()">OK</button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
     
-  <header class="app-header" id="header"></header>
-  <div class="sidebar" id="sidebar"></div>
-  <div class="overlay" id="overlay"></div>
-  <footer class="app-footer" id="footer">
-  </footer>
-</span>
+    <script>
+        /* --- FONKSYON POU ALÈT PERSONNALIZE --- */
+        function showCustomAlert(message, isError = false) {
+            document.getElementById('customAlertMessage').innerText = message;
+            const icon = document.getElementById('customAlertIcon');
+            
+            if (isError) {
+                icon.className = 'fas fa-exclamation-circle';
+                icon.style.color = '#dc3545'; // Wouj pou erè
+            } else {
+                icon.className = 'fas fa-check-circle';
+                icon.style.color = '#28a745'; // Vèt pou siksè
+            }
+            
+            document.getElementById('customAlert').style.display = 'flex';
+        }
 
-  <!-- CONTENU PRINCIPAL-->
-<main class="main-content">
+        function closeCustomAlert() {
+            document.getElementById('customAlert').style.display = 'none';
+        }
 
-  <!-- HERO SECTION -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>
-        Formation, Astuce services informatique sur Android
-      </h1><hr>
-      <p>
-        Je vous transforme en un pro d'informatique sur Android, developper vos idées en applications web mobiles performantes et sites web modernes.
-        Développement rapide, sécurisé et sur mesure.
-      </p>
-      <div class="hero-buttons">
-        <a href="#contact" class="btn-primary">
-          <i class="fas fa-rocket"></i> Lancer mon projet
-        </a>
-        <a href="https://wa.me/50942772970" target="_blank" class="btn-secondary">
-          <i class="fab fa-whatsapp"></i> Discuter sur WhatsApp
-        </a>
-      </div>
-    </div>
-  </section>
+        /* --- BAZ DONE SÈVIS YO POU URL AK SEO DINAMIK --- */
+        const servicesDB = {
+            'formulaires-pro': {
+                title: 'Formulaires Pro',
+                price: '15$',
+                oldPrice: '25$',
+                desc: 'Création de formulaires sur mesure, sécurisés et responsives pour collecter vos données clients ou sondages facilement.',
+                icon: 'fa-file-alt'
+            },
+            'web-statique': {
+                title: 'Web Statique',
+                price: '45$',
+                oldPrice: '80$',
+                desc: 'Développement d\'une page web vitrine rapide, moderne et adaptée aux téléphones pour présenter votre entreprise.',
+                icon: 'fa-code'
+            },
+            'blogs-perso': {
+                title: 'Blog Personnel',
+                price: '65$',
+                oldPrice: '100$',
+                desc: 'Création et configuration de votre blog professionnel pour partager vos articles, avec un design attractif.',
+                icon: 'fa-blog'
+            },
+            'web-to-apk': {
+                title: 'Web to APK',
+                price: '25$',
+                oldPrice: '50$',
+                desc: 'Conversion rapide et optimisée de votre site internet en une véritable application Android (APK) prête à être installée.',
+                icon: 'fa-robot'
+            },
+            'maintenance-seo': {
+                title: 'Maintenance & SEO',
+                price: '30$/mois',
+                oldPrice: '50$/mois',
+                desc: 'Service d\'hébergement, de maintenance mensuelle et d\'optimisation pour les moteurs de recherche (SEO).',
+                icon: 'fa-tools'
+            }
+        };
 
+        const defaultSEO = {
+            title: "RJ4DROID - Services Tech & Formations Android",
+            desc: "RJ4DROID : Expert en création de sites web, blogs, conversion APK et formations informatiques sur Android."
+        };
 
-  <!-- SECTION PROBLÈME / SOLUTION -->
-  <section class="services-section">
-    <div class="section-title">
-      <h2>Vous avez une idée ? Je vous aide à la concrétiser.</h2><hr>
-    </div>
+        let currentServiceIdForShare = null; 
 
-    <div class="cards-scroll">
-      <div class="service-card">
-        <div class="card-icon">
-          <i class="fa-solid fa-circle-question"></i>
-        </div>
-        <p>
-          Vous souhaitez apprendre Android ? Créer un blog professionnel ?
-          Transformer votre site en application mobile ?
-        </p>
-      </div>
+        /* --- LOJIK VUE DETAY AK ROUTING --- */
+        function openServiceView(serviceId, pushHistory = true) {
+            const srv = servicesDB[serviceId];
+            if (!srv) return;
 
-      <div class="service-card">
-        <div class="card-icon">
-          <i class="fa-solid fa-circle-check"></i>
-        </div>
-        <p>
-          Je propose des solutions modernes adaptées aux entrepreneurs,
-          étudiants et entreprises en Haïti et à l’international.
-        </p>
-      </div>
-    </div>
-  </section>
+            currentServiceIdForShare = serviceId; 
 
+            // Ranpli detay
+            document.getElementById('detailTitle').innerText = srv.title;
+            document.getElementById('detailDesc').innerText = srv.desc;
+            document.getElementById('detailPrice').innerText = srv.price;
+            document.getElementById('detailOldPrice').innerText = srv.oldPrice;
+            document.getElementById('detailIcon').className = 'fas main-icon ' + srv.icon;
+            
+            // Link WhatsApp
+            const phoneNumber = "50938761708";
+            const message = `Bonjour RJ4DROID ! 👋\n\nJe suis intéressé(e) par votre service : *${srv.title}*.\n\n*Détails :* ${srv.desc}\n*Prix Promotionnel :* ${srv.price} (au lieu de ${srv.oldPrice}).\n\nComment pouvons-nous procéder ?`;
+            document.getElementById('detailWaBtn').href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            
+            // Afichaj Vue
+            document.getElementById('app-content').style.display = 'none';
+            document.getElementById('serviceDetailView').style.display = 'block';
+            window.scrollTo(0, 0);
 
-  <!-- SERVICES -->
-  <section class="services-section">
-    <div class="section-title">
-      <h2>Services sur mesure</h2><hr>
-    </div>
+            if (pushHistory) {
+                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?service=' + serviceId;
+                window.history.pushState({ path: newUrl }, '', newUrl);
+            }
+            
+            document.getElementById('page-title').innerText = `${srv.title} - Service RJ4DROID`;
+            document.getElementById('meta-desc').setAttribute("content", srv.desc);
+        }
 
-    <div class="cards-scroll">
+        function closeServiceView() {
+            document.getElementById('serviceDetailView').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            window.scrollTo(0, 0);
 
-      <div class="service-card">
-        <div class="card-icon"><i class="fas fa-pencil-alt"></i></div>
-        <h3>Blog professionnel</h3>
-        <p>Blog personnalisé, administration simple, intégration Firebase ou Google Sheets.</p>
-        <span class="chip">dès 2500 HTG</span>
-      </div>
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+            
+            document.getElementById('page-title').innerText = defaultSEO.title;
+            document.getElementById('meta-desc').setAttribute("content", defaultSEO.desc);
+            currentServiceIdForShare = null;
+        }
 
-      <div class="service-card">
-        <div class="card-icon"><i class="fas fa-user-check"></i></div>
-        <h3>Formulaire intelligent</h3>
-        <p>Validation temps réel, API, stockage sécurisé Firebase.</p>
-        <span class="chip">sur devis</span>
-      </div>
+        /* --- LOJIK POU PATAJE SÈVIS LA --- */
+        function shareCurrentService() {
+            if (!currentServiceIdForShare) return;
+            
+            const srv = servicesDB[currentServiceIdForShare];
+            const shareUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?service=' + currentServiceIdForShare;
+            const shareTitle = `${srv.title} - Offre RJ4DROID`;
+            const shareText = `Découvrez le service "${srv.title}" chez RJ4DROID.\n\n🔥 Offre Spéciale : ${srv.price} (au lieu de ${srv.oldPrice})\n✅ ${srv.desc}\n\nVoir les détails ici 👇 :`;
 
-      <div class="service-card">
-        <div class="card-icon"><i class="fas fa-mobile-alt"></i></div>
-        <h3>Site Web → Application Android</h3>
-        <p>Conversion optimisée avec WebView avancée + splash screen personnalisé.</p>
-        <span class="chip">à partir de 3000 HTG</span>
-      </div>
+            if (navigator.share) {
+                navigator.share({
+                    title: shareTitle,
+                    text: shareText,
+                    url: shareUrl
+                }).catch(console.error);
+            } else {
+                const fullTextToCopy = `${shareTitle}\n\n${shareText}\n${shareUrl}`;
+                navigator.clipboard.writeText(fullTextToCopy).then(() => {
+                    // Nou ranplase "alert" pa Custom Modal sa:
+                    showCustomAlert("Les détails et le lien du service ont été copiés ! Vous pouvez les coller pour les partager.", false);
+                }).catch(err => {
+                    // Nou ranplase "alert" pa Custom Modal sa pou erè:
+                    showCustomAlert("Erreur lors de la copie du lien.", true);
+                });
+            }
+        }
 
-    </div>
-  </section>
+        function checkUrlForService() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const serviceId = urlParams.get('service');
+            if (serviceId && servicesDB[serviceId]) {
+                openServiceView(serviceId, false); 
+            } else {
+                document.getElementById('serviceDetailView').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                document.getElementById('page-title').innerText = defaultSEO.title;
+                document.getElementById('meta-desc').setAttribute("content", defaultSEO.desc);
+            }
+        }
 
-<section id="portfolio" class="portfolio-section">
-  <h2>Mes réalisations</h2><hr>
-  <div class="portfolio-grid">
-    <div class="portfolio-item" onclick="openModal('image/not.png','Application X')">
-      <img src="image/not.png" alt="Application X">
-      <span>Pran Nòt</span>
-    </div>
-    <div class="portfolio-item" onclick="openModal('image/rjprompt.jpg','Application Y')">
-      <img src="image/rjprompt.jpg" alt="Application Y">
-      <span>RJ Prompt</span>
-    </div>
-  </div>
-  </div>
-</section>
-
-<a href="https://wa.me/50942772970" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
-
-  <!-- À PROPOS -->
-  <section class="preso-block">
-    <div class="preso-text">
-      <h2>Ruban Joseph · Développeur Web & Mobile</h2>
-      <p>
-        J’accompagne les debutant ambitieux à lancer leurs projets
-        efficacement et sans complication sur android.
-      </p>
-
-      <div class="stats-mini">
-        <div class="stat-item">
-          <span class="stat-number">+25</span>
-          <span class="stat-label">applications livrées</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">4.8</span>
-          <span class="stat-label">⭐ satisfaction client</span>
-        </div>
-      </div>
-    </div>
-  </section>
-  
-  <!-- TÉMOIGNAGES -->
-<section class="temoignages-block">
-  <h2>Témoignages</h2>
-  <div class="temoignages-list">
-    <div class="temoignage-item">
-      <p>"Ruban m'a aidé à lancer mon app Android en moins d'un mois. Super clair et efficace !"</p>
-      <span>- Alice M.</span>
-    </div>
-    <div class="temoignage-item">
-      <p>"Grâce à ses conseils, j'ai pu concrétiser mon projet sans galère technique."</p>
-      <span>- Karim L.</span>
-    </div>
-    <div class="temoignage-item">
-      <p>"Un développeur pro et patient, je recommande vivement à tous les débutants."</p>
-      <span>- Sophie D.</span>
-    </div>
-  </div>
-</section>
-
-<style>
-.temoignages-block {
-  padding: 40px 20px;
-  text-align: center;
-}
-.temoignages-block h2 {
-  margin-bottom: 30px;
-  font-size: 28px;
-  color: #333;
-}
-.temoignages-list {
-  display: flex;
-  gap: 20px;
-  flex-wrap: nowrap;
-  justify-content: start;
-  overflow-x: auto;
-}
-.temoignage-item {
-  min-width: 300px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  width: 250px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-.temoignage-item p {
-  font-style: italic;
-  margin-bottom: 10px;
-}
-.temoignage-item span {
-  font-weight: bold;
-  color: #555;
-}
-</style>
+        window.addEventListener('popstate', function(event) {
+            checkUrlForService();
+        });
 
 
-  <!-- CONTACT -->
-  <section class="contact-section" id="contact">
-    <div class="contact-header">
-      <h2>Discutons de votre projet</h2>
-    </div>
+        /* --- LOJIK FIREBASE OU A KI PA CHANJE --- */
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database(); 
 
-    <form>
-      <div class="form-group">
-        <label for="name">Nom</label>
-        <input type="text" id="name" required>
-      </div>
+        async function loadLatestNews() {
+            const newsContainer = document.getElementById('latest-news-container');
+            if (!newsContainer) return;
 
-      <div class="form-group">
-        <label for="contactEmail">Email</label>
-        <input type="email" id="contactEmail" required>
-      </div>
+            try {
+                const snapshot = await db.ref('RJFORDROID/ARTICLES')
+                    .limitToLast(3)
+                    .once('value');
+                
+                const articles = snapshot.val();
 
-      <div class="form-group">
-        <label for="contactPhone">WhatsApp</label>
-        <input type="tel" id="contactPhone" placeholder="+509..." required>
-      </div>
+                if (!articles) {
+                    newsContainer.innerHTML = "<p style='text-align:center; font-size:13px;'>Aucune actualité disponible pour le moment.</p>";
+                    return;
+                }
 
-      <div class="form-group">
-        <label for="message">Votre projet</label>
-        <textarea id="message" required></textarea>
-      </div>
+                newsContainer.innerHTML = ""; 
 
-      <button type="submit" class="btn-submit">
-        <i class="fas fa-paper-plane"></i> Envoyer la demande
-      </button>
-    </form>
-  </section>
+                Object.keys(articles).reverse().forEach(id => {
+                    const art = articles[id];
+                    
+                    const newsHTML = `
+                        <div class="card" style="margin-bottom: 15px; border-left: 4px solid #007bff;">
+                            <div class="card-info">
+                                <h3 style="font-size: 16px; color: #333;">${art.title}</h3>
+                                <p style="font-size: 13px; color: #666; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 5px 0;">
+                                    ${art.summary || (art.content ? art.content.substring(0, 80) : "...")}
+                                </p>
+                                <a href="article-detail.html?id=${id}" style="color: #007bff; text-decoration: none; font-size: 0.85rem; font-weight: bold;">
+                                    Lire la suite <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
+                                </a>
+                            </div>
+                        </div>`;
+                    newsContainer.insertAdjacentHTML('beforeend', newsHTML);
+                });
 
-</main>
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                newsContainer.innerHTML = "<p style='text-align:center; color:red; font-size:12px;'>Erreur de connexion à la base de données.</p>";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkUrlForService(); 
+            loadLatestNews();
+        });
+    </script>
+
 </body>
 </html>

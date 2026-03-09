@@ -1,88 +1,42 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <meta name="google-adsense-account" content="ca-pub-4800728968697075">
-  <title>RJ4DROID · app mobile</title>
-  <!-- Font Awesome Icons (v6) + Google Font Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075"
-     crossorigin="anonymous"></script>
-  
-  
-  
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/home.css">
-  
-  <style>
-
-  /* ======= BADGES ======= */
-  .badge { display:inline-block; padding:4px 8px; background:#28a745; color:white; border-radius:4px; font-size:0.85rem; }
-
- 
- 
-  /* ======= COMMENTS ======= */
-  .comment-bubble { background:#eee; padding:10px; border-radius:8px; margin-bottom:10px; }
-  .comment-bubble.self { background:#cce5ff; align-self:flex-end; }
-  .comment-bubble.other { background:#f1f1f1; align-self:flex-start; }
-
-  textarea { width:100%; min-height:60px; padding:10px; border-radius:5px; border:1px solid #ccc; }
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RJ4DROID - Apps & Actualité Informatique</title>
+    <meta name="description" content="Téléchargez les meilleures applications Android et suivez toute l'actualité informatique en temps réel sur RJ4DROID.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- AdSense Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-METE_ID_OU_LA" crossorigin="anonymous"></script>
+    
+         <!-- FIREBASE SDK (Obligatwa pou chaje done yo) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 <body>
-      <!--config-->
-<span>  
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="js/firebase.js"></script>
-  <script src="js/userSidebar.js"></script>
-  <script src="js/layout.js"></script>
-    
-  <header class="app-header" id="header"></header>
-  <div class="sidebar" id="sidebar"></div>
-  <div class="overlay" id="overlay"></div>
-  <footer class="app-footer" id="footer">
-  </footer>
-</span>
-  <!-- CONTENU PRINCIPAL-->
-  <main class="main-content">
-  <h1>Politique de confidentialité et cookies</h1>
 
-  <p>Chez <strong>RJForDroid</strong>, nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles conformément au Règlement Général sur la Protection des Données (RGPD).</p>
 
-  <h2>Données collectées</h2>
-  <ul>
-    <li>Adresse email (si vous nous contactez via le formulaire)</li>
-    <li>Cookies pour améliorer l'expérience utilisateur</li>
-    <li>Données statistiques anonymes sur la navigation</li>
-  </ul>
-<div class="ad-space">
-<!-- Bloc AdSense 2 -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-4800728968697075"
-     data-ad-slot="XXXXXXX"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-</div>
-  <h2>Utilisation des données</h2>
-  <p>Nous utilisons vos données uniquement pour répondre à vos demandes, améliorer nos services et analyser le trafic du site. Vos informations ne seront jamais vendues ou partagées avec des tiers à des fins commerciales.</p>
+    <!-- KONTNI APP LA -->
+    <div id="app-content" style="display: none;">
+        <main class="container">
+            <h2 class="page-title">Politique de Confidentialité</h2>
+            <div class="text-content">
+                <p>La protection de vos données est une priorité pour RJ4DROID.</p>
+                
+                <h2>1. Collecte des données</h2>
+                <p>Nous ne collectons aucune donnée personnelle à votre insu. Les seules informations recueillies sont celles fournies volontairement via notre formulaire de contact.</p>
 
-  <h2>Cookies</h2>
-  <p>Le site utilise des cookies pour : analyser le trafic, mémoriser vos préférences et optimiser votre expérience. Vous pouvez désactiver les cookies dans les paramètres de votre navigateur.</p>
+                <h2>2. Cookies et Google AdSense</h2>
+                <p>Ce site utilise Google AdSense pour afficher des annonces publicitaires. En tant que fournisseur tiers, Google utilise des cookies (notamment le cookie DoubleClick) pour diffuser des annonces en fonction de vos visites antérieures sur notre site ou d'autres sites web.</p>
+                <p>Vous pouvez désactiver la publicité personnalisée en visitant les <a href="https://adssettings.google.com/" target="_blank">Paramètres des annonces Google</a>.</p>
 
-  <a href="https://whatsapp.com/channel/0029VadhmlpEAKWIRzYyWt0a">
-    <button>S'abonner sur WhatsApp</button>
-  </a>
-</main>
+                <h2>3. Liens externes</h2>
+                <p>Notre application contient des liens vers des sites externes. Nous ne sommes pas responsables du contenu ou des politiques de confidentialité de ces sites.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>RJ4DROID - Téléchargez RJFlash & Actualité Informatique</title>
+    <meta name="description" content="Téléchargez RJFlash, l'application Android tout-en-un pour discuter, apprendre et lire vos PDF. Suivez toute l'actualité informatique en temps réel on RJ4DROID.">
+    <meta name="keywords" content="RJFlash, Application Android, Télécharger APK, Apprendre l'informatique, Chat, PDF, Actualité Tech, RJ4DROID">
+    <meta name="author" content="RJ4DROID">
+    <meta name="robots" content="index, follow">
+    
+    <meta property="og:title" content="Téléchargez l'App RJFlash sur RJ4DROID">
+    <meta property="og:description" content="L'application Android pour discuter, apprendre l'informatique et lire vos documents PDF.">
+    <meta property="og:image" content="image/logoflash.png">
+    <meta property="og:type" content="website">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "RJFlash",
+      "operatingSystem": "ANDROID",
+      "applicationCategory": "EducationalApplication",
+      "description": "RJFlash est une application tout-en-un pour discuter, apprendre l'informatique, lire des PDF et s'informer (Actualités, Langues).",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "RJ4DROID"
+      }
+    }
+    </script>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
+        
+        main.container.main-content {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            max-width: 100% !important;
+            overflow-x: hidden;
+        }
+
+        .page-title { 
+            text-align: center; 
+            color: #333; 
+            margin: 20px 15px 25px 15px; 
+            font-weight: 800; 
+        }
+
+        .promo-container {
+            width: 100%;
+            margin: 0 0 40px 0;
+            background: #ffffff;
+            border-radius: 0; 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border-top: 1px solid #eaeaea;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .promo-header {
+            background: linear-gradient(135deg, rgba(0,123,255,0.9) 0%, rgba(0,198,255,0.9) 100%), url('image/service.jpg') center/cover no-repeat;
+            padding: 50px 20px 40px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .app-icon-img {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            background: white;
+            border-radius: 24px;
+            padding: 5px;
+            margin-bottom: 25px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            animation: float 3s ease-in-out infinite; 
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .promo-title {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            line-height: 1.35;
+        }
+        
+        .promo-subtitle {
+            font-size: 16px;
+            font-weight: 400;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto 25px auto;
+            line-height: 1.5;
+        }
+        
+        .promo-body { padding: 30px 0; }
+        
+        .features-scroll {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 20px 25px 20px; 
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .features-scroll::-webkit-scrollbar { height: 6px; }
+        .features-scroll::-webkit-scrollbar-track { background: transparent; }
+        .features-scroll::-webkit-scrollbar-thumb { background: rgba(0, 123, 255, 0.3); border-radius: 10px; }
+
+        .feature-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 260px;
+            min-width: 260px;
+            flex: 0 0 auto;
+            scroll-snap-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+            border-color: #007bff;
+        }
+        
+        .feature-icon {
+            background: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-text {
+            font-size: 14px;
+            color: #495057;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        .promo-tagline {
+            text-align: center;
+            color: #dc3545;
+            margin: 20px 15px 25px 15px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+        
+        .screenshot {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 15px 20px 35px 20px;
+            margin: 0;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            align-items: center;
+        }
+
+        .screenshot::-webkit-scrollbar { height: 6px; }
+        .screenshot::-webkit-scrollbar-track { background: transparent; }
+        .screenshot::-webkit-scrollbar-thumb { background: rgba(40, 167, 69, 0.4); border-radius: 10px; }
+
+        .screenshot-img {
+            max-width: 250px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border: 3px solid #fff;
+            flex: 0 0 auto;
+            scroll-snap-align: center;
+        }
+        
+        @media (min-width: 600px) {
+            .screenshot-img { max-width: 320px; } 
+            .screenshot { justify-content: center; flex-wrap: wrap; overflow-x: visible; }
+        }
+        
+        .btn-cta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: max-content;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 16px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .ad-container {
+            text-align: center;
+            margin: 0 15px 25px 15px; 
+            min-height: 120px; 
+            background: #fdfdfd;
+            border: 1px dashed #ced4da;
+            border-radius: 12px;
+            padding: 10px;
+        }
+        
+        .ad-label {
+            font-size: 10px;
+            color: #adb5bd;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        /* --- STYLING POU NOUVO TEKS LA --- */
+        .app-description-section {
+            padding: 30px 20px;
+            background: #fff;
+            color: #444;
+            line-height: 1.7;
+        }
+
+        .description-block {
+            margin-bottom: 30px;
+        }
+
+        .description-block h3 {
+            color: #007bff;
+            font-size: 19px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .description-block p {
+            font-size: 15px;
+            text-align: justify;
+        }
+
+        .description-block i {
+            font-size: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .promo-title { font-size: 23px; }
+            .feature-card { min-width: 250px; width: 250px; } 
+            .screenshot-img { width: 75%; max-width: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-content" style="display: none;">
+        <main class="container main-content">
+          
+            <h2 class="page-title">Top Application</h2>
+            
+            <div class="promo-container">
+                
+              <div class="promo-header">
+                <img src="image/logoflash.png" alt="RJFlash Icon" class="app-icon-img" onerror="this.src='image/rjflash.png'">
+                <h1 class="promo-title">RJFlash — L'app qui mélange chat, connaissances et informations.</h1>
+                <p class="promo-subtitle">Avec RJFlash, vous ne faites pas que discuter… vous vous connectez, apprenez et découvrez.</p>
+                
+                <a href="https://rjfordroid.netlify.app/p/apps.html?nom=RJFlash" class="btn-cta">
+                  <i class="fa-brands fa-google-play" style="margin-right: 10px;"></i> Télécharger l'App
+                </a>
+              </div>
+
+              <div class="promo-body">
+                 <div class="features-scroll">
+                  <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-comments"></i></div>
+                    <div class="feature-text">Discutez en groupe ou en privé avec des personnes partageant vos intérêts.</div>
+                  </div>
+                  <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <div class="feature-text">Lisez et téléchargez des documents PDF facilement pour votre éducation.</div>
+                  </div>
+                  <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-earth-americas"></i></div>
+                    <div class="feature-text">Apprenez des expressions en anglais, espagnol et créole pour améliorer vos langues.</div>
+                  </div>
+                  <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <div class="feature-text">Suivez des séries de formations pour vous développer chaque jour.</div>
+                  </div>
+                  <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-newspaper"></i></div>
+                    <div class="feature-text">Restez branché sur l'actualité, la politique, la technologie et la bible.</div>
+                  </div>
+                </div>
+ 
+                <div class="ad-container">
+                    <span class="ad-label">Sponsorisé</span>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-4800728968697075"
+                         data-ad-slot="7183756643" 
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
+
+                <h3 class="promo-tagline">
+                  <i class="fa-solid fa-bolt"></i> Une seule app. Plusieurs expériences.
+                </h3>
+                
+                <div class="screenshot">
+                  <img src="image/c1.png" alt="Aperçu" class="screenshot-img" onerror="this.src='https://via.placeholder.com/300x600?text=Screenshot+1'">
+                  <img src="image/c2.png" alt="Aperçu" class="screenshot-img" onerror="this.src='https://via.placeholder.com/300x600?text=Screenshot+2'">
+                  <img src="image/c3.png" alt="Aperçu" class="screenshot-img" onerror="this.src='https://via.placeholder.com/300x600?text=Screenshot+3'">
+                  <img src="image/c4.png" alt="Aperçu" class="screenshot-img" onerror="this.src='https://via.placeholder.com/300x600?text=Screenshot+4'">
+                  <img src="image/c5.png" alt="Aperçu" class="screenshot-img" onerror="this.src='https://via.placeholder.com/300x600?text=Screenshot+5'">
+                </div>
+
+                <div class="ad-container" style="margin-top: 10px;">
+                    <span class="ad-label">Sponsorisé</span>
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-4800728968697075"
+                         data-ad-slot="7183756643"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
+                
+                <div class="app-description-section">
+                    
+                    <div class="description-block">
+                        <h3><i class="fas fa-rocket"></i> Yon solisyon tout-an-yon</h3>
+                        <p>Aplikasyon RJFlash la, ki devlope pa ekip RJ4DROID la, se pa sèlman yon senp aplikasyon pou w telechaje sou smartphone Android ou. Li se yon platfòm dijital entelijan ak yon espas "tout-an-yon" (tout-en-un) ki konbine plizyè zouti esansyèl nan yon sèl kote. Lè nou gade fonksyonalite li yo, nou ka wè aklè li fèt pou reponn ak plizyè bezwen pratik, edikatif ak sosyal itilizatè yo genyen chak jou.</p>
+                    </div>
+
+                    <div class="description-block">
+                        <h3><i class="fas fa-users"></i> Entèraksyon Sosyal ak Chat</h3>
+                        <p>Premyèman, sou plan entèraksyon sosyal, RJFlash ofri yon sistèm "Chat" trè byen fèt kote itilizatè yo ka diskite an prive oswa an gwoup. Sa pèmèt moun ki gen menm pasyon ak menm enterè yo reyini ansanm pou yo pataje lide, bay konsèy, epi kreye yon kominote vityèl ki solid. Se yon espas kote kominikasyon fèt yon fason ki senp epi entèraktif.</p>
+                    </div>
+
+                    <div class="description-block">
+                        <h3><i class="fas fa-book-reader"></i> Bibliyotèk Dijital ak PDF</h3>
+                        <p>Dezyèmman, sou plan edikasyon, aplikasyon an aji tankou yon vrè bibliyotèk dijital pèsonèl. Li bay tout moun posiblite pou yo telechaje epi li dokiman PDF dirèkteman anndan aplikasyon an san yo pa bezwen enstale yon lòt aplikasyon separe. Sa se yon avantaj ekstrawòdinè pou etidyan, pwofesè, ak pwofesyonèl ki toujou bezwen gen dokiman enpòtan sou men yo.</p>
+                    </div>
+
+                    <div class="description-block">
+                        <h3><i class="fas fa-language"></i> Aprantisaj Lang Etranjè</h3>
+                        <p>Twazyèmman, aplikasyon sa bay anpil enpòtans ak devlopman pèsonèl, sitou nan aprantisaj lang. Li ofri opsyon kote itilizatè yo ka aprann nouvo mo ak ekspresyon nan lang Anglè, Panyòl, ak Kreyòl. Nan mond modèn sa a, metrize plizyè lang se yon kle pou jwenn plis opòtinite, epi gen yon zouti ki fasilite w pratike sa gratis se yon gwo benefis.</p>
+                    </div>
+
+                    <div class="description-block">
+                        <h3><i class="fas fa-newspaper"></i> Aktyalite, Teknoloji ak Bib</h3>
+                        <p>Katriyèmman, RJFlash asire li ke itilizatè l yo toujou okouran de sa k ap pase nan lemonn antye. Li gen ladan l yon seksyon pou aktyalite an tan reyèl (Nouvèl) sou politik ak teknoloji. Menm aspè espirityèl la pa bliye, paske aplikasyon an ofri ti piblikasyon ak edikasyon sou Bib la pou moun k ap chèche grandi nan lafwa yo.</p>
+                    </div>
+
+                    <div class="description-block">
+                        <h3><i class="fas fa-check-circle"></i> Konklizyon ak Benefis</h3>
+                        <p>An konklizyon, RJFlash chanje fason nou konn abitye sèvi ak smartphone nou. Lè w gen tout gwo sèvis sa yo reyini nan yon sèl platfòm, ou rive ekonomize anpil espas (storage) sou telefòn ou paske w pap gen pou w telechaje yon pakèt aplikasyon separe. Li fè lavi w pi pwodiktif, li ede w evolye, epi li rete yon referans kòm youn nan pi bon aplikasyon ayisyen jodi a.</p>
+                    </div>
+
+                </div>
+
+              </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const appContent = document.getElementById('app-content');
+            if(appContent) { appContent.style.display = 'block'; }
+        });
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4800728968697075" crossorigin="anonymous"></script>
+
+</body>
+</html>
