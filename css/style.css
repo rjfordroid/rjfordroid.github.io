@@ -1,355 +1,140 @@
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+/* ================= style.css ================= */
+:root {
+    --primary: #007bff;
+    --dark: #121212;
+    --light-bg: #f4f7f6;
+    --text-dark: #333;
+    --text-light: #fff;
+}
 
-    body {
-      background:white;
-      font-family: 'Inter', sans-serif;
-      color: black;
-      line-height: 1.5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    
-     h1, h2 { margin-bottom:15px; color:#333; }
-  h1 { font-size:2rem; margin-bottom:20px; text-align:center; color:black; }
-  p { margin-bottom:15px; color:black;}
-  ul { margin-left:20px; margin-bottom:15px; }
-  li { margin-bottom:8px; }
-    
-      a { color:#0066cc; text-decoration:none; }
-  a:hover { text-decoration:underline; }
-  
-   /* ======= BUTTONS ======= */
-  button { cursor:pointer; padding:10px 15px; border:none; border-radius:5px; background:#0066cc; color:white; font-size:0.9rem; margin-top:10px; }
-  button:hover { background:#0055aa; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+body { background-color: var(--light-bg); color: var(--text-dark); -webkit-tap-highlight-color: transparent; }
+
+/* PC BLOCKER */
+#desktop-blocker {
+    display: none;
+    height: 100vh; width: 100vw;
+    background-color: var(--dark); color: white;
+    flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 20px; z-index: 9999; position: fixed; top: 0; left: 0;
+}
+#desktop-blocker i { font-size: 5rem; color: #ff4757; margin-bottom: 20px; }
+#desktop-blocker h1 { font-size: 2rem; margin-bottom: 10px; }
+#desktop-blocker p { font-size: 1.1rem; color: #ccc; }
+
+/* APP LAYOUT */
+#app-content { padding-bottom: 70px; padding-top: 60px; }
+
+/* Header */
+.app-header {
+    position: fixed; top: 0; width: 100%; height: 60px;
+    background: var(--primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;
+}
+
+        .header-btn {
+            background: none;
+            border: none;
+            color: white; /* Asire w koulè a mache ak header w la */
+            font-size: 22px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+.app-header h1 { font-size: 1.5rem; letter-spacing: 1px; }
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed; bottom: 0; width: 100%; height: 65px;
+    background: white; display: flex; justify-content: space-around; align-items: center;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 1000;
+}
+.nav-item {
+    text-decoration: none; color: #666; display: flex;
+    flex-direction: column; align-items: center; font-size: 0.8rem;
+}
+.nav-item.active { color: var(--primary); font-weight: bold; }
+.nav-item i { font-size: 1.5rem; margin-bottom: 4px; }
+
+/* Main Content */
+.container { padding: 15px; }
+.page-title { margin-bottom: 15px; font-size: 1.3rem; border-bottom: 2px solid var(--primary); display: inline-block; }
+
+/* Cards (Apps/News) */
+.card {
+    background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; gap: 15px; align-items: center;
+}
+.card img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; }
+.card-info h3 { font-size: 1.1rem; margin-bottom: 5px; }
+.card-info p { font-size: 0.85rem; color: #777; margin-bottom: 8px; }
+.btn-download { background: var(--primary); color: white; padding: 5px 15px; border-radius: 20px; text-decoration: none; font-size: 0.8rem; font-weight: bold; }
+
+/* Text Pages (About, Privacy...) */
+.text-content { background: white; padding: 20px; border-radius: 10px; line-height: 1.6; }
+.text-content h2 { margin-top: 20px; margin-bottom: 10px; font-size: 1.2rem; }
+.text-content p { margin-bottom: 15px; color: #444; }
+
+/* AdSense Slot styling */
+.ad-slot { margin: 20px 0; text-align: center; background: #eaeaea; padding: 10px; border-radius: 5px; border: 1px dashed #ccc;}
+.ad-slot::before { content: "Publicité"; font-size: 0.7rem; color: #888; display: block; margin-bottom: 5px; }
 
 
- /* ======= MEDIA ======= */
-  img, video, iframe { max-width:100%; border-radius:6px; margin:15px 0; }
 
-
-    /* ===== HEADER FIXED EN HAUT ===== */
-    .app-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: white;
-      padding:10px;
-      box-shadow: 0 10px 25px -8px #00000070;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      backdrop-filter: blur(6px);
-      border-bottom: 1px solid #2e5075;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .menu-btn {
-      background: #1e3a57;
-      border: none;
-      color: black;
-      font-size: 1.8rem;
-      width: 48px;
-      height: 48px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border: 1px solid #345f88;
-      transition: all 0.1s;
-    }
-
-    .menu-btn:active {
-      background: #2b4f73;
-      transform: scale(0.95);
-    }
-
-    .logo-small h2 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      background: linear-gradient(130deg, green, blue);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .dev-icon-small {
-      background: #1f3a57;
-      width: 48px;
-      height: 48px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      color: #6bb5ff;
-      border: 1px solid #31658b;
-    }
-
-/* Menu */
-.context-menu {
+/* ==================== OVERLAY ==================== */
+#overlay {
   position: fixed;
-  top: 60px;
-  right: 15px;
-  background: white;
-  width: 200px;
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 10px 0;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
   opacity: 0;
-  transform: translateY(-10px) scale(0.95);
-  pointer-events: none;
-  transition: all 0.25s ease;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
-  .context-menu {
-    background: white;
-    border: 1px solid #2e5880;
-    border-radius: 1.5rem;
-    padding: 0.8rem 0;
-    min-width: 180px;
-    box-shadow: 0 15px 30px -10px black;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-  }
 
-
-/* Etat actif */
-.context-menu.active {
+#overlay.active {
   opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
+  visibility: visible;
 }
 
-/* Liens */
-.context-menu a {
-  display: block;
-  padding: 12px 16px;
-  text-decoration: none;
-  color: black;
-  font-size: 14px;
-  transition: 0.2s;
+/* ==================== SIDEBAR ==================== */
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px; /* Kache a goch */
+  width: 280px;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 9999;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  transition: left 0.3s ease;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.context-menu a:hover {
-  background: #2a2a2a;
-  padding-left: 20px;
+#sidebar.open {
+  left: 0; /* Parèt sou ekran an */
 }
 
-.main-content {
-  margin-bottom: 100px;
-  margin-top: 100px;
-flex: 1;
-overflow-y: auto;
-color: black;
-border: 1px solid linear-gradient(145deg, #0d1b2c 0%, lime 100%);
+/* Bouton fèmen */
+#closeSidebar {
+  align-self: flex-end;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
 }
 
-    /* ===== SIDEBAR (coulisse gauche) ===== */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -390px; /* cachée par défaut */
-      width: 390px;
-      height: 100vh;
-      background: white;
-      backdrop-filter: blur(20px);
-      border-right: 2px solid #264a6e;
-      box-shadow: 10px 0 40px -5px #000000cc;
-      z-index: 200;
-      transition: left 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
-      padding: 1.8rem 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      overflow-y: auto;
-    }
-
-    .sidebar.open {
-      left: 0;
-    }
-
-    .sidebar-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-
-    .sidebar-header h3 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #b0dcff;
-    }
-
-    .close-sidebar {
-      background: #1b344b;
-      border: none;
-      color: #c0e1ff;
-      font-size: 1.8rem;
-      width: 44px;
-      height: 44px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border: 1px solid #34638a;
-    }
-    .hidden {
-  display: none;
-}
-    /* profil utilisateur dans sidebar */
-    .user-profile-sidebar {
-      background: gray;
-      border-radius: 2rem;
-      padding: 1.8rem 1.2rem;
-      border: 1px solid #2d5780;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .avatar-side {
-      width: 100px;
-      height: 100px;
-      background: #203f5b;
-      border-radius: 50%;
-      margin: 0 auto 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 3px solid #4f8fc9;
-      font-size: 3.5rem;
-      color: #aad0ff;
-    }
-
-    .user-profile-sidebar h4 {
-      font-size: 1.6rem;
-      font-weight: 700;
-    }
-
-    .user-title {
-      color: #80b9f0;
-      font-weight: 500;
-      margin: 0.2rem 0 1rem;
-    }
-
-    .detail-row {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      background: #1a354b;
-      padding: 0.7rem 1rem;
-      border-radius: 40px;
-      margin: 0.8rem 0;
-      border: 1px solid #2b5580;
-      font-size: 0.9rem;
-      text-align: left;
-    }
-
-    .detail-row i {
-      width: 24px;
-      color: #7cb9ff;
-    }
-
-    .stats-side {
-      display: flex;
-      justify-content: space-around;
-      margin: 1.5rem 0 0.8rem;
-    }
-
-    .stat-side-item {
-      text-align: center;
-    }
-
-    .stat-side-num {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #8ec3ff;
-    }
-
-    .stat-side-label {
-      font-size: 0.7rem;
-      color: #96b4d3;
-    }
-
-    .logout-btn {
-      background: #1f3043;
-      border: 1px solid #3e6085;
-      border-radius: 40px;
-      padding: 0.9rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      color: #c7defa;
-      font-weight: 600;
-      margin-top: 0.8rem;
-    }
-
-    /* overlay pour fermer en cliquant à côté */
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(2px);
-      z-index: 150;
-      display: none;
-    }
-
-    .overlay.active {
-      display: block;
-    }
-
-  
-    /* ===== FOOTER FIXED EN BAS ===== */
-    .app-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: white;
-      padding:10px;
-      border-top: 1px solid #2a4a6e;
-      box-shadow: 0 -8px 20px -5px #00000060;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      backdrop-filter: blur(8px);
-    }
-
-    .footer-item {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      color: black;
-      font-size: 0.75rem;
-      transition: color 0.1s;
-    }
-
-    .footer-item i {
-      font-size: 1.4rem;
-      margin-bottom: 3px;
-    }
-
-    .footer-item.active {
-      color: #6bb5ff;
-    }
+/* Design debaz pou enfòmasyon nan sidebar */
+.sidebar-profile { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;}
+.sidebar-profile h3 { margin: 10px 0 5px; }
+.sidebar-links { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
+.sidebar-links a { text-decoration: none; color: #333; font-weight: bold; }
+.hidden { display: none !important; }
