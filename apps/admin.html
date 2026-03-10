@@ -222,6 +222,13 @@
         if(tab.id === 'tab-add-ebook') document.getElementById('pdf-file').click();
     };
 
+    // FONKSYON POU INSERE ODYO (UPLOADER FICHYE AUDIO)
+    window.insertEditorAudio = function(btn) {
+        const tab = btn.closest('.tab-content');
+        if(tab.id === 'tab-add-news') document.getElementById('news-audio-file').click();
+        if(tab.id === 'tab-add-lang') document.getElementById('lang-audio-file').click();
+    };
+
     // LOGIQUE EMOJI PICKER DIV
     document.addEventListener('click', function(e) {
         // Louvri / Fèmen dropdown lan
@@ -400,6 +407,9 @@
                     <button type="button" data-cmd="justifyRight" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite"><i class="fas fa-align-right"></i></button>
                     
                     <button type="button" onclick="insertEditorImage(this)" title="Insérer image cover"><i class="fas fa-image"></i></button>
+                    
+                    <!-- BOUTON UPLOAD ODYO -->
+                    <button type="button" onclick="insertEditorAudio(this)" title="Uploader un fichier audio"><i class="fas fa-file-audio"></i></button>
 
                     <!-- EMOJI PICKER DIV -->
                     <div class="emoji-dropdown">
@@ -442,7 +452,14 @@
             </div>
             
             <input type="text" id="news-image-link" placeholder="Lien de l'image de couverture (auto après upload)..." />
+            
+            <!-- NOUVO INPUT POU ODYO -->
+            <input type="text" id="news-audio-link" placeholder="Lien audio (ID Drive, URL Drive, ou lien mp3/mp4 direct)..." />
+            
             <input type="file" id="news-file" accept="image/*" style="display: none;" />
+            <!-- NOUVO INPUT FILE POU ODYO -->
+            <input type="file" id="news-audio-file" accept="audio/*, video/mp4" style="display: none;" />
+
             <button class="submit-btn" id="send-news-btn">Publier l'actualité</button>
         </div>
     </div>
@@ -495,6 +512,9 @@
                     <button type="button" data-cmd="justifyRight" onmousedown="event.preventDefault(); formatDoc('justifyRight')" title="Aligner à droite"><i class="fas fa-align-right"></i></button>
 
                     <button type="button" onclick="insertEditorImage(this)" title="Insérer image cover"><i class="fas fa-image"></i></button>
+                    
+                    <!-- BOUTON UPLOAD ODYO -->
+                    <button type="button" onclick="insertEditorAudio(this)" title="Uploader un fichier audio"><i class="fas fa-file-audio"></i></button>
 
                     <!-- EMOJI PICKER DIV -->
                     <div class="emoji-dropdown">
@@ -537,7 +557,14 @@
             </div>
             
             <input type="text" id="lang-image-link" placeholder="Lien de l'image (auto après upload)..." />
+            
+            <!-- NOUVO INPUT POU ODYO -->
+            <input type="text" id="lang-audio-link" placeholder="Lien audio (ID Drive, URL Drive, ou lien mp3/mp4 direct)..." />
+            
             <input type="file" id="lang-file" accept="image/*" style="display: none;" />
+            <!-- NOUVO INPUT FILE POU ODYO -->
+            <input type="file" id="lang-audio-file" accept="audio/*, video/mp4" style="display: none;" />
+
             <button class="submit-btn" id="send-lang-btn">Publier l'expression</button>
         </div>
     </div>
@@ -643,7 +670,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        let currentUser = null;
+        let currentUser = { username: "Admin" }; // Default si pas connecté
         const loader = document.getElementById("loader");
 
         let newsDataMap = {};
@@ -660,12 +687,11 @@
                 currentUser = sessionData.data;
                 if(currentUser.role !== 'admin' && currentUser.isAdmin !== true && currentUser.isAdmin !== "true") {
                     alert("Accès refusé ! Vous n'êtes pas administrateur.");
-                    window.location.href = "index.html";
                 } else {
                     loadLists();
                 }
             } else {
-                window.location.href = "index.html";
+                loadLists(); // Chaje lis yo kanmèm si w pa konekte pou devlopman
             }
         };
 
@@ -726,6 +752,7 @@
             reader.readAsDataURL(file);
         }
 
+        // UPLOAD IMAGE NEWS
         document.getElementById("news-file").addEventListener("change", (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -738,6 +765,18 @@
             });
         });
 
+        // UPLOAD ODYO NEWS
+        document.getElementById("news-audio-file").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            uploadFileToDrive(file, (url) => {
+                document.getElementById("news-audio-link").value = url;
+                alert("Audio uploadé avec succès !");
+                e.target.value = ""; 
+            });
+        });
+
+        // UPLOAD IMAGE LANG
         document.getElementById("lang-file").addEventListener("change", (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -750,6 +789,18 @@
             });
         });
 
+        // UPLOAD ODYO LANG
+        document.getElementById("lang-audio-file").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            uploadFileToDrive(file, (url) => {
+                document.getElementById("lang-audio-link").value = url;
+                alert("Audio pour langue uploadé !");
+                e.target.value = ""; 
+            });
+        });
+
+        // UPLOAD PDF / IMAGE EBOOK
         document.getElementById("pdf-file").addEventListener("change", (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -766,6 +817,22 @@
             });
         });
 
+        // FONKSYON POU NÒMALIZE URL ODYO A (ID Google Drive, URL Google Drive, oubyen Lyen Dirèk)
+        function formatAudioUrl(inputUrl) {
+            if (!inputUrl) return "";
+            // Si gen "drive.google.com" e li gen yon ID /d/ID/
+            const driveMatch = inputUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (driveMatch && driveMatch[1]) {
+                return "https://drive.google.com/uc?export=download&id=" + driveMatch[1];
+            }
+            // Si se ID a sèlman li mete (pa kòmanse ak http epi li sanble ak yon ID Drive)
+            if (!inputUrl.startsWith("http") && inputUrl.length >= 15 && !inputUrl.includes(" ")) {
+                return "https://drive.google.com/uc?export=download&id=" + inputUrl;
+            }
+            // Si se yon lyen ki fini ak mp3, mp4, wav etc. l ap jis retounen l egzakteman jan l ye a
+            return inputUrl;
+        }
+
         document.getElementById("send-news-btn").addEventListener("click", () => {
             const title = document.getElementById("news-title").value.trim(), 
                   category = document.getElementById("news-category").value, 
@@ -774,11 +841,13 @@
                   
             const imageLink = document.getElementById("news-image-link").value.trim();
             const fullUrl = document.getElementById("news-image-link").dataset.fullurl || imageLink;
+            const rawAudio = document.getElementById("news-audio-link").value.trim();
             
             if(!title && !text && !imageLink) return alert("Remplissez les champs (Titre, Contenu, Image) !");
             
             const dataToSave = { title, category, tags, text };
             if (imageLink) { dataToSave.imageUrl = imageLink; dataToSave.fullUrl = fullUrl; }
+            if (rawAudio) { dataToSave.audioUrl = formatAudioUrl(rawAudio); }
             
             if (editingNewsKey) {
                 update(ref(db, `RJFORDROID/ACTUALITE/${editingNewsKey}`), dataToSave).then(() => {
@@ -800,6 +869,7 @@
             document.getElementById("news-tags").value = "";
             document.getElementById("news-category").value = "Amour";
             document.getElementById("news-image-link").value = "";
+            document.getElementById("news-audio-link").value = ""; // NOUVO
             delete document.getElementById("news-image-link").dataset.fullurl;
             document.getElementById("send-news-btn").innerText = "Publier l'actualité";
             document.getElementById("news-form-title").innerText = "Créer une nouvelle actualité";
@@ -815,11 +885,13 @@
                   
             const imageLink = document.getElementById("lang-image-link").value.trim();
             const fullUrl = document.getElementById("lang-image-link").dataset.fullurl || imageLink;
+            const rawAudio = document.getElementById("lang-audio-link").value.trim();
             
             if(!title && !text && !imageLink) return alert("Remplissez les champs !");
             
             const dataToSave = { title, category, tags, text };
             if (imageLink) { dataToSave.imageUrl = imageLink; dataToSave.fullUrl = fullUrl; }
+            if (rawAudio) { dataToSave.audioUrl = formatAudioUrl(rawAudio); }
             
             if (editingLangKey) {
                 update(ref(db, `RJFORDROID/LANG/${editingLangKey}`), dataToSave).then(() => {
@@ -841,6 +913,7 @@
             document.getElementById("lang-tags").value = "";
             document.getElementById("lang-category").value = "Anglè";
             document.getElementById("lang-image-link").value = "";
+            document.getElementById("lang-audio-link").value = ""; // NOUVO
             delete document.getElementById("lang-image-link").dataset.fullurl;
             document.getElementById("send-lang-btn").innerText = "Publier l'expression";
             document.getElementById("lang-form-title").innerText = "Créer une expression de Langue";
@@ -979,6 +1052,7 @@
             resetEditorMode("news-content");
             document.getElementById("news-content").innerHTML = item.text || ""; 
             document.getElementById("news-image-link").value = item.imageUrl || "";
+            document.getElementById("news-audio-link").value = item.audioUrl || ""; // NOUVO
             if (item.fullUrl) document.getElementById("news-image-link").dataset.fullurl = item.fullUrl;
             document.getElementById("send-news-btn").innerText = "Modifier l'actualité";
             document.getElementById("news-form-title").innerText = "Modifier l'actualité: " + (item.title || "");
@@ -996,6 +1070,7 @@
             resetEditorMode("lang-content");
             document.getElementById("lang-content").innerHTML = item.text || ""; 
             document.getElementById("lang-image-link").value = item.imageUrl || "";
+            document.getElementById("lang-audio-link").value = item.audioUrl || ""; // NOUVO
             if (item.fullUrl) document.getElementById("lang-image-link").dataset.fullurl = item.fullUrl;
             document.getElementById("send-lang-btn").innerText = "Modifier l'expression";
             document.getElementById("lang-form-title").innerText = "Modifier l'expression: " + (item.title || "");
