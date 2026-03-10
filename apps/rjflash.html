@@ -864,10 +864,42 @@
         };
 
         window.speakingKey = null;
+        window.currentAudioObj = null;
+
         window.readTextAloud = function(key) {
-            let text = document.getElementById(`text-${key}`).innerText; let btn = document.getElementById(`speak-btn-${key}`);
-            if (window.isSpeaking === key) { if (typeof AndroidControler !== "undefined") AndroidControler.stopSpeak(); window.isSpeaking = null; btn.innerHTML = "🔊 Lire"; } 
-            else { if (typeof AndroidControler !== "undefined") { AndroidControler.speak(text); window.isSpeaking = key; btn.innerHTML = "⏹️ Stop"; } }
+            let text = document.getElementById(`text-${key}`).innerText; 
+            let btn = document.getElementById(`speak-btn-${key}`);
+            
+            let item = allNewsItems.find(i => i.id === key) || {};
+            let audioUrl = item.audioUrl || item.audio || item.audioFile || item.audioLink;
+
+            if (window.isSpeaking === key) { 
+                if (window.currentAudioObj) { window.currentAudioObj.pause(); window.currentAudioObj = null; }
+                if (typeof AndroidControler !== "undefined") AndroidControler.stopSpeak(); 
+                window.isSpeaking = null; 
+                btn.innerHTML = "🔊 Lire"; 
+            } 
+            else { 
+                if (window.isSpeaking) {
+                    if (window.currentAudioObj) { window.currentAudioObj.pause(); window.currentAudioObj = null; }
+                    if (typeof AndroidControler !== "undefined") AndroidControler.stopSpeak();
+                    let oldBtn = document.getElementById(`speak-btn-${window.isSpeaking}`) || document.getElementById(`speak-btn-lang-${window.isSpeaking}`);
+                    if(oldBtn) oldBtn.innerHTML = "🔊 Lire";
+                }
+                
+                window.isSpeaking = key; 
+                btn.innerHTML = "⏹️ Stop"; 
+
+                if (audioUrl && (audioUrl.includes('.mp3') || audioUrl.includes('.wav') || audioUrl.includes('.m4a') || audioUrl.includes('.ogg') || audioUrl.startsWith('http'))) {
+                    window.currentAudioObj = new Audio(audioUrl);
+                    window.currentAudioObj.play().catch(e => console.log(e));
+                    window.currentAudioObj.onended = () => {
+                        if (window.isSpeaking === key) { window.isSpeaking = null; btn.innerHTML = "🔊 Lire"; window.currentAudioObj = null; }
+                    };
+                } else {
+                    if (typeof AndroidControler !== "undefined") { AndroidControler.speak(text); } 
+                }
+            }
         };
 
         window.setLangCategory = (cat) => { currentLangCategory = cat; currentLangPage = 1; updateLangFilterUI(); loadLang(); };
@@ -943,10 +975,41 @@
                 if (typeof AndroidControler !== "undefined" && AndroidControler.shareToAndroid) AndroidControler.shareToAndroid(title, content); else if (navigator.share) navigator.share({ title, text: content }).catch(() => {}); else { navigator.clipboard.writeText(content); showPopup("Lien copié !"); }
             });
         };
+
         window.readTextAloudLang = function(key) {
-            let text = document.getElementById(`text-lang-${key}`).innerText; let btn = document.getElementById(`speak-btn-lang-${key}`);
-            if (window.isSpeaking === key) { if (typeof AndroidControler !== "undefined") AndroidControler.stopSpeak(); window.isSpeaking = null; btn.innerHTML = "🔊 Lire"; } 
-            else { if (typeof AndroidControler !== "undefined") { AndroidControler.speak(text); window.isSpeaking = key; btn.innerHTML = "⏹️ Stop"; } }
+            let text = document.getElementById(`text-lang-${key}`).innerText; 
+            let btn = document.getElementById(`speak-btn-lang-${key}`);
+            
+            let item = allLangItems.find(i => i.id === key) || {};
+            let audioUrl = item.audioUrl || item.audio || item.audioFile || item.audioLink;
+
+            if (window.isSpeaking === key) { 
+                if (window.currentAudioObj) { window.currentAudioObj.pause(); window.currentAudioObj = null; }
+                if (typeof AndroidControler !== "undefined") AndroidControler.stopSpeak(); 
+                window.isSpeaking = null; 
+                btn.innerHTML = "🔊 Lire"; 
+            } 
+            else { 
+                if (window.isSpeaking) {
+                    if (window.currentAudioObj) { window.currentAudioObj.pause(); window.currentAudioObj = null; }
+                    if (typeof AndroidControler !== "undefined") AndroidControler.stopSpeak();
+                    let oldBtn = document.getElementById(`speak-btn-${window.isSpeaking}`) || document.getElementById(`speak-btn-lang-${window.isSpeaking}`);
+                    if(oldBtn) oldBtn.innerHTML = "🔊 Lire";
+                }
+                
+                window.isSpeaking = key; 
+                btn.innerHTML = "⏹️ Stop"; 
+
+                if (audioUrl && (audioUrl.includes('.mp3') || audioUrl.includes('.wav') || audioUrl.includes('.m4a') || audioUrl.includes('.ogg') || audioUrl.startsWith('http'))) {
+                    window.currentAudioObj = new Audio(audioUrl);
+                    window.currentAudioObj.play().catch(e => console.log(e));
+                    window.currentAudioObj.onended = () => {
+                        if (window.isSpeaking === key) { window.isSpeaking = null; btn.innerHTML = "🔊 Lire"; window.currentAudioObj = null; }
+                    };
+                } else {
+                    if (typeof AndroidControler !== "undefined") { AndroidControler.speak(text); }
+                }
+            }
         };
 
         // ================= SERIES LOGIC =================
