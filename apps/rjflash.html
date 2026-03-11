@@ -311,7 +311,13 @@
             <div id="chat-header">
                 <button id="menu-btn" onclick="toggleMenu()">☰</button>
                 <button class="back-btn" onclick="goHome()">⬅️</button>
-                <span id="chat-title-text">📰 Actualités</span>
+                <span id="chat-title-text" style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📰 Actualités</span>
+                
+                <!-- BARRE DE RECHERCHE GLOBALE -->
+                <div id="global-search-container" style="display: flex; align-items: center; background: white; border-radius: 20px; padding: 4px 10px; border: 1px solid #ccc; margin-left: 10px; max-width: 150px; flex-shrink: 0;">
+                    <input type="text" id="global-search-input" placeholder="Recherche..." style="border: none; outline: none; padding: 2px; width: 100%; font-size: 14px; background: transparent; color: #111b21;">
+                    <span style="font-size: 14px; color: #555; cursor: default;">🔍</span>
+                </div>
             </div>
 
             <!-- Filtè pou Actualités -->
@@ -461,6 +467,9 @@
 
         const NEWS_PER_PAGE = 20, SERIE_COST = 50; 
 
+        // VARIABLES RECHERCHE GLOBALE
+        window.globalSearchTerm = "";
+
         const loginScreen = document.getElementById("login-screen"), appScreen = document.getElementById("app"), identifierInput = document.getElementById("identifier-input"), passwordInput = document.getElementById("password-input"), loginBtn = document.getElementById("login-btn"), errorMsg = document.getElementById("error-msg");
         const messagesDiv = document.getElementById("messages"), seriesArea = document.getElementById("series-area"), seriesContainer = document.getElementById("seriesContainer"), pdfArea = document.getElementById("pdf-area"), pdfContainer = document.getElementById("pdfContainer");
         const paginationControls = document.getElementById("pagination-controls"), messageInput = document.getElementById("message-input"), sendBtn = document.getElementById("send-btn"), userListDiv = document.getElementById("user-list"), chatTitleText = document.getElementById("chat-title-text"), notifSound = document.getElementById("notification-sound"), emojiBtn = document.getElementById("emoji-btn"), emojiPicker = document.getElementById("emoji-picker"), loader = document.getElementById("loader"), fileInput = document.getElementById("file-input"), inputArea = document.getElementById("input-area"), newsFilters = document.getElementById("news-filters"), langFilters = document.getElementById("lang-filters"), backBtn = document.querySelector(".back-btn"), menuBtn = document.getElementById("menu-btn");
@@ -504,6 +513,55 @@
                 ebookModal.style.display = 'none'; 
                 if(window.pdfRealtimeUnsubscribe) window.pdfRealtimeUnsubscribe(); 
             } 
+        });
+
+        // ===== FONCTION DE RECHERCHE DOM (FILTRE PAR TITRE SEULEMENT) =====
+        window.applyDOMSearch = function(containerId, term) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            const items = container.querySelectorAll('.serie-card');
+            items.forEach(item => {
+                // On récupère uniquement le texte du titre (balise h3)
+                const titleEl = item.querySelector('h3');
+                const titleText = titleEl ? titleEl.innerText.toLowerCase() : "";
+                
+                if(titleText.includes(term.toLowerCase())) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        };
+
+        // Recherche Chat Optionnelle (non modifiée car elle utilise le texte du msg)
+        window.applyChatSearch = function(term) {
+            const msgs = messagesDiv.querySelectorAll('.msg');
+            msgs.forEach(msg => {
+                const text = msg.innerText.toLowerCase();
+                if(text.includes(term.toLowerCase())) {
+                    msg.style.display = '';
+                } else {
+                    msg.style.display = 'none';
+                }
+            });
+        };
+
+        // ===== EVENEMENT RECHERCHE GLOBALE =====
+        document.getElementById("global-search-input").addEventListener("input", (e) => {
+            window.globalSearchTerm = e.target.value.trim();
+            if (currentChatId === "ACTUALITE") {
+                currentNewsPage = 1;
+                renderNewsPage();
+            } else if (currentChatId === "LANG") {
+                currentLangPage = 1;
+                renderLangPage();
+            } else if (currentChatId === "SERIES") {
+                window.applyDOMSearch("seriesContainer", window.globalSearchTerm);
+            } else if (currentChatId === "PDF_DOCS") {
+                window.applyDOMSearch("pdfContainer", window.globalSearchTerm);
+            } else {
+                window.applyChatSearch(window.globalSearchTerm);
+            }
         });
 
         function getRoleBadge(userObj) {
@@ -669,6 +727,13 @@
         window.goHome = () => switchChat("ACTUALITE");
 
         window.switchChat = (target) => {
+            // Effacer la barre de recherche au changement d'onglet
+            const searchInput = document.getElementById("global-search-input");
+            if(searchInput) {
+                searchInput.value = "";
+                window.globalSearchTerm = "";
+            }
+
             if(currentUser && target !== "ADMIN_PANEL") localStorage.setItem("rjfordroid_last_chat_" + currentUser.username, target);
             
             newsFilters.style.display = (target === "ACTUALITE") ? "flex" : "none";
@@ -802,10 +867,21 @@
 
         function renderNewsPage() {
             if (currentChatId !== "ACTUALITE") return;
-            messagesDiv.innerHTML = allNewsItems.length === 0 ? "<div style='text-align:center; color:#8696a0; margin-top:20px;'>Aucune actualité.</div>" : "";
-            const totalPages = Math.ceil(allNewsItems.length / NEWS_PER_PAGE);
+            
+            // FILTRE PAR TITRE SEULEMENT
+            let filteredNews = allNewsItems;
+            if (window.globalSearchTerm) {
+                const term = window.globalSearchTerm.toLowerCase();
+                filteredNews = allNewsItems.filter(item => 
+                    (item.title && item.title.toLowerCase().includes(term))
+                );
+            }
+
+            messagesDiv.innerHTML = filteredNews.length === 0 ? "<div style='text-align:center; color:#8696a0; margin-top:20px;'>Aucune actualité trouvée.</div>" : "";
+            const totalPages = Math.ceil(filteredNews.length / NEWS_PER_PAGE);
             const start = (currentNewsPage - 1) * NEWS_PER_PAGE;
-            allNewsItems.slice(start, start + NEWS_PER_PAGE).forEach(item => displayNews(item, item.id));
+            filteredNews.slice(start, start + NEWS_PER_PAGE).forEach(item => displayNews(item, item.id));
+            
             paginationControls.style.display = totalPages > 1 ? "flex" : "none";
             if(totalPages > 1) paginationControls.innerHTML = `<button onclick="changeNewsPage(-1)" ${currentNewsPage === 1 ? 'disabled' : ''}>Précédent</button><span>Page ${currentNewsPage}/${totalPages}</span><button onclick="changeNewsPage(1)" ${currentNewsPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
         }
@@ -904,6 +980,7 @@
 
         window.setLangCategory = (cat) => { currentLangCategory = cat; currentLangPage = 1; updateLangFilterUI(); loadLang(); };
         window.updateLangFilterUI = () => { langFilters.querySelectorAll('.filter-btn').forEach(btn => { btn.classList.toggle('active', btn.innerText.includes(currentLangCategory)); }); };
+        
         function loadLang() {
             onValue(ref(db, `RJFORDROID/LANG`), (snapshot) => {
                 if (currentChatId !== "LANG") return; 
@@ -919,16 +996,30 @@
                 renderLangPage();
             });
         }
+        
         function renderLangPage() {
             if (currentChatId !== "LANG") return;
-            messagesDiv.innerHTML = allLangItems.length === 0 ? "<div style='text-align:center; color:#8696a0; margin-top:20px;'>Pa gen done pou lang sa a.</div>" : "";
-            const totalPages = Math.ceil(allLangItems.length / NEWS_PER_PAGE);
+            
+            // FILTRE PAR TITRE SEULEMENT
+            let filteredLang = allLangItems;
+            if (window.globalSearchTerm) {
+                const term = window.globalSearchTerm.toLowerCase();
+                filteredLang = allLangItems.filter(item => 
+                    (item.title && item.title.toLowerCase().includes(term))
+                );
+            }
+
+            messagesDiv.innerHTML = filteredLang.length === 0 ? "<div style='text-align:center; color:#8696a0; margin-top:20px;'>Pa gen rezilta pou rechèch sa a.</div>" : "";
+            const totalPages = Math.ceil(filteredLang.length / NEWS_PER_PAGE);
             const start = (currentLangPage - 1) * NEWS_PER_PAGE;
-            allLangItems.slice(start, start + NEWS_PER_PAGE).forEach(item => displayLang(item, item.id));
+            filteredLang.slice(start, start + NEWS_PER_PAGE).forEach(item => displayLang(item, item.id));
+            
             paginationControls.style.display = totalPages > 1 ? "flex" : "none";
             if(totalPages > 1) paginationControls.innerHTML = `<button onclick="changeLangPage(-1)" ${currentLangPage === 1 ? 'disabled' : ''}>Précédent</button><span>Page ${currentLangPage}/${totalPages}</span><button onclick="changeLangPage(1)" ${currentLangPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
         }
+        
         window.changeLangPage = (d) => { currentLangPage += d; renderLangPage(); messagesDiv.scrollTop = 0; };
+        
         function displayLang(item, key) {
             const div = document.createElement("div"); div.className = `news-card`; 
             let tagsHtml = item.tags ? item.tags.split(',').map(t => `<span class="news-tag">#${t.trim()}</span>`).join('') : "";
@@ -951,12 +1042,14 @@
                 ${(currentUser && (currentUser.isAdmin || currentUser.role === 'admin')) ? `<button onclick="deleteLang('${key}')" style="background:#ff3b30; color:white; border:none; padding:8px 10px; border-radius:5px; margin-top:15px; cursor:pointer; font-size:13px; width: 100%;">Supprimer</button>` : ''}`;
             messagesDiv.appendChild(div);
         }
+        
         window.toggleReadMoreLang = function(key) {
             document.querySelectorAll('.news-text.text-expanded').forEach(el => { if (el.id !== `text-lang-${key}`) { el.classList.remove('text-expanded'); el.classList.add('text-truncated'); let btn = document.getElementById(el.id.replace('text-', 'btn-')); if (btn) btn.innerText = "Lire la suite..."; } });
             let textContainer = document.getElementById(`text-lang-${key}`), btn = document.getElementById(`btn-lang-${key}`);
             if (textContainer.classList.contains('text-truncated')) { textContainer.classList.remove('text-truncated'); textContainer.classList.add('text-expanded'); btn.innerText = "Voir moins"; } 
             else { textContainer.classList.add('text-truncated'); textContainer.classList.remove('text-expanded'); btn.innerText = "Lire la suite..."; }
         };
+        
         window.deleteLang = (key) => showPopup("Effacer cette expression ?", true, () => remove(ref(db, `RJFORDROID/LANG/${key}`)));
         window.voteLang = (key, type) => {
             get(ref(db, `RJFORDROID/LANG/${key}/voters_${type}/${currentUserKey}`)).then(snap => {
@@ -964,6 +1057,7 @@
                 else { set(ref(db, `RJFORDROID/LANG/${key}/voters_${type}/${currentUserKey}`), true); const countRef = ref(db, `RJFORDROID/LANG/${key}/${type}`); get(countRef).then(s => set(countRef, (s.val() || 0) + 1)); addCredits(1); }
             });
         };
+        
         window.shareLang = (key, title) => {
             const currentLang = allLangItems.find(i => i.id === key); 
             let fullText = currentLang ? currentLang.text : "";
@@ -1030,8 +1124,11 @@
                     }
                     document.getElementById('globalEpisodes').innerText = totalG_Ep; document.getElementById('globalLikes').innerText = totalG_Like; document.getElementById('globalComments').innerText = totalG_Comm;
                 }
+                // Appliquer le filtre de recherche s'il est actif
+                if (window.globalSearchTerm) window.applyDOMSearch("seriesContainer", window.globalSearchTerm);
             });
         };
+        
         function createSerieCard(id, data, isUnlocked, epCount, likeCount, commentCount) {
             const card = document.createElement('article'); card.className = 'serie-card'; card.onclick = () => handleSerieClick(id, isUnlocked);
             card.innerHTML = `
@@ -1040,6 +1137,7 @@
                 <div class="serie-info"><h3>${data.titre}</h3><div class="serie-stats"><div class="stat-item">▶️ ${epCount}</div><div class="stat-item">❤️ ${likeCount}</div><div class="stat-item">💬 ${commentCount}</div></div></div>`;
             seriesContainer.appendChild(card);
         }
+        
         window.handleSerieClick = async function(serieId, alreadyUnlocked) {
             if (alreadyUnlocked) { window.location.href = `player.html?serie=${serieId}`; return; }
             try {
@@ -1057,7 +1155,7 @@
             } catch (e) { showPopup("Erè: Gen yon pwoblèm ki rive. Tanpri eseye ankò."); }
         };
 
-        // ================= PDF ET EBOOKS LOGIC (NOUVEAU) =================
+        // ================= PDF ET EBOOKS LOGIC =================
         window.loadPDFs = async function() {
             if (!currentUserKey) return;
             let unlockedPdfs = {};
@@ -1077,6 +1175,9 @@
                         pdfContainer.appendChild(card);
                     }
                 } else pdfContainer.innerHTML = "<p style='text-align:center; width:100%; grid-column: 1 / -1;'>Aucun document disponible.</p>";
+                
+                // Appliquer le filtre de recherche s'il est actif
+                if (window.globalSearchTerm) window.applyDOMSearch("pdfContainer", window.globalSearchTerm);
             });
         };
 
@@ -1322,6 +1423,7 @@
             onValue(ref(db, `RJFORDROID/CHAT_USERS/${chatId}`), (snapshot) => {
                 if (currentChatId !== chatId) return; messagesDiv.innerHTML = "";
                 if (snapshot.exists()) { const data = snapshot.val(); for (let key in data) displayMessage(data[key], key); }
+                if (window.globalSearchTerm) window.applyChatSearch(window.globalSearchTerm);
             });
         }
 
