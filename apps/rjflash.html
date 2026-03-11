@@ -1171,7 +1171,10 @@
                         const card = document.createElement('article'); card.className = 'serie-card'; card.onclick = () => handlePdfClick(key, doc, isUnlocked, REAL_COST);
                         let imgSrc = 'https://via.placeholder.com/300x160?text=PDF+DOC';
                         if (doc.image && doc.image !== "None") { if (doc.image.startsWith('http')) imgSrc = doc.image; else imgSrc = `https://drive.google.com/thumbnail?id=${doc.image}&sz=w300`; }
-                        card.innerHTML = `<div class="status-badge ${isUnlocked ? 'badge-unlocked' : 'badge-price'}">${isUnlocked ? '✔️ Deboke' : REAL_COST + ' 💰'}</div><img src="${imgSrc}" class="serie-banner"><div class="serie-info"><h3>${doc.Titre}</h3><p style="font-size: 12px; color: #666; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.desc || ''}</p><div style="font-size: 11px; color: #888;">Publié le: ${doc.Date || ''}</div></div>`;
+                        
+                        let descSanBaliz = doc.desc ? doc.desc.replace(/<[^>]+>/g, '') : '';
+                        
+                        card.innerHTML = `<div class="status-badge ${isUnlocked ? 'badge-unlocked' : 'badge-price'}">${isUnlocked ? '✔️ Deboke' : REAL_COST + ' 💰'}</div><img src="${imgSrc}" class="serie-banner"><div class="serie-info"><h3>${doc.Titre}</h3><p style="font-size: 12px; color: #666; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${descSanBaliz}</p><div style="font-size: 11px; color: #888;">Publié le: ${doc.Date || ''}</div></div>`;
                         pdfContainer.appendChild(card);
                     }
                 } else pdfContainer.innerHTML = "<p style='text-align:center; width:100%; grid-column: 1 / -1;'>Aucun document disponible.</p>";
@@ -1205,7 +1208,7 @@
             }
             img.src = imgSrc;
             title.innerText = doc.Titre || "San Tit";
-            desc.innerText = doc.desc || "Pa gen deskripsyon pou dokiman sa a.";
+            desc.innerHTML = doc.desc || "Pa gen deskripsyon pou dokiman sa a.";
 
             if (alreadyUnlocked) {
                 // AFFICHAGE DEBLOQUÉ
