@@ -1,1 +1,470 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Éditeur Web Complet avec Onglets</title>
 
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldgutter.min.css">
+
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --header-bg: #252526;
+            --tab-bg: #2d2d2d;
+            --tab-active: #1e1e1e;
+            --text-color: #ffffff;
+            --border-color: #444;
+            --font-size: 14px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* HEADER / NAVBAR */
+        header {
+            background-color: var(--header-bg);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title { display: flex; align-items: center; gap: 15px; }
+        .header-title h2 { font-size: 18px; margin: 0; color: #61afef; }
+        
+        #save-status { color: #8bc34a; font-size: 12px; }
+
+        .actions { display: flex; gap: 8px; }
+        .actions button, .actions label {
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            display: inline-block;
+            transition: 0.2s;
+        }
+        .actions button:hover, .actions label:hover { background-color: #444; }
+        .actions button.btn-danger { color: #f44336; border-color: #f44336; background: transparent;}
+        .actions button.btn-danger:hover { background: #f44336; color: white; }
+        input[type="file"] { display: none; }
+
+        /* BARRE D'ONGLETS */
+        .tabs-container {
+            display: flex;
+            background-color: var(--tab-bg);
+            border-bottom: 1px solid var(--border-color);
+            align-items: flex-end;
+            padding-left: 10px;
+        }
+
+        .tabs-list { display: flex; }
+
+        .tab {
+            padding: 8px 15px;
+            background-color: var(--tab-bg);
+            color: #888;
+            cursor: pointer;
+            border-right: 1px solid var(--border-color);
+            border-left: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .tab.active {
+            background-color: var(--tab-active);
+            color: #fff;
+            border-top: 2px solid #61afef;
+        }
+
+        .tab:hover:not(.active) { background-color: #333; }
+
+        .close-tab {
+            font-size: 14px;
+            color: #aaa;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 18px; height: 18px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .close-tab:hover { background-color: #555; color: white; }
+
+        /* SÉLECTEUR AJOUT ONGLET */
+        .add-tab-wrapper { padding: 5px 10px; }
+        .add-tab-wrapper select {
+            background: #252526;
+            color: white;
+            border: 1px solid #555;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* MAIN LAYOUT (Editor + Preview) */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: calc(100vh - 80px); /* Hauteur moins header et tabs */
+        }
+
+        .editor-section {
+            flex: 1;
+            position: relative;
+            border-bottom: 4px solid #000;
+        }
+
+        .editor-wrapper {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+        }
+        .editor-wrapper.active { display: block; }
+
+        .CodeMirror {
+            height: 100% !important;
+            font-size: var(--font-size);
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        /* PREVIEW */
+        .preview-section {
+            flex: 1;
+            background-color: #fff;
+            position: relative;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        /* MODAL PARAMÈTRES */
+        .modal {
+            display: none; position: fixed; z-index: 100; left: 0; top: 0;
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);
+        }
+        .modal-content {
+            background-color: var(--header-bg); margin: 10% auto;
+            padding: 20px; border: 1px solid #555; width: 320px;
+            border-radius: 8px; color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .modal-content h2 { margin-bottom: 15px; border-bottom: 1px solid #444; padding-bottom: 10px;}
+        .modal-content label { font-size: 13px; color: #ccc; margin-bottom: 5px; display: block;}
+        .modal-content select, .modal-content input {
+            width: 100%; padding: 8px; margin-bottom: 15px;
+            background: #1e1e1e; color: white; border: 1px solid #555; border-radius: 4px;
+        }
+        .close-btn { background: #61afef; padding: 10px; border: none; color: black; font-weight: bold; cursor: pointer; width: 100%; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <!-- Barre d'outils -->
+    <header>
+        <div class="header-title">
+            <span id="save-status">Autosaved ✓</span>
+        </div>
+        <div class="actions">
+            <label for="file-upload">📂</label>
+            <input type="file" id="file-upload" accept=".html,.css,.js" multiple>
+            <button onclick="exportProject()">💾</button>
+            <button onclick="openSettings()">⚙️</button>
+            <button onclick="resetEditor()" class="btn-danger">🗑</button>
+        </div>
+    </header>
+
+    <!-- Barre des onglets -->
+    <div class="tabs-container">
+        <div class="tabs-list" id="tabs-list">
+            <!-- Onglets générés par JS -->
+        </div>
+        <div class="add-tab-wrapper">
+            <select id="add-tab-select" onchange="handleAddTab(this.value)">
+                <option value="" disabled selected>+ Ajouter fichier</option>
+                <!-- Options générées par JS -->
+            </select>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Zone des éditeurs -->
+        <div class="editor-section">
+            <div class="editor-wrapper" id="wrapper-html">
+                <textarea id="html-code"></textarea>
+            </div>
+            <div class="editor-wrapper" id="wrapper-css">
+                <textarea id="css-code"></textarea>
+            </div>
+            <div class="editor-wrapper" id="wrapper-js">
+                <textarea id="js-code"></textarea>
+            </div>
+        </div>
+        
+        <!-- Zone de Prévisualisation (En bas) -->
+        <div class="preview-section">
+            <iframe id="preview"></iframe>
+        </div>
+    </div>
+
+    <!-- Modal Paramètres -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2>Paramètres de l'éditeur</h2>
+            <label>Thème:</label>
+            <select id="theme-select" onchange="changeSettings()">
+                <option value="monokai">Monokai</option>
+                <option value="dracula">Dracula</option>
+                <option value="default">Light (Défaut)</option>
+            </select>
+            <label>Taille de police (px):</label>
+            <input type="number" id="fontsize-input" value="14" onchange="changeSettings()">
+            <button class="close-btn" onclick="closeSettings()">Appliquer & Fermer</button>
+        </div>
+    </div>
+
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/brace-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/xml-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+
+    <script>
+        // --- 1. DÉFINITION DES FICHIERS ---
+        const files = {
+            'html': { id: 'html', name: 'index.html', icon: '📄', mode: 'xml' },
+            'css': { id: 'css', name: 'style.css', icon: '🎨', mode: 'css' },
+            'js': { id: 'js', name: 'script.js', icon: '⚡', mode: 'javascript' }
+        };
+
+        // État des onglets (HTML et CSS ouverts par défaut)
+        let openTabs = ['html', 'css'];
+        let activeTab = 'html';
+        let editors = {}; // Stockera les instances de CodeMirror
+
+        // --- 2. GESTION DES ONGLETS (TABS) ---
+        function renderTabs() {
+            const tabsList = document.getElementById('tabs-list');
+            const selectMenu = document.getElementById('add-tab-select');
+            
+            tabsList.innerHTML = '';
+            
+            // Construire les onglets ouverts
+            openTabs.forEach(fileId => {
+                const file = files[fileId];
+                const isActive = fileId === activeTab ? 'active' : '';
+                
+                const tabHtml = `
+                    <div class="tab ${isActive}" onclick="switchTab('${fileId}')">
+                        <span>${file.icon} ${file.name}</span>
+                        <span class="close-tab" onclick="closeTab(event, '${fileId}')">×</span>
+                    </div>
+                `;
+                tabsList.innerHTML += tabHtml;
+            });
+
+            // Mettre à jour le selecteur d'ajout
+            selectMenu.innerHTML = '<option value="" disabled selected>+ Ajouter fichier</option>';
+            let hasClosedTabs = false;
+            
+            Object.keys(files).forEach(fileId => {
+                if (!openTabs.includes(fileId)) {
+                    hasClosedTabs = true;
+                    selectMenu.innerHTML += `<option value="${fileId}">${files[fileId].name}</option>`;
+                }
+            });
+
+            // Afficher ou cacher le sélecteur si tout est ouvert
+            selectMenu.style.display = hasClosedTabs ? 'block' : 'none';
+
+            // Afficher l'éditeur correspondant
+            Object.keys(files).forEach(fileId => {
+                const wrapper = document.getElementById(`wrapper-${fileId}`);
+                if (fileId === activeTab && openTabs.includes(fileId)) {
+                    wrapper.classList.add('active');
+                    // Important: CodeMirror a besoin d'un refresh s'il était caché
+                    if (editors[fileId]) {
+                        setTimeout(() => editors[fileId].refresh(), 1);
+                    }
+                } else {
+                    wrapper.classList.remove('active');
+                }
+            });
+        }
+
+        function switchTab(fileId) {
+            activeTab = fileId;
+            renderTabs();
+        }
+
+        function closeTab(event, fileId) {
+            event.stopPropagation(); // Évite de déclencher le switchTab parent
+            
+            openTabs = openTabs.filter(id => id !== fileId);
+            
+            // Si on ferme l'onglet actif, on sélectionne le dernier restant
+            if (activeTab === fileId) {
+                activeTab = openTabs.length > 0 ? openTabs[openTabs.length - 1] : null;
+            }
+            renderTabs();
+        }
+
+        function handleAddTab(fileId) {
+            if (fileId && !openTabs.includes(fileId)) {
+                openTabs.push(fileId);
+                activeTab = fileId;
+                renderTabs();
+            }
+        }
+
+        // --- 3. INITIALISATION DE CODEMIRROR ---
+        const cmOptions = {
+            theme: 'monokai',
+            lineNumbers: true,
+            autoCloseTags: true,
+            autoCloseBrackets: true,
+            foldGutter: true,
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+        };
+
+        editors['html'] = CodeMirror.fromTextArea(document.getElementById('html-code'), { ...cmOptions, mode: 'xml' });
+        editors['css'] = CodeMirror.fromTextArea(document.getElementById('css-code'), { ...cmOptions, mode: 'css' });
+        editors['js'] = CodeMirror.fromTextArea(document.getElementById('js-code'), { ...cmOptions, mode: 'javascript' });
+
+        // --- 4. LIVE PREVIEW ---
+        function updatePreview() {
+            const html = editors['html'].getValue();
+            const css = `<style>${editors['css'].getValue()}<\/style>`;
+            const js = `<script>${editors['js'].getValue()}<\/script>`;
+            const previewFrame = document.getElementById('preview');
+            previewFrame.srcdoc = `${html}\n${css}\n${js}`;
+        }
+
+        // --- 5. AUTOSAVE ---
+        let timeout;
+        function handleCodeChange() {
+            document.getElementById('save-status').innerText = "Sauvegarde en cours...";
+            document.getElementById('save-status').style.color = "#ff9800";
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                updatePreview();
+                localStorage.setItem('savedHTML', editors['html'].getValue());
+                localStorage.setItem('savedCSS', editors['css'].getValue());
+                localStorage.setItem('savedJS', editors['js'].getValue());
+                document.getElementById('save-status').innerText = "Autosaved ✓";
+                document.getElementById('save-status').style.color = "#8bc34a";
+            }, 500);
+        }
+
+        editors['html'].on('change', handleCodeChange);
+        editors['css'].on('change', handleCodeChange);
+        editors['js'].on('change', handleCodeChange);
+
+        // --- 6. CHARGEMENT INITIAL ---
+        window.onload = () => {
+            const savedHTML = localStorage.getItem('savedHTML') || "<h1>Bonjour le Monde!</h1>\n<p>Tapez du code pour commencer.</p>";
+            const savedCSS = localStorage.getItem('savedCSS') || "body {\n  font-family: Arial, sans-serif;\n  text-align: center;\n  color: #333;\n  margin-top: 20px;\n}";
+            const savedJS = localStorage.getItem('savedJS') || "console.log('Fichier JavaScript prêt !');";
+
+            editors['html'].setValue(savedHTML);
+            editors['css'].setValue(savedCSS);
+            editors['js'].setValue(savedJS);
+            
+            renderTabs();
+            loadSettings();
+            updatePreview();
+        };
+
+        // --- 7. ACTIONS (OUVRIR, EXPORTER, RESET) ---
+        document.getElementById('file-upload').addEventListener('change', function(e) {
+            const fileList = e.target.files;
+            for (let file of fileList) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    if (file.name.endsWith('.html')) { editors['html'].setValue(content); handleAddTab('html'); }
+                    else if (file.name.endsWith('.css')) { editors['css'].setValue(content); handleAddTab('css'); }
+                    else if (file.name.endsWith('.js')) { editors['js'].setValue(content); handleAddTab('js'); }
+                };
+                reader.readAsText(file);
+            }
+            this.value = '';
+        });
+
+        function exportProject() {
+            const html = editors['html'].getValue();
+            const css = `<style>\n${editors['css'].getValue()}\n</style>`;
+            const js = `<script>\n${editors['js'].getValue()}\n<\/script>`;
+            const fullContent = `<!DOCTYPE html>\n<html lang="fr">\n<head>\n<meta charset="UTF-8">\n<title>Export</title>\n${css}\n</head>\n<body>\n${html}\n${js}\n</body>\n</html>`;
+            
+            const blob = new Blob([fullContent], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'mon_projet.html';
+            a.click();
+        }
+
+        function resetEditor() {
+            if(confirm("Voulez-vous vraiment tout effacer ? Cette action est irréversible.")) {
+                editors['html'].setValue('');
+                editors['css'].setValue('');
+                editors['js'].setValue('');
+                localStorage.clear();
+            }
+        }
+
+        // --- 8. PARAMÈTRES (SETTINGS) ---
+        function openSettings() { document.getElementById('settings-modal').style.display = 'block'; }
+        function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+        
+        function changeSettings() {
+            const theme = document.getElementById('theme-select').value;
+            const fontSize = document.getElementById('fontsize-input').value;
+            
+            Object.values(editors).forEach(editor => editor.setOption("theme", theme));
+            document.documentElement.style.setProperty('--font-size', fontSize + 'px');
+            
+            localStorage.setItem('editorTheme', theme);
+            localStorage.setItem('editorFontSize', fontSize);
+        }
+
+        function loadSettings() {
+            const theme = localStorage.getItem('editorTheme') || 'monokai';
+            const fontSize = localStorage.getItem('editorFontSize') || '14';
+            
+            document.getElementById('theme-select').value = theme;
+            document.getElementById('fontsize-input').value = fontSize;
+            changeSettings();
+        }
+    </script>
+</body>
+</html>
