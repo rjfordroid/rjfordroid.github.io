@@ -1,1 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Excel Web - Pro Mobile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; background-color: #f3f2f1; user-select: none; overflow: hidden; }
+        
+        /* Barre d'outils Principale */
+        .toolbar { padding: 10px; background-color: #107c41; color: white; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-shrink: 0;}
+        .toolbar button { cursor: pointer; background: transparent; border: 1px solid transparent; font-size: 14px; padding: 6px 12px; border-radius: 4px; color: #fff; flex-shrink: 0; font-weight:bold;}
+        .toolbar button:active { background: #0c5e31; }
+        .toolbar-title { font-size: 16px; font-weight: bold; }
 
+        /* NOUVEAU: Barre d'outils Mobile Excel (Formatage) */
+        .toolbar-mobile { width: 100%; display: flex; box-sizing: border-box; white-space: nowrap; }
+        .toolTab {
+            width: 100%; display: flex; overflow-x: auto; background-color: white; padding: 8px 10px;
+            gap: 5px; border-bottom: 1px solid #ccc; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; white-space: nowrap;
+        }
+        .toolTab::-webkit-scrollbar { display: none; }
+        .toolTab { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .toolTab button {
+            background: transparent; border: 1px solid transparent; font-size: 16px; padding: 6px 12px;
+            border-radius: 4px; color: #333; cursor: pointer; flex-shrink: 0;
+        }
+        .toolTab button:active { background: #e1dfdd; border-color: #ccc; }
+        .toolTab select { padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; background: #fff; cursor: pointer; }
+        
+        .toolbar-mobile .divider { width: 1px; height: 24px; background: #ccc; flex-shrink: 0; margin: 0 5px; }
+        .toolTab input[type="color"] { width: 28px; height: 28px; border: none; padding: 0; cursor: pointer; flex-shrink: 0; background: transparent; }
+
+        /* Barre de formule */
+        .formula-bar { display: flex; padding: 5px; background-color: white; border-bottom: 1px solid #ccc; align-items: center; flex-shrink: 0;}
+        .fx-icon { font-weight: bold; font-style: italic; color: #107c41; margin: 0 10px; cursor:pointer;}
+        .name-box { width: 80px; padding: 5px; border: 1px solid #ccc; text-align: center; font-weight: bold; font-size: 13px; }
+        .formula-input { flex-grow: 1; padding: 5px; border: 1px solid #ccc; margin-left: 5px; font-family: monospace; font-size: 14px;}
+
+        /* Grille Excel */
+        .grid-container { flex-grow: 1; overflow: auto; background-color: white; }
+        table { border-collapse: collapse; min-width: 100%; }
+        th, td { border: 1px solid #ccc; min-width: 90px; height: 30px; text-align: center; position: relative; padding: 0;}
+        th { background-color: #f3f2f1; font-weight: normal; cursor: pointer; padding: 5px; position: sticky; top: 0; z-index: 3;}
+        .row-header { background-color: #f3f2f1; width: 40px; min-width: 40px; cursor: default; position: sticky; left: 0; z-index: 4; }
+        th:hover { background-color: #e1dfdd; }
+        
+        td input { width: 100%; height: 100%; border: none; outline: none; padding: 0 5px; font-size: 14px; background: transparent; }
+        td input:focus { background-color: transparent; } /* Modifie pou koulè seleksyon an ka parèt */
+        
+        .selected-cell { border: 2px solid #107c41 !important; z-index: 2; }
+        .drag-highlight { background-color: rgba(16, 124, 65, 0.2) !important; }
+        
+        /* Klas pou plizyè selil ou seleksyone an menm tan */
+        .multi-selected { background-color: #c6efce !important; }
+
+        /* Poignée de recopie (Autofill handle) */
+        .autofill-handle {
+            position: absolute; right: -5px; bottom: -5px; width: 14px; height: 14px;
+            background-color: #107c41; border: 2px solid white; border-radius: 50%; cursor: crosshair; z-index: 10;
+        }
+
+        /* Div des Fonctions */
+        .functions-view {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #ffffff; z-index: 2000; flex-direction: column; overflow-y: auto;
+        }
+        .functions-header {
+            background-color: #107c41; color: white; padding: 15px; display: flex; 
+            align-items: center; gap: 15px; position: sticky; top: 0; z-index: 10;
+        }
+        .btn-back {
+            background: white; color: #107c41; padding: 8px 15px; border: none; 
+            border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px;
+        }
+        .func-list { list-style: none; padding: 0; margin: 0; }
+        .func-list li { display: flex; align-items: flex-start; padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .func-list li:active { background: #f3f2f1; }
+        .copy-icon { font-size: 20px; margin-right: 15px; background: #e1dfdd; padding: 10px; border-radius: 8px; color: #333; display: flex; align-items: center; justify-content: center;}
+        .func-desc b { color: #107c41; font-family: monospace; font-size: 16px; display: block; margin-bottom: 3px; }
+        .func-desc span { font-size: 13px; color: #555; display: block;}
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <div class="toolbar-title">RJE</div>
+        <button onclick="saveDocument()" title="Sove File"><i class="fas fa-save"></i></button>
+        <div style="padding:5px; width:75%; display:flex; flex-wrap:nowrap; gap:5px; justify-content:start; overflow-x:auto;">
+          <button onclick="switchTab('homeTab')"><i class="fas fa-home"></i> Akèy</button>
+          <button onclick="switchTab('insertTab')"><i class="fas fa-plus"></i> Ensèsyon</button>
+          <button onclick="switchTab('dataTab')"><i class="fas fa-database"></i> Fòma/Done</button>
+        </div>
+    </div>
+
+    <div class="toolbar-mobile">
+      <!-- TAB: HOME (Akèy) -->
+      <div id="homeTab" class="toolTab" style="display:flex;">
+        <select onchange="formatActiveCell('fontFamily', this.value)" title="Font Family">
+            <option value="Arial">Arial</option>
+            <option value="Courier New">Courier</option>
+            <option value="Times New Roman">Times</option>
+            <option value="Verdana">Verdana</option>
+        </select>
+        <select onchange="formatActiveCell('fontSize', this.value)" title="Font Size">
+            <option value="12px">12</option>
+            <option value="14px">14</option>
+            <option value="16px">16</option>
+            <option value="18px">18</option>
+            <option value="20px">20</option>
+        </select>
+        <div class="divider"></div>
+        <button onclick="formatActiveCell('bold')" title="Gras"><i class="fas fa-bold"></i></button>
+        <button onclick="formatActiveCell('italic')" title="Italique"><i class="fas fa-italic"></i></button>
+        <button onclick="formatActiveCell('underline')" title="Souligné"><i class="fas fa-underline"></i></button>
+        <div class="divider"></div>
+        <button onclick="formatActiveCell('align', 'left')" title="Agòch"><i class="fas fa-align-left"></i></button>
+        <button onclick="formatActiveCell('align', 'center')" title="Nan mitan"><i class="fas fa-align-center"></i></button>
+        <button onclick="formatActiveCell('align', 'right')" title="Adwat"><i class="fas fa-align-right"></i></button>
+        <div class="divider"></div>
+        <button onclick="addBorderToSelection()" title="Ajoute Border (Plage)"><i class="fas fa-border-all"></i></button>
+        <div class="divider"></div>
+        <div style="display:flex; align-items:center; gap:3px; font-weight:bold; color:#555;">
+            <i class="fas fa-font"></i><input type="color" id="textColor" onchange="formatActiveCell('color', this.value)" value="#000000">
+        </div>
+        <div style="display:flex; align-items:center; gap:3px; font-weight:bold; color:#555; margin-left:10px;">
+            <i class="fas fa-fill-drip"></i><input type="color" id="bgColor" onchange="formatActiveCell('bg', this.value)" value="#ffffff">
+        </div>
+      </div>
+
+      <!-- TAB: INSERT (Ensèsyon) - MODIFYE SAN PROMPT -->
+      <div id="insertTab" class="toolTab" style="display:none;">
+        <button onclick="insertColumnAfter()"><i class="fas fa-columns"></i> Ajoute Kolòn</button>
+        <div class="divider"></div>
+        <button onclick="insertRowAfter()"><i class="fas fa-grip-lines"></i> Ajoute Liy</button>
+        <div class="divider"></div>
+        <button onclick="createDynamicTablePrompt()"><i class="fas fa-table"></i> Kreye Tableau Dinamik</button>
+      </div>
+
+      <!-- TAB: DATA/FORMAT (Done) - MODIFYE FUSION SAN PROMPT -->
+      <div id="dataTab" class="toolTab" style="display:none;">
+        <button onclick="resizeRowPrompt()"><i class="fas fa-arrows-alt-v"></i> Wotè Liy</button>
+        <button onclick="resizeColPrompt()"><i class="fas fa-arrows-alt-h"></i> Lajè Kolòn</button>
+        <div class="divider"></div>
+        <button onclick="mergeCells()"><i class="fas fa-object-group"></i> Fusionner</button>
+      </div>
+
+    </div>
+
+    <div class="formula-bar">
+        <input type="text" id="nameBox" class="name-box" placeholder="Cellule" readonly>
+        <span class="fx-icon" onclick="showFunctions()" title="Fonctions">fx</span>
+        <input type="text" id="formulaInput" class="formula-input" placeholder="Valeur ou Formule...">
+    </div>
+
+    <div class="grid-container">
+        <table id="spreadsheet">
+            <thead id="grid-head"></thead>
+            <tbody id="grid-body"></tbody>
+        </table>
+    </div>
+
+    <div id="functionsView" class="functions-view">
+        <div class="functions-header">
+            <button class="btn-back" onclick="hideFunctions()">⬅ Retour</button>
+            <h2 style="margin:0; font-size: 18px;">Liste des Fonctions</h2>
+        </div>
+        <ul class="func-list">
+            <li onclick="copyFormula('=SUM()')"><span class="copy-icon">📋</span><div class="func-desc"><b>=SUM()</b><span>Additionne les nombres.</span></div></li>
+            <li onclick="copyFormula('=AVERAGE()')"><span class="copy-icon">📋</span><div class="func-desc"><b>=AVERAGE()</b><span>Calcule la moyenne.</span></div></li>
+            <li onclick="copyFormula('=MAX()')"><span class="copy-icon">📋</span><div class="func-desc"><b>=MAX() ou =MIN()</b><span>Trouve la valeur max ou min.</span></div></li>
+            <li onclick="copyFormula('=COUNT()')"><span class="copy-icon">📋</span><div class="func-desc"><b>=COUNT()</b><span>Compte les cellules avec des nombres.</span></div></li>
+            <li onclick="copyFormula('=COUNTA()')"><span class="copy-icon">📋</span><div class="func-desc"><b>=COUNTA()</b><span>Compte les cellules non vides.</span></div></li>
+            <li onclick="copyFormula('=IF( , , )')"><span class="copy-icon">📋</span><div class="func-desc"><b>=IF(A1>5, "Vrai", "Faux")</b><span>Fonction logique Conditionnelle.</span></div></li>
+            <li onclick="copyFormula('=TODAY()')"><span class="copy-icon">📋</span><div class="func-desc"><b>=TODAY()</b><span>Affiche la date actuelle.</span></div></li>
+        </ul>
+    </div>
+
+    <script>
+        const ROWS = 50;
+        const COLS = 20;
+        let activeRow = 1;
+        let activeCol = 1;
+        
+        // Varyab pou seleksyon miltip
+        let selStartRow = 1, selStartCol = 1;
+        let selEndRow = 1, selEndCol = 1;
+        let isSelecting = false;
+
+        let columnNames = {}; 
+        let cellNames = {};   
+        let formulas = {};    
+        let values = {};      
+
+        let isDragging = false;
+        let dragStartRow = 1, dragStartCol = 1;
+        let dragEndRow = 1, dragEndCol = 1;
+
+        function getColumnLetter(colIndex) {
+            let temp, letter = '';
+            while (colIndex > 0) {
+                temp = (colIndex - 1) % 26;
+                letter = String.fromCharCode(temp + 65) + letter;
+                colIndex = (colIndex - temp - 1) / 26;
+            }
+            return letter;
+        }
+
+        function letterToNumber(letters) {
+            let num = 0;
+            for (let i = 0; i < letters.length; i++) {
+                num = num * 26 + (letters.toUpperCase().charCodeAt(i) - 64);
+            }
+            return num;
+        }
+
+        function initGrid() {
+            const thead = document.getElementById('grid-head');
+            const tbody = document.getElementById('grid-body');
+
+            let headerRow = '<tr><th class="row-header"></th>';
+            for (let c = 1; c <= COLS; c++) {
+                headerRow += `<th id="colHeader-${c}" onclick="renameColumn(${c})">${getColumnLetter(c)}</th>`;
+            }
+            headerRow += '</tr>';
+            thead.innerHTML = headerRow;
+
+            for (let r = 1; r <= ROWS; r++) {
+                let rowHtml = `<tr><th class="row-header">${r}</th>`;
+                for (let c = 1; c <= COLS; c++) {
+                    let cellId = `${getColumnLetter(c)}${r}`;
+                    // Ajoute onmousedown ak ontouchstart sou inputs yo pou kòmanse seleksyon an
+                    rowHtml += `<td id="td-${cellId}">
+                                    <input type="text" id="${cellId}" data-row="${r}" data-col="${c}" 
+                                    onfocus="cellFocused(this)" onblur="cellBlurred(this)" oninput="cellInput(this)"
+                                    onmousedown="startSelection(event, ${r}, ${c})" ontouchstart="startSelection(event, ${r}, ${c})">
+                                </td>`;
+                }
+                rowHtml += '</tr>';
+                tbody.insertAdjacentHTML('beforeend', rowHtml);
+            }
+        }
+
+        function cellFocused(element) {
+            document.querySelectorAll('td').forEach(el => el.classList.remove('selected-cell'));
+            element.parentElement.classList.add('selected-cell');
+
+            activeRow = parseInt(element.getAttribute('data-row'));
+            activeCol = parseInt(element.getAttribute('data-col'));
+            const defaultId = element.id;
+
+            // Fè reset sou seleksyon an si itilizatè a pa ap trennen dwèt li
+            if (!isSelecting) {
+                selStartRow = activeRow; selStartCol = activeCol;
+                selEndRow = activeRow; selEndCol = activeCol;
+                drawSelection();
+            }
+
+            document.querySelectorAll('.autofill-handle').forEach(el => el.remove());
+            let handle = document.createElement('div');
+            handle.className = 'autofill-handle';
+            handle.onmousedown = startAutofill;
+            handle.ontouchstart = startAutofill; 
+            element.parentElement.appendChild(handle);
+
+            element.value = formulas[defaultId] !== undefined ? formulas[defaultId] : "";
+
+            const customName = cellNames[defaultId] || defaultId;
+            document.getElementById('nameBox').value = customName;
+            document.getElementById('nameBox').dataset.originalId = defaultId;
+            document.getElementById('formulaInput').value = formulas[defaultId] !== undefined ? formulas[defaultId] : "";
+        }
+
+        function cellBlurred(element) {
+            const defaultId = element.id;
+            element.value = values[defaultId] !== undefined ? values[defaultId] : "";
+        }
+
+        function cellInput(element) {
+            const defaultId = element.id;
+            formulas[defaultId] = element.value;
+            document.getElementById('formulaInput').value = element.value;
+            updateCalculations();
+        }
+
+        document.getElementById('formulaInput').addEventListener('input', function() {
+            const cellId = document.getElementById('nameBox').dataset.originalId;
+            if(cellId) {
+                formulas[cellId] = this.value;
+                const cellEl = document.getElementById(cellId);
+                if (document.activeElement === cellEl) { cellEl.value = this.value; }
+                updateCalculations();
+            }
+        });
+
+        // ==========================
+        // SELEKSYON MILTIP (NOUVO)
+        // ==========================
+        function startSelection(e, r, c) {
+            // Si l klike sou ti pwen vèt la, kite autofill fè travay li
+            if (e.target.classList && e.target.classList.contains('autofill-handle')) return;
+            isSelecting = true;
+            selStartRow = r; selStartCol = c;
+            selEndRow = r; selEndCol = c;
+            drawSelection();
+        }
+
+        function drawSelection() {
+            document.querySelectorAll('td').forEach(td => td.classList.remove('multi-selected'));
+            let rMin = Math.min(selStartRow, selEndRow);
+            let rMax = Math.max(selStartRow, selEndRow);
+            let cMin = Math.min(selStartCol, selEndCol);
+            let cMax = Math.max(selStartCol, selEndCol);
+
+            for(let r=rMin; r<=rMax; r++){
+                for(let c=cMin; c<=cMax; c++){
+                    let td = document.getElementById(`td-${getColumnLetter(c)}${r}`);
+                    if (td) td.classList.add('multi-selected');
+                }
+            }
+        }
+
+        // ==========================
+        // FÒMATAJ MILTIP (MODIFYE)
+        // ==========================
+        function formatActiveCell(type, val) {
+            // Aplike chanjman sou TOUT selil ki seleksyone yo
+            let rMin = Math.min(selStartRow, selEndRow);
+            let rMax = Math.max(selStartRow, selEndRow);
+            let cMin = Math.min(selStartCol, selEndCol);
+            let cMax = Math.max(selStartCol, selEndCol);
+
+            for(let r=rMin; r<=rMax; r++){
+                for(let c=cMin; c<=cMax; c++){
+                    let cellId = getColumnLetter(c) + r;
+                    let input = document.getElementById(cellId);
+                    if (!input) continue;
+                    
+                    if (type === 'bold') input.style.fontWeight = input.style.fontWeight === 'bold' ? 'normal' : 'bold';
+                    if (type === 'italic') input.style.fontStyle = input.style.fontStyle === 'italic' ? 'normal' : 'italic';
+                    if (type === 'underline') input.style.textDecoration = input.style.textDecoration === 'underline' ? 'none' : 'underline';
+                    if (type === 'align') input.style.textAlign = val;
+                    if (type === 'color') input.style.color = val;
+                    if (type === 'bg') input.parentElement.style.backgroundColor = val;
+                    if (type === 'fontFamily') input.style.fontFamily = val;
+                    if (type === 'fontSize') input.style.fontSize = val;
+                }
+            }
+        }
+
+        function getCellsInRange(start, end) {
+            let c1 = letterToNumber(start.match(/[A-Z]+/i)[0]);
+            let r1 = parseInt(start.match(/[0-9]+/)[0]);
+            let c2 = letterToNumber(end.match(/[A-Z]+/i)[0]);
+            let r2 = parseInt(end.match(/[0-9]+/)[0]);
+            let cells = [];
+            for (let c = Math.min(c1, c2); c <= Math.max(c1, c2); c++) {
+                for (let r = Math.min(r1, r2); r <= Math.max(r1, r2); r++) {
+                    cells.push(getColumnLetter(c) + r);
+                }
+            }
+            return cells;
+        }
+
+        function evaluateFormula(expr) {
+            try {
+                let nameKeys = Object.keys(cellNames).sort((a,b) => b.length - a.length);
+                let exprParsed = expr;
+                
+                exprParsed = exprParsed.replace(/\bTODAY\b\s*(?:\(\))?/gi, 'TODAY_DATE');
+                exprParsed = exprParsed.replace(/&/g, '+""+');
+
+                nameKeys.forEach(defaultId => {
+                    let regex = new RegExp("\\b" + cellNames[defaultId] + "\\b", "gi");
+                    exprParsed = exprParsed.replace(regex, defaultId);
+                });
+
+                exprParsed = exprParsed.replace(/([A-Z]+[0-9]+):([A-Z]+[0-9]+)/gi, (match, p1, p2) => {
+                    return getCellsInRange(p1, p2).join(',');
+                });
+
+                exprParsed = exprParsed.replace(/[A-Z]+[0-9]+/gi, (match) => {
+                    let id = match.toUpperCase();
+                    let val = values[id] !== undefined ? values[id] : "";
+                    if (!isNaN(val) && val !== "") return Number(val);
+                    return `"${String(val).replace(/"/g, '\\"')}"`;
+                });
+
+                const context = {
+                    SUM: (...args) => args.reduce((a, b) => a + Number(b), 0),
+                    AVERAGE: (...args) => args.length ? args.reduce((a, b) => a + Number(b), 0) / args.length : 0,
+                    MAX: (...args) => Math.max(...args.map(Number)),
+                    MIN: (...args) => Math.min(...args.map(Number)),
+                    COUNT: (...args) => args.filter(a => !isNaN(a) && a !== "").length,
+                    COUNTA: (...args) => args.filter(a => a !== "").length,
+                    IF: (cond, t, f) => cond ? t : f,
+                    TODAY_DATE: new Date().toLocaleDateString()
+                };
+
+                let result = new Function("ctx", `with(ctx) { return ${exprParsed}; }`)(context);
+                return result === undefined ? "" : result;
+            } catch (e) {
+                return "#ERREUR!";
+            }
+        }
+
+        function updateCalculations() {
+            for (let pass = 0; pass < 3; pass++) {
+                for (let r = 1; r <= ROWS; r++) {
+                    for (let c = 1; c <= COLS; c++) {
+                        let cellId = getColumnLetter(c) + r;
+                        let formula = formulas[cellId] || "";
+                        
+                        if (formula.toString().startsWith("=")) {
+                            values[cellId] = evaluateFormula(formula.substring(1));
+                        } else {
+                            values[cellId] = formula; 
+                        }
+
+                        let cellEl = document.getElementById(cellId);
+                        if (document.activeElement !== cellEl) {
+                            cellEl.value = values[cellId] !== undefined ? values[cellId] : "";
+                        }
+                    }
+                }
+            }
+        }
+
+        function startAutofill(e) {
+            e.preventDefault();
+            isDragging = true;
+            dragStartRow = activeRow; dragStartCol = activeCol;
+            dragEndRow = activeRow; dragEndCol = activeCol;
+        }
+
+        function cellHovered(r, c) {
+            if (!isDragging) return;
+            dragEndRow = r; dragEndCol = c;
+            
+            document.querySelectorAll('td').forEach(td => td.classList.remove('drag-highlight'));
+            
+            let rMin = Math.min(dragStartRow, dragEndRow);
+            let rMax = Math.max(dragStartRow, dragEndRow);
+            let cMin = Math.min(dragStartCol, dragEndCol);
+            let cMax = Math.max(dragStartCol, dragEndCol);
+
+            for(let row=rMin; row<=rMax; row++){
+                for(let col=cMin; col<=cMax; col++){
+                    document.getElementById(`td-${getColumnLetter(col)}${row}`).classList.add('drag-highlight');
+                }
+            }
+        }
+
+        window.addEventListener('mousemove', function(e) {
+            if (isSelecting && !isDragging) {
+                let el = document.elementFromPoint(e.clientX, e.clientY);
+                if(el && el.tagName === 'INPUT') {
+                    selEndRow = parseInt(el.getAttribute('data-row'));
+                    selEndCol = parseInt(el.getAttribute('data-col'));
+                    drawSelection();
+                }
+            }
+        });
+
+        window.addEventListener('mouseup', function() {
+            if(isDragging) {
+                isDragging = false;
+                document.querySelectorAll('td').forEach(td => td.classList.remove('drag-highlight'));
+                applyAutofill();
+            }
+            if (isSelecting) isSelecting = false;
+        });
+
+        // Kontwole trennen dwèt sou mobil (tou de Autofill ak Seleksyon miltip)
+        window.addEventListener('touchmove', function(e) {
+            if (isDragging) {
+                e.preventDefault(); 
+                let touch = e.touches[0];
+                let el = document.elementFromPoint(touch.clientX, touch.clientY);
+                if(el) {
+                    let td = el.closest('td');
+                    if(td) {
+                        let input = td.querySelector('input');
+                        if(input) {
+                            cellHovered(parseInt(input.getAttribute('data-row')), parseInt(input.getAttribute('data-col')));
+                        }
+                    }
+                }
+            } else if (isSelecting) {
+                e.preventDefault(); // Anpeche page lan scroll lè w'ap seleksyone
+                let touch = e.touches[0];
+                let el = document.elementFromPoint(touch.clientX, touch.clientY);
+                if(el) {
+                    let td = el.closest('td');
+                    if(td) {
+                        let input = td.querySelector('input');
+                        if(input) {
+                            selEndRow = parseInt(input.getAttribute('data-row'));
+                            selEndCol = parseInt(input.getAttribute('data-col'));
+                            drawSelection();
+                        }
+                    }
+                }
+            }
+        }, { passive: false });
+
+        window.addEventListener('touchend', function(e) {
+            if(isDragging) {
+                isDragging = false;
+                document.querySelectorAll('td').forEach(td => td.classList.remove('drag-highlight'));
+                applyAutofill();
+            }
+            if(isSelecting) isSelecting = false;
+        });
+
+        function shiftFormula(formula, rowOffset, colOffset) {
+            if (!formula || !formula.toString().startsWith("=")) return formula;
+            return formula.replace(/[A-Z]+[0-9]+/gi, match => {
+                let colStr = match.match(/[A-Z]+/i)[0];
+                let rowNum = parseInt(match.match(/[0-9]+/)[0]);
+                let colNum = letterToNumber(colStr) + colOffset;
+                let newRow = rowNum + rowOffset;
+                if (colNum < 1) colNum = 1;
+                if (newRow < 1) newRow = 1;
+                return getColumnLetter(colNum) + newRow;
+            });
+        }
+
+        function applyAutofill() {
+            if (dragStartRow === dragEndRow && dragStartCol === dragEndCol) return;
+            let sourceId = getColumnLetter(dragStartCol) + dragStartRow;
+            let sourceFormula = formulas[sourceId] || "";
+
+            let rMin = Math.min(dragStartRow, dragEndRow);
+            let rMax = Math.max(dragStartRow, dragEndRow);
+            let cMin = Math.min(dragStartCol, dragEndCol);
+            let cMax = Math.max(dragStartCol, dragEndCol);
+
+            for(let r=rMin; r<=rMax; r++){
+                for(let c=cMin; c<=cMax; c++){
+                    if (r === dragStartRow && c === dragStartCol) continue;
+                    let targetId = getColumnLetter(c) + r;
+                    formulas[targetId] = shiftFormula(sourceFormula, r - dragStartRow, c - dragStartCol);
+                }
+            }
+            updateCalculations();
+        }
+
+        function showFunctions() { document.getElementById('functionsView').style.display = 'flex'; }
+        function hideFunctions() { document.getElementById('functionsView').style.display = 'none'; }
+
+        function copyFormula(formulaText) {
+            const cellId = getColumnLetter(activeCol) + activeRow;
+            const inputEl = document.getElementById(cellId);
+            formulas[cellId] = formulaText;
+            document.getElementById('formulaInput').value = formulaText;
+            if(inputEl) { inputEl.value = formulaText; inputEl.focus(); }
+            updateCalculations();
+            hideFunctions(); 
+        }
+
+        function switchTab(tabId) {
+            document.getElementById('homeTab').style.display = 'none';
+            document.getElementById('insertTab').style.display = 'none';
+            document.getElementById('dataTab').style.display = 'none';
+            document.getElementById(tabId).style.display = 'flex';
+        }
+
+        function resizeRowPrompt() {
+            let h = prompt("Antre wotè liy lan ou vle a (an px):", "30");
+            if (h) document.getElementById('td-' + getColumnLetter(activeCol) + activeRow).parentElement.style.height = h + "px";
+        }
+
+        function resizeColPrompt() {
+            let w = prompt("Antre lajè kolòn nan ou vle a (an px):", "90");
+            if (w) {
+                document.getElementById('colHeader-' + activeCol).style.minWidth = w + "px";
+                document.getElementById('colHeader-' + activeCol).style.width = w + "px";
+            }
+        }
+
+        // ==========================
+        // FIZYONE OTOMATIK (SAN PROMPT)
+        // ==========================
+        function mergeCells() {
+            let rMin = Math.min(selStartRow, selEndRow);
+            let rMax = Math.max(selStartRow, selEndRow);
+            let cMin = Math.min(selStartCol, selEndCol);
+            let cMax = Math.max(selStartCol, selEndCol);
+
+            if (rMin === rMax && cMin === cMax) return; // Anyen pa seleksyone
+
+            let firstCellId = getColumnLetter(cMin) + rMin;
+            let firstTd = document.getElementById('td-' + firstCellId);
+            
+            firstTd.colSpan = (cMax - cMin) + 1;
+            firstTd.rowSpan = (rMax - rMin) + 1;
+            
+            for(let r=rMin; r<=rMax; r++){
+                for(let c=cMin; c<=cMax; c++){
+                    if (r === rMin && c === cMin) continue;
+                    let td = document.getElementById('td-' + getColumnLetter(c) + r);
+                    if (td) td.style.display = 'none';
+                }
+            }
+        }
+
+        // ==========================
+        // BORDER OTOMATIK SOU SELEKSYON AN
+        // ==========================
+        function addBorderToSelection() {
+            let rMin = Math.min(selStartRow, selEndRow);
+            let rMax = Math.max(selStartRow, selEndRow);
+            let cMin = Math.min(selStartCol, selEndCol);
+            let cMax = Math.max(selStartCol, selEndCol);
+
+            for(let r=rMin; r<=rMax; r++){
+                for(let c=cMin; c<=cMax; c++){
+                    let td = document.getElementById('td-' + getColumnLetter(c) + r);
+                    if (td) td.style.border = "1px solid #000";
+                }
+            }
+        }
+
+        function createDynamicTablePrompt() {
+            let rMin = Math.min(selStartRow, selEndRow);
+            let rMax = Math.max(selStartRow, selEndRow);
+            let cMin = Math.min(selStartCol, selEndCol);
+            let cMax = Math.max(selStartCol, selEndCol);
+            
+            for(let r=rMin; r<=rMax; r++){
+                for(let c=cMin; c<=cMax; c++){
+                    let id = getColumnLetter(c) + r;
+                    let td = document.getElementById('td-' + id);
+                    let input = document.getElementById(id);
+                    if (!td || !input) continue;
+                    
+                    td.style.border = "1px solid #107c41";
+                    if (r === rMin) {
+                        td.style.backgroundColor = "#107c41";
+                        input.style.color = "white";
+                        input.style.fontWeight = "bold";
+                    } else if (r % 2 === 0) {
+                        td.style.backgroundColor = "#e1dfdd";
+                        input.style.color = "black";
+                    } else {
+                        td.style.backgroundColor = "#ffffff";
+                        input.style.color = "black";
+                    }
+                }
+            }
+        }
+
+        // ==========================
+        // AJOUTE KOLÒN APRE (SAN PROMPT)
+        // ==========================
+        function insertColumnAfter() {
+            let targetCol = activeCol + 1;
+            if (targetCol > COLS) return; // Limite par le max de COLS défini
+            
+            // Decale données vers la droite
+            for (let c = COLS - 1; c >= targetCol; c--) {
+                for (let r = 1; r <= ROWS; r++) {
+                    let oldId = getColumnLetter(c) + r;
+                    let newId = getColumnLetter(c + 1) + r;
+                    formulas[newId] = formulas[oldId] || "";
+                    values[newId] = values[oldId] || "";
+                    let targetInput = document.getElementById(newId);
+                    if(targetInput) targetInput.value = values[newId];
+                }
+            }
+            
+            // Vide la nouvelle colonne
+            for (let r = 1; r <= ROWS; r++) {
+                let targetId = getColumnLetter(targetCol) + r;
+                formulas[targetId] = "";
+                values[targetId] = "";
+                let targetInput = document.getElementById(targetId);
+                if(targetInput) targetInput.value = "";
+            }
+            updateCalculations();
+        }
+
+        // ==========================
+        // AJOUTE LIY APRE (SAN PROMPT)
+        // ==========================
+        function insertRowAfter() {
+            let targetRow = activeRow + 1;
+            if (targetRow > ROWS) return; 
+            
+            // Decale données vers le bas
+            for (let r = ROWS - 1; r >= targetRow; r--) {
+                for (let c = 1; c <= COLS; c++) {
+                    let oldId = getColumnLetter(c) + r;
+                    let newId = getColumnLetter(c) + (r + 1);
+                    formulas[newId] = formulas[oldId] || "";
+                    values[newId] = values[oldId] || "";
+                    let targetInput = document.getElementById(newId);
+                    if(targetInput) targetInput.value = values[newId];
+                }
+            }
+            
+            // Vide la nouvelle ligne
+            for (let c = 1; c <= COLS; c++) {
+                let targetId = getColumnLetter(c) + targetRow;
+                formulas[targetId] = "";
+                values[targetId] = "";
+                let targetInput = document.getElementById(targetId);
+                if(targetInput) targetInput.value = "";
+            }
+            updateCalculations();
+        }
+
+        function saveDocument() {
+            let title = prompt("Antre tit dokiman ou vle sove a (li ap telechaje kòm JSON):", "Dokiman_Excel_Mwen");
+            if (!title) return;
+            
+            let dataObj = { formulas: formulas, values: values };
+            let dataStr = JSON.stringify(dataObj);
+            let blob = new Blob([dataStr], { type: "application/json" });
+            
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = title + ".json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        window.onload = initGrid;
+
+    </script>
+</body>
+</html>
