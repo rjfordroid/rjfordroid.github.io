@@ -1,9 +1,12 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RJFORDROID Chat & Actualités</title>
+    <!-- Ajoute html2canvas pou telechaje Sètifika a kòm imaj -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: normal; }
         body, html { height: 100%; width: 100%; background-color: #f0f2f5; overflow: hidden; position: relative; }
@@ -109,8 +112,8 @@
         .delete-btn { display: none; position: absolute; top: -10px; left: -10px; background: #ff3b30; color: white; border-radius: 50%; width: 22px; height: 22px; text-align: center; line-height: 22px; cursor: pointer; font-size: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;}
         .msg.me:hover .delete-btn { display: block; }
 
-        /* CSS SERIES */
-        #series-area { display: none; flex: 1; overflow-y: auto; background: #f0f2f5; padding-bottom: 20px; }
+        /* CSS SERIES & PDF & COURS */
+        #series-area, #pdf-area, #cours-area, #my-apps-area, #certif-area { display: none; flex: 1; overflow-y: auto; background: #f0f2f5; padding-bottom: 20px; }
         .series-header-banner { background: #000; border-radius: 0 0 25px 25px; padding: 30px 20px; text-align: center; color: white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .series-header-banner h1 { color: #fe2c55; font-size: 1.8rem; margin: 0; }
         .series-header-banner span.tv { color: white; }
@@ -134,11 +137,21 @@
         .badge-price { background: #fe2c55; }
         .badge-unlocked { background: #25d366; }
         
-        /* CSS PDF / EBOOKS */
-        #pdf-area { display: none; flex: 1; overflow-y: auto; background: #f0f2f5; padding-bottom: 20px; }
         .pdf-header-banner { background: #005bb5; border-radius: 0 0 25px 25px; padding: 30px 20px; text-align: center; color: white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .pdf-header-banner h1 { color: #fff; font-size: 1.8rem; margin: 0; }
         .pdf-header-banner p { font-size: 0.85rem; opacity: 0.9; margin-top: 5px; }
+
+        .cours-header-banner { background: #e67e22; border-radius: 0 0 25px 25px; padding: 30px 20px; text-align: center; color: white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .cours-header-banner h1 { color: #fff; font-size: 1.8rem; margin: 0; }
+        .cours-header-banner p { font-size: 0.85rem; opacity: 0.9; margin-top: 5px; }
+
+        .apps-header-banner { background: #673ab7; border-radius: 0 0 25px 25px; padding: 30px 20px; text-align: center; color: white; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .apps-header-banner h1 { font-size: 1.8rem; margin: 0; }
+        .apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 0 15px; }
+        .app-card { background: white; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.3s; border: 1px solid #eee; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .app-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.15); }
+        .app-card img { width: 100%; height: 90px; object-fit: cover; background: #e0e0e0; border-bottom: 1px solid #eee; }
+        .app-card h3 { font-size: 0.85rem; color: #333; margin: 10px 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; }
 
         .pdf-action-btns { display: flex; gap: 10px; margin-bottom: 15px; }
         .pdf-action-btns button { flex: 1; padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; font-size: 14px;}
@@ -173,6 +186,7 @@
             .series-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 10px; }
             .serie-banner { height: auto !important; min-height:250px; }
             .global-stats-container { gap: 8px; padding: 0 10px; }
+            .apps-grid { gap: 10px; padding: 0 10px; } 
         }
         
         .overlay { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); }
@@ -181,9 +195,9 @@
         #signupForm input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         #signupForm button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        /* ======== NOUVEAU FOOTER BOTTOM CSS ======== */
+        /* FOOTER BOTTOM CSS */
         #bottom-footer {
-            display: none; /* Kache jiskaske yo login */
+            display: none; 
             position: fixed;
             bottom: 0;
             left: 0;
@@ -194,7 +208,7 @@
             flex-direction: row;
             justify-content: space-around;
             align-items: center;
-            z-index: 800; /* Anba popup yo men anwo lòt bagay */
+            z-index: 800; 
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
         .footer-item {
@@ -236,7 +250,6 @@
             font-size: 9px;
             border: 2px solid white;
         }
-        /* Pou anpeche konfli ak klas .user-item nan sidebar la */
         .footer-item.user-item {
             padding: 0 !important;
             border-bottom: none !important;
@@ -244,6 +257,31 @@
         .footer-item.user-item:hover, .footer-item.user-item.active {
             background: transparent !important;
         }
+
+        /* CSS POU LESON READER */
+        #lesson-reader-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: white; z-index: 7000; flex-direction: column; }
+        .lesson-content { flex: 1; padding: 20px; overflow-y: auto; font-size: 16px; line-height: 1.6; color: #333; }
+        
+        /* ------------------------------------------------------------------------------------------------------ */
+        /* MODIFIKASYON: FÒSE RESPEKTE FÒMA HTML (Espas, Paragraf, Imaj, Lis) SÈLMAN ANNDAN LESON AN SAN GATE RÈS CSS OU A */
+        .lesson-content p { margin-bottom: 15px !important; }
+        .lesson-content h1, .lesson-content h2, .lesson-content h3, .lesson-content h4, .lesson-content h5, .lesson-content h6 { margin-top: 20px !important; margin-bottom: 10px !important; font-weight: bold !important; line-height: 1.3 !important; }
+        .lesson-content ul { list-style-type: disc !important; margin-left: 20px !important; padding-left: 15px !important; margin-bottom: 15px !important; }
+        .lesson-content ol { list-style-type: decimal !important; margin-left: 20px !important; padding-left: 15px !important; margin-bottom: 15px !important; }
+        .lesson-content li { margin-bottom: 8px !important; display: list-item !important; }
+        .lesson-content img, .lesson-content video, .lesson-content iframe { max-width: 100% !important; height: auto !important; border-radius: 8px !important; margin: 15px auto !important; display: block !important; }
+        .lesson-content b, .lesson-content strong { font-weight: bold !important; }
+        .lesson-content i, .lesson-content em { font-style: italic !important; }
+        .lesson-content a { color: #00a884 !important; text-decoration: underline !important; }
+        .lesson-content { word-wrap: break-word !important; overflow-wrap: break-word !important; }
+        /* ------------------------------------------------------------------------------------------------------ */
+
+        .lesson-nav { display: flex; justify-content: space-between; padding: 15px; background: #eee; border-top: 1px solid #ccc; flex-shrink: 0; gap:10px; align-items: center;}
+        .lesson-nav button { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 20px;}
+        .btn-prev { background: #8696a0; color: white; }
+        .btn-prev:hover { background: #667680; }
+        .btn-next { background: #00a884; color: white; flex: 1;}
+        .btn-next:hover { background: #008f6f; }
     </style>
 </head>
  
@@ -259,38 +297,30 @@
         </div>
     </div>
 
-    <!-- Popup Ebook / PDF Refait avec Nouvelles Options 100vh wote ak laje epi scroll -->
     <div id="ebookModal" class="overlay">
         <div class="popup-content" style="text-align: center; margin: 0; width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; border-radius: 0; overflow-y: auto; display: block; box-sizing: border-box; background: white; padding-bottom: 30px;">
-            
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; position: sticky; top: 0; background: #fff; padding: 15px 0; z-index: 20; border-bottom: 1px solid #eee;">
                 <span id="closeEbookModal" style="font-size: 24px; cursor: pointer; color: #333; margin-left: 5px;">⬅️</span>
                 <span style="font-weight: bold; font-size: 16px;">Détails du document</span>
                 <div style="width: 24px; margin-right: 5px;"></div>
             </div>
-            
             <img id="ebookModalImg" src="" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 10px; margin-bottom: 15px; background: #e0e0e0;">
             <h3 id="ebookModalTitle" style="margin-bottom: 10px; color: #111b21;"></h3>
             <p id="ebookModalDesc" style="font-size: 14px; color: #555; margin-bottom: 15px; white-space: pre-wrap; text-align: left;"></p>
-            
             <div id="ebookLockedView">
                 <div style="font-size: 16px; font-weight: bold; margin-bottom: 15px;" id="ebookModalPrice"></div>
                 <button id="ebookModalActionBtn" style="width: 100%; padding: 12px; background: #00a884; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer;"></button>
             </div>
-
             <div id="ebookUnlockedView" style="display:none;">
                 <div class="pdf-action-btns">
                     <button class="btn-read" id="btn-read-pdf">📖 Lire sur l'app</button>
                     <button class="btn-download" id="btn-download-pdf">📥 Télécharger</button>
                 </div>
-
                 <div class="pdf-social">
                     <button id="btn-like-pdf">👍 <span id="pdf-likes-count">0</span></button>
                     <button id="btn-dislike-pdf">👎 <span id="pdf-dislikes-count">0</span></button>
                 </div>
-
                 <div class="pdf-comments-section" id="pdf-comments-list"></div>
-                
                 <div class="pdf-comment-input-area">
                     <input type="text" id="pdf-comment-input" placeholder="Ajouter un commentaire...">
                     <button id="btn-send-pdf-comment">Envoyer</button>
@@ -299,7 +329,153 @@
         </div>
     </div>
 
-    <!-- Interface Plein Écran pour Lire le PDF 100vh ak defileman -->
+    <!-- MODAL POU MANDE NON SETIFIKA A -->
+    <div id="certif-name-prompt" class="overlay" style="z-index: 8000;">
+        <div class="popup-content" style="text-align: center;">
+            <h3>Felisitasyon! 🎉</h3>
+            <p>Ou fèk fini kou a nèt. Antre non konplè w pou resevwa sètifika w la:</p>
+            <input type="text" id="certif-input-name" placeholder="Nom complet" style="width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; border-radius: 5px; outline:none; font-size: 16px;">
+            <button onclick="submitCertifName()" style="width: 100%; padding: 10px; background: #00a884; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;">Jenere Sètifika a</button>
+            <button onclick="document.getElementById('certif-name-prompt').style.display='none'; closeLessonReader();" style="width: 100%; padding: 10px; background: #e0e0e0; color: #555; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px;">Pase opsyon sa a</button>
+        </div>
+    </div>
+
+    <!-- MODAL POU AFICHE E TELECHAJE SETIFIKA A -->
+    <div id="certificate-modal" class="overlay" style="z-index: 8500;">
+        <div class="popup-content" style="max-width: 900px; width: 95%; background: transparent; box-shadow: none; text-align: center; overflow-y: auto; max-height: 95vh; padding: 0;">
+            
+            <div style="background: white; padding: 1px; border-radius: 10px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); position: relative;">
+                <span onclick="document.getElementById('certificate-modal').style.display='none'" style="position: absolute; right: 15px; top: 15px; font-size: 28px; cursor: pointer; color: #333; z-index: 10;">&times;</span>
+                
+                <p style="margin-bottom: 10px; margin-top: 10px; font-weight: bold; color: #00a884; font-size: 14px;">Glise adwat pou wè tout sètifika a ➡️</p>
+
+                <!-- ZÒN SÈTIFIKA MOBIL LANDSCAPE (Scrollable pour bien afficher) -->
+                <div style="width: 100%; overflow-x: auto; padding-bottom: 5px;">
+                   <div id="certificate-content"
+style="
+width: 100%;
+max-width: 100%;
+aspect-ratio: 1/1;
+padding: 3px;
+border: 6px solid #00a884;
+background: #fff;
+text-align: center;
+position: relative;
+font-family: 'Times New Roman', Times, serif;
+overflow: hidden;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+margin: auto;
+box-sizing: border-box;
+">
+     <!-- Watermark / Design bg -->
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle, #f4fdf9 0%, #ffffff 100%); pointer-events: none; z-index: 1;"></div>
+                        <svg style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.04; width: 250px; height: 250px; z-index: 1; pointer-events: none;" viewBox="0 0 100 100">
+                            <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="#00a884" />
+                            <circle cx="50" cy="50" r="30" fill="white" />
+                            <text x="50%" y="55%" text-anchor="middle" font-size="14" font-weight="bold" fill="#00a884" font-family="sans-serif">RJF</text>
+                        </svg>
+
+                        <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                            <!-- En-tête -->
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; border-bottom: 2px solid #00a884; padding-bottom: 10px;">
+                                <img src="logo.png" alt="Logo" style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 1px solid #00a884;">
+                                <div style="text-align: left;">
+                                    <h2 style="margin: 0; color: #111b21; font-size: 20px; font-weight: 900; letter-spacing: 1px; font-family: Arial, sans-serif;">RJFORDROID</h2>
+                                    <p style="margin: 2px 0 0; font-size: 11px; color: #555; font-style: italic;">Ruban Joseph Formation sur Android</p>
+                                    <p style="margin: 2px 0 0; font-size: 11px; color: #00a884; font-weight: bold; font-family: Arial, sans-serif;">rjfordroid@gmail.com</p>
+                                </div>
+                            </div>
+
+                            <!-- Kò Sètifika a -->
+                            <div>
+                                <h1 style="color: #00a884; margin: 5px 0; font-size: 18px; letter-spacing: 2px; text-transform: uppercase;">CERTIFICAT DE FORMATION</h1>
+                                <p style="font-size: 14px; color: #555; margin-bottom: 5px;">Nous attestons que</p>
+                                <h2 id="certif-name-display" style="font-size: 16px; color: #111b21; margin: 0 auto 10px; padding-bottom: 2px; border-bottom: 2px dashed #ccc; display: inline-block; font-style: italic; min-width: 250px;"></h2>
+                                <p style="font-size: 11px; color: #555; margin-bottom: 5px;">a complété avec succès la formation en ligne sur</p>
+                                <h3 id="certif-course-display" style="font-size: 14px; color: #e67e22; margin: 0 auto 10px; max-width: 90%;"></h3>
+                                <p style="font-size: 11px; color: #444; line-height: 1.4; max-width: 100%; margin: 0 auto; font-family: Arial, sans-serif;">
+                                    Cette formation lui a permis d’acquérir des connaissances pratiques et des compétences essentielles dans le domaine du numérique.
+                                </p>
+                            </div>
+                            
+                            <!-- Bap Sètifika a -->
+                            <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 6px; font-family: Arial, sans-serif;">
+                                <div style="text-align: left; width: 30%;">
+                                    <p style="font-size: 10px; color: #888; margin: 0 0 3px;">Code de vérification :</p>
+                                    <p id="certif-code-display" style="font-size: 12px; font-weight: bold; color: #333; margin: 0; border-top: 1px solid #ccc; padding-top: 3px;"></p>
+                                </div>
+                                <div style="text-align: center; width: 35%;">
+                                    <div style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive; font-size: 18px; color: #00a884; line-height: 1; margin-bottom: 3px;">R. Joseph</div>
+                                    <p style="font-size: 11px; color: #555; margin: 0; border-top: 1px solid #ccc; padding-top: 3px; font-weight: bold;">Ruban Joseph - Formateur</p>
+                                </div>
+                                <div style="text-align: right; width: 30%;">
+                                    <p style="font-size: 10px; color: #888; margin: 0 0 3px;">Date de délivrance :</p>
+                                    <p id="certif-date-display" style="font-size: 12px; font-weight: bold; color: #333; margin: 0; border-top: 1px solid #ccc; padding-top: 3px;"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOUTON 2 OPSYON YO -->
+                <div style="display: flex; gap: 10px; margin-top: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="downloadCertificate('mobile')" style="padding: 12px 20px; background: #00a884; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 200px;">📱 Telechaje (Fòma Mobil)</button>
+                    <button onclick="downloadCertificate('print')" style="padding: 12px 20px; background: #007aff; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 200px;">🖨️ Telechaje (11x8.5)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ZÒN SÈTIFIKA POU PRINT 11x8.5 (Kache, Html2canvas sèlman k ap wè l) -->
+    <div id="certificate-print-content" style="width: 1056px; height: 816px; padding: 40px; border: 10px solid #00a884; background: #fff; text-align: center; position: fixed; top: 0; left: 0; z-index: -100; font-family: 'Times New Roman', Times, serif; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle, #f4fdf9 0%, #ffffff 100%); pointer-events: none; z-index: 1;"></div>
+        <svg style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.04; width: 400px; height: 400px; z-index: 1; pointer-events: none;" viewBox="0 0 100 100">
+            <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="#00a884" />
+            <circle cx="50" cy="50" r="30" fill="white" />
+            <text x="50%" y="55%" text-anchor="middle" font-size="14" font-weight="bold" fill="#00a884" font-family="sans-serif">RJF</text>
+        </svg>
+
+        <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; border-bottom: 3px solid #00a884; padding-bottom: 20px;">
+                <img src="logo.png" alt="Logo" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid #00a884;">
+                <div style="text-align: left;">
+                    <h2 style="margin: 0; color: #111b21; font-size: 32px; font-weight: 900; letter-spacing: 1px; font-family: Arial, sans-serif;">RJFORDROID</h2>
+                    <p style="margin: 5px 0 0; font-size: 22px; color: #555; font-style: italic;">Ruban Joseph Formation sur Android</p>
+                    <p style="margin: 5px 0 0; font-size: 16px; color: #00a884; font-weight: bold; font-family: Arial, sans-serif;">rjfordroid@gmail.com</p>
+                </div>
+            </div>
+
+            <div>
+                <h1 style="color: #00a884; margin: 20px 0; font-size: 42px; letter-spacing: 3px; text-transform: uppercase;">CERTIFICAT DE FORMATION</h1>
+                <p style="font-size: 22px; color: #555; margin-bottom: 10px;">Nous attestons que</p>
+                <h2 id="print-name-display" style="font-size: 40px; color: #111b21; margin: 0 auto 15px; padding-bottom: 5px; border-bottom: 3px dashed #ccc; display: inline-block; font-style: italic; min-width: 400px;"></h2>
+                <p style="font-size: 20px; color: #555; margin-bottom: 10px;">a complété avec succès la formation en ligne sur</p>
+                <h3 id="print-course-display" style="font-size: 28px; color: #e67e22; margin: 0 auto 25px; max-width: 90%;"></h3>
+                <p style="font-size: 18px; color: #444; line-height: 1.5; max-width: 85%; margin: 0 auto; font-family: Arial, sans-serif;">
+                    Cette formation lui a permis d’acquérir des connaissances pratiques et des compétences essentielles dans le domaine du numérique.
+                </p>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-top: 20px; font-family: Arial, sans-serif;">
+                <div style="text-align: left; width: 30%;">
+                    <p style="font-size: 14px; color: #888; margin: 0 0 5px;">Code de vérification :</p>
+                    <p id="print-code-display" style="font-size: 18px; font-weight: bold; color: #333; margin: 0; border-top: 2px solid #ccc; padding-top: 5px;"></p>
+                </div>
+                <div style="text-align: center; width: 35%;">
+                    <div style="font-family: 'Brush Script MT', 'Lucida Handwriting', cursive; font-size: 40px; color: #00a884; line-height: 1; margin-bottom: 5px;">R. Joseph</div>
+                    <p style="font-size: 16px; color: #555; margin: 0; border-top: 2px solid #ccc; padding-top: 5px; font-weight: bold;">Ruban Joseph - Formateur</p>
+                </div>
+                <div style="text-align: right; width: 30%;">
+                    <p style="font-size: 14px; color: #888; margin: 0 0 5px;">Date de délivrance :</p>
+                    <p id="print-date-display" style="font-size: 18px; font-weight: bold; color: #333; margin: 0; border-top: 2px solid #ccc; padding-top: 5px;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div id="pdf-reader-overlay" class="overlay" style="z-index: 6000; padding: 0; margin: 0; width: 100vw; height: 100vh;">
         <div style="width:100%; height:100%; display:flex; flex-direction:column; background:white;">
             <div id="pdf-reader-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #111b21; color: white; flex-shrink: 0;">
@@ -310,6 +486,35 @@
             <div style="flex:1; width:100%; overflow-y:auto; -webkit-overflow-scrolling: touch;">
                 <iframe id="pdf-iframe" src="" style="border:none; width:100%; height:100%; min-height: 100vh; background: #f0f2f5;"></iframe>
             </div>
+        </div>
+    </div>
+
+    <!-- Interface Lektè pou Leson/Kou yo -->
+    <div id="lesson-reader-overlay" class="overlay">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #111b21; color: white; flex-shrink: 0;">
+            <button onclick="closeLessonReader()" style="background: transparent; color: white; border: none; font-size: 20px; cursor: pointer;">⬅️</button>
+            <span id="lesson-course-title" style="font-size: 16px; font-weight: bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 70%;">Titre Cours</span>
+            <div style="width: 20px;"></div>
+        </div>
+        
+        <div style="padding: 12px; background: #f0f2f5; text-align: center; font-weight: bold; border-bottom: 1px solid #ddd; color: #111b21;" id="lesson-subtitle">Leson ...</div>
+        
+        <!-- VIDEO AREA (iFrame entegre) -->
+        <div id="lesson-video-container" style="display: none; width: 100%; text-align: center; background: #000; padding: 10px 0; flex-shrink: 0;">
+            <iframe id="lesson-video-iframe" src="" allowfullscreen style="width:95%; max-width:500px; height:250px; border:none; border-radius:8px;"></iframe>
+        </div>
+
+        <div class="lesson-content" id="lesson-content-text"></div>
+        
+        <!-- BOUTON SOCIAL POU COURS -->
+        <div class="cours-social" style="display: flex; justify-content: space-around; padding: 10px; background: #fff; border-top: 1px solid #eee; flex-shrink: 0;">
+            <button id="btn-like-cours" style="background:none; border:none; font-size:16px; font-weight:bold; cursor:pointer; color:#555; outline:none;">👍 <span id="cours-likes-count">0</span></button>
+            <button id="btn-share-cours" style="background:none; border:none; font-size:16px; font-weight:bold; cursor:pointer; color:#555; outline:none;">🔗 Pataje</button>
+        </div>
+
+        <div class="lesson-nav">
+            <button id="btn-lesson-prev" class="btn-prev">⬅️</button>
+            <button id="btn-lesson-next" class="btn-next">➡️</button>
         </div>
     </div>
 
@@ -350,17 +555,6 @@
                 <div id="my-info" class="user-info"></div>
                 <button class="logout-btn" onclick="logout()">Déconnexion</button>
             </div>
-            <script>
-  atOptions = {
-    'key' : '84f94dfc2ebce76ea4663ccd18ce574e',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 320,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/84f94dfc2ebce76ea4663ccd18ce574e/invoke.js"></script>
-            <!-- User list will now just show Administration and dynamically loaded users -->
             <div id="user-list"></div>
         </div>
 
@@ -370,14 +564,12 @@
                 <button class="back-btn" onclick="goHome()">⬅️</button>
                 <span id="chat-title-text" style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📰 Actualités</span>
                 
-                <!-- BARRE DE RECHERCHE GLOBALE -->
                 <div id="global-search-container" style="display: flex; align-items: center; background: white; border-radius: 20px; padding: 4px 10px; border: 1px solid #ccc; margin-left: 10px; max-width: 150px; flex-shrink: 0;">
                     <input type="text" id="global-search-input" placeholder="Recherche..." style="border: none; outline: none; padding: 2px; width: 100%; font-size: 14px; background: transparent; color: #111b21;">
                     <span style="font-size: 14px; color: #555; cursor: default;">🔍</span>
                 </div>
             </div>
 
-            <!-- Filtè pou Actualités -->
             <div id="news-filters">
                 <button class="filter-btn active" onclick="setNewsCategory('Amour')">❤️ Amour</button>
                 <button class="filter-btn" onclick="setNewsCategory('Politique')">🏛️ Politique</button>
@@ -385,7 +577,6 @@
                 <button class="filter-btn" onclick="setNewsCategory('Informatique')">💻 Info</button>
             </div>
 
-            <!-- Filtè pou Lang Eksprèsyon -->
             <div id="lang-filters">
                 <button class="filter-btn active" onclick="setLangCategory('Anglè')">🇬🇧 Anglè</button>
                 <button class="filter-btn" onclick="setLangCategory('Espanyòl')">🇪🇸 Espanyòl</button>
@@ -393,16 +584,7 @@
             </div>
   
             <div id="messages"></div>
-                      <script>
-  atOptions = {
-    'key' : '84f94dfc2ebce76ea4663ccd18ce574e',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 420,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/84f94dfc2ebce76ea4663ccd18ce574e/invoke.js"></script>
+            
             <div id="pagination-controls"></div>
             <div id="emoji-picker"></div>
 
@@ -424,17 +606,37 @@
                     <h1>RJFORDROID <span class="tv">DOCS</span></h1>
                     <p>Bibliyotèk Ebooks ak Dokiman PDF</p>
                 </div>
-                            <script>
-  atOptions = {
-    'key' : '84f94dfc2ebce76ea4663ccd18ce574e',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 420,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/84f94dfc2ebce76ea4663ccd18ce574e/invoke.js"></script>
                 <div class="series-grid" id="pdfContainer"></div>
+            </div>
+
+            <div id="cours-area">
+                <div class="cours-header-banner">
+                    <h1>RJFORDROID <span class="tv">ACADEMY</span></h1>
+                    <p>Fòmasyon Pwofesyonèl Ak Leson Etap Pa Etap</p>
+                </div>
+                <div class="series-grid" id="coursContainer"></div>
+            </div>
+
+            <div id="my-apps-area">
+                <div class="apps-header-banner">
+                    <h1>MY APPS</h1>
+                    <p>Toutes nos applications Firebase</p>
+                </div>
+                <div class="apps-grid" id="myAppsContainer"></div>
+            </div>
+
+            <!-- NOUVO ZÒN POU VERIFYE SÈTIFIKA -->
+            <div id="certif-area" style="text-align: center; padding: 20px;">
+                <div class="apps-header-banner" style="background:#00a884;">
+                    <h1>SÈTIFIKA</h1>
+                    <p>Verifye Validite Yon Sètifika</p>
+                </div>
+                <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto;">
+                    <p style="font-size: 15px; color: #555; margin-bottom: 15px;">Antre kòd sètifika a pou wè si l valab nan sistèm nou an.</p>
+                    <input type="text" id="certif-code-input" placeholder="Egz: RJFlah123457" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; outline: none;">
+                    <button onclick="verifyCertificate()" style="width: 100%; padding: 12px; background: #111b21; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;">Verifye Koulye a</button>
+                    <div id="certif-result" style="margin-top: 20px; font-size: 15px;"></div>
+                </div>
             </div>
 
             <div id="input-area">
@@ -447,11 +649,11 @@
         </div>
     </div>
 
-    <!-- NOUVEAU FOOTER AVEC TOUS LES SERVICES -->
+    <!-- FOOTER AVÈK TOUT 5 BOUTON ORIJINAL OU YO + NOUVO A -->
     <div id="bottom-footer">
         <div class="footer-item user-item active" data-chatid="ACTUALITE" onclick="switchChat('ACTUALITE')">
             <div class="icon">📰</div>
-            <div class="label">Actualités</div>
+            <div class="label">Akt</div>
             <span class="badge" style="display:none;"></span>
         </div>
         <div class="footer-item user-item" data-chatid="LANG" onclick="switchChat('LANG')">
@@ -459,25 +661,43 @@
             <div class="label">Lang</div>
             <span class="badge" style="display:none;"></span>
         </div>
+        <div class="footer-item user-item" data-chatid="COURS" onclick="switchChat('COURS')">
+            <div class="icon">🎓</div>
+            <div class="label">Kou</div>
+            <span class="badge" style="display:none;"></span>
+        </div>
         <div class="footer-item user-item" data-chatid="SERIES" onclick="switchChat('SERIES')">
             <div class="icon">📺</div>
-            <div class="label">Séries</div>
+            <div class="label">Seri</div>
             <span class="badge" style="display:none;"></span>
         </div>
         <div class="footer-item user-item" data-chatid="PDF_DOCS" onclick="switchChat('PDF_DOCS')">
             <div class="icon">📚</div>
-            <div class="label">Docs</div>
+            <div class="label">Dok</div>
             <span class="badge" style="display:none;"></span>
         </div>
-        <div class="footer-item user-item" data-chatid="GROUP" onclick="switchChat('GROUP')">
-            <div class="icon">👥</div>
-            <div class="label">Groupe</div>
+        <!-- ONGLÈ SÈTIFIKA -->
+        <div class="footer-item user-item" data-chatid="CERTIF" onclick="switchChat('CERTIF')">
+            <div class="icon">📜</div>
+            <div class="label">Sètif.</div>
             <span class="badge" style="display:none;"></span>
         </div>
     </div>
     
     <script>
       window.handleAndroidBack = function() {
+            let lessonReader = document.getElementById('lesson-reader-overlay');
+            if (lessonReader && lessonReader.style.display === 'flex') {
+                if(window.closeLessonReader) window.closeLessonReader();
+                return true;
+            }
+
+            let certModal = document.getElementById('certificate-modal');
+            if(certModal && certModal.style.display === 'block') {
+                certModal.style.display = 'none';
+                return true;
+            }
+
             let pdfReader = document.getElementById('pdf-reader-overlay');
             if (pdfReader && pdfReader.style.display === 'block') {
                 if(window.closePdfReader) window.closePdfReader();
@@ -527,7 +747,7 @@
 
 <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, get, set, update, push, onValue, onDisconnect, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { getDatabase, ref, get, set, update, push, onValue, onDisconnect, serverTimestamp, remove, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = { apiKey: "AIzaSyAQeHWr_vUiQmVVgJJ_cOF9qrCCLd7IJNc", authDomain: "ayiweb.firebaseapp.com", databaseURL: "https://ayiweb-default-rtdb.firebaseio.com", projectId: "ayiweb", storageBucket: "ayiweb.appspot.com", messagingSenderId: "115054504556", appId: "1:115054504556:web:ccd713ba01dd8f02830649" };
         const app = initializeApp(firebaseConfig);
@@ -544,12 +764,11 @@
 
         const NEWS_PER_PAGE = 20, SERIE_COST = 50; 
 
-        // VARIABLES RECHERCHE GLOBALE
         window.globalSearchTerm = "";
 
         const loginScreen = document.getElementById("login-screen"), appScreen = document.getElementById("app"), identifierInput = document.getElementById("identifier-input"), passwordInput = document.getElementById("password-input"), loginBtn = document.getElementById("login-btn"), errorMsg = document.getElementById("error-msg");
         const messagesDiv = document.getElementById("messages"), seriesArea = document.getElementById("series-area"), seriesContainer = document.getElementById("seriesContainer"), pdfArea = document.getElementById("pdf-area"), pdfContainer = document.getElementById("pdfContainer");
-        const paginationControls = document.getElementById("pagination-controls"), messageInput = document.getElementById("message-input"), sendBtn = document.getElementById("send-btn"), userListDiv = document.getElementById("user-list"), chatTitleText = document.getElementById("chat-title-text"), notifSound = document.getElementById("notification-sound"), emojiBtn = document.getElementById("emoji-btn"), emojiPicker = document.getElementById("emoji-picker"), loader = document.getElementById("loader"), fileInput = document.getElementById("file-input"), inputArea = document.getElementById("input-area"), newsFilters = document.getElementById("news-filters"), langFilters = document.getElementById("lang-filters"), backBtn = document.querySelector(".back-btn"), menuBtn = document.getElementById("menu-btn");
+        const paginationControls = document.getElementById("pagination-controls"), messageInput = document.getElementById("message-input"), sendBtn = document.getElementById("send-btn"), userListDiv = document.getElementById("user-list"), chatTitleText = document.getElementById("chat-title-text"), notifSound = document.getElementById("notification-sound"), emojiBtn = document.getElementById("emoji-picker"), loader = document.getElementById("loader"), fileInput = document.getElementById("file-input"), inputArea = document.getElementById("input-area"), newsFilters = document.getElementById("news-filters"), langFilters = document.getElementById("lang-filters"), backBtn = document.querySelector(".back-btn"), menuBtn = document.getElementById("menu-btn");
 
         const popupOverlay = document.getElementById("custom-popup-overlay"), popupMsg = document.getElementById("popup-message"), popupConfirmBtn = document.getElementById("popup-confirm-btn"), popupCancelBtn = document.getElementById("popup-cancel-btn");
 
@@ -567,7 +786,6 @@
         closeBtn.addEventListener('click', () => { signupOverlay.style.display = 'none'; });
         window.addEventListener('click', (e) => { if (e.target === signupOverlay) signupOverlay.style.display = 'none'; });
 
-        // ===== POPUP EBOOK EVENTS =====
         const ebookModal = document.getElementById('ebookModal');
         const closeEbookModal = document.getElementById('closeEbookModal');
         closeEbookModal.addEventListener('click', () => { 
@@ -581,11 +799,10 @@
             } 
         });
 
-        // ===== FONCTION DE RECHERCHE DOM =====
         window.applyDOMSearch = function(containerId, term) {
             const container = document.getElementById(containerId);
             if(!container) return;
-            const items = container.querySelectorAll('.serie-card');
+            const items = container.querySelectorAll('.serie-card, .app-card');
             items.forEach(item => {
                 const titleEl = item.querySelector('h3');
                 const titleText = titleEl ? titleEl.innerText.toLowerCase() : "";
@@ -603,14 +820,15 @@
             });
         };
 
-        // ===== EVENEMENT RECHERCHE GLOBALE =====
         document.getElementById("global-search-input").addEventListener("input", (e) => {
             window.globalSearchTerm = e.target.value.trim();
             if (currentChatId === "ACTUALITE") { currentNewsPage = 1; renderNewsPage(); } 
             else if (currentChatId === "LANG") { currentLangPage = 1; renderLangPage(); } 
             else if (currentChatId === "SERIES") { window.applyDOMSearch("seriesContainer", window.globalSearchTerm); } 
             else if (currentChatId === "PDF_DOCS") { window.applyDOMSearch("pdfContainer", window.globalSearchTerm); } 
-            else { window.applyChatSearch(window.globalSearchTerm); }
+            else if (currentChatId === "MY_APPS") { window.applyDOMSearch("myAppsContainer", window.globalSearchTerm); } 
+            else if (currentChatId === "COURS") { window.applyDOMSearch("coursContainer", window.globalSearchTerm); } 
+            else if (currentChatId !== "CERTIF") { window.applyChatSearch(window.globalSearchTerm); }
         });
 
         function getRoleBadge(userObj) {
@@ -688,7 +906,7 @@
         function startApp() {
             loginScreen.style.display = "none"; 
             appScreen.style.display = "flex";
-            document.getElementById("bottom-footer").style.display = "flex"; // Afiche footer la
+            document.getElementById("bottom-footer").style.display = "flex"; 
             
             if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") Notification.requestPermission();
             refreshMyInfoUI(); 
@@ -711,9 +929,18 @@
             onValue(ref(db, 'RJFORDROID/USERS'), (snapshot) => {
                 const isAdmin = (currentUser && (currentUser.role === 'admin' || currentUser.isAdmin === true || currentUser.isAdmin === "true"));
                 
-                // Mwen kite bouton Administrasyon an nan sidebar pou sèlman Admin yo
                 userListDiv.innerHTML = `
                     ${isAdmin ? `<div class="user-item" onclick="window.location.href='admin.html'"><div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #ff3b30, #cc2f26);">⚙️</div><div class="user-details"><div class="user-name">Administration</div><div class="user-sub">Gérer les contenus</div></div></div></div>` : ''}
+                    
+                    <div class="user-item" onclick="switchChat('MY_APPS')">
+                        <div class="user-info">
+                            <div class="avatar avatar-group" style="background: linear-gradient(135deg, #673ab7, #512da8);">📱</div>
+                            <div class="user-details">
+                                <div class="user-name">My Apps</div>
+                                <div class="user-sub">Toutes nos applications</div>
+                            </div>
+                        </div>
+                    </div>
                 `;
                 
                 if (snapshot.exists()) {
@@ -735,7 +962,7 @@
         window.updateBadges = function() {
             document.querySelectorAll('.user-item').forEach(item => {
                 const chatId = item.getAttribute('data-chatid'); let badge = item.querySelector('.badge');
-                if(!badge || !chatId || chatId === "ACTUALITE" || chatId === "LANG" || chatId === "ADMIN_PANEL" || chatId === "SERIES" || chatId === "PDF_DOCS") return;
+                if(!badge || !chatId || chatId === "ACTUALITE" || chatId === "LANG" || chatId === "ADMIN_PANEL" || chatId === "SERIES" || chatId === "PDF_DOCS" || chatId === "MY_APPS" || chatId === "COURS" || chatId === "CERTIF") return;
                 let msgs = allChatsData[chatId] ? Object.values(allChatsData[chatId]) : [];
                 let totalOther = msgs.filter(m => m.sender !== currentUser.username).length;
                 let seen = JSON.parse(localStorage.getItem('seen_msgs_' + currentUser.username)) || {};
@@ -759,21 +986,28 @@
             
             newsFilters.style.display = (target === "ACTUALITE") ? "flex" : "none";
             langFilters.style.display = (target === "LANG") ? "flex" : "none";
-            inputArea.style.display = (target !== "ACTUALITE" && target !== "LANG" && target !== "SERIES" && target !== "PDF_DOCS") ? "flex" : "none";
-            messagesDiv.style.display = (target !== "SERIES" && target !== "PDF_DOCS") ? "flex" : "none";
+            
+            inputArea.style.display = (target !== "ACTUALITE" && target !== "LANG" && target !== "SERIES" && target !== "PDF_DOCS" && target !== "MY_APPS" && target !== "COURS" && target !== "CERTIF") ? "flex" : "none";
+            messagesDiv.style.display = (target !== "SERIES" && target !== "PDF_DOCS" && target !== "MY_APPS" && target !== "COURS" && target !== "CERTIF") ? "flex" : "none";
+            
             seriesArea.style.display = (target === "SERIES") ? "block" : "none";
             pdfArea.style.display = (target === "PDF_DOCS") ? "block" : "none";
+            document.getElementById("my-apps-area").style.display = (target === "MY_APPS") ? "block" : "none";
+            document.getElementById("cours-area").style.display = (target === "COURS") ? "block" : "none";
+            document.getElementById("certif-area").style.display = (target === "CERTIF") ? "block" : "none";
             
             if (target === "ACTUALITE") { currentChatId = "ACTUALITE"; chatTitleText.innerText = "📰 Accueil"; updateFilterUI(); loadNews(); }
             else if (target === "LANG") { currentChatId = "LANG"; chatTitleText.innerText = "🗣️ Lang Eksprèsyon"; updateLangFilterUI(); loadLang(); }
             else if (target === "SERIES") { currentChatId = "SERIES"; chatTitleText.innerText = "📺 Séries Vidéos"; loadSeries(); } 
             else if (target === "PDF_DOCS") { currentChatId = "PDF_DOCS"; chatTitleText.innerText = "📚 Ebooks & PDF"; loadPDFs(); }
-            else if (target === "GROUP") { currentChatId = "GROUP"; chatTitleText.innerText = "👥 Groupe"; loadChat("GROUP"); }
+            else if (target === "MY_APPS") { currentChatId = "MY_APPS"; chatTitleText.innerText = "📱 My Apps"; loadMyApps(); } 
+            else if (target === "COURS") { currentChatId = "COURS"; chatTitleText.innerText = "🎓 RJ Academy"; loadCours(); } 
+            else if (target === "CERTIF") { currentChatId = "CERTIF"; chatTitleText.innerText = "📜 Verifye Sètifika"; } 
             else { currentChatId = getPrivateChatId(currentUser.username, target); chatTitleText.innerText = `👤 ${target}`; loadChat(currentChatId); }
 
             document.getElementById("app").classList.remove("menu-active");
-            backBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS") ? "none" : "block";
-            menuBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS") ? "block" : "none";
+            backBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS" || currentChatId === "MY_APPS" || currentChatId === "COURS" || currentChatId === "CERTIF") ? "none" : "block";
+            menuBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS" || currentChatId === "MY_APPS" || currentChatId === "COURS" || currentChatId === "CERTIF") ? "block" : "none";
             
             document.querySelectorAll('.user-item').forEach(el => {
                 if (el.getAttribute('data-chatid') === target) el.classList.add('active');
@@ -783,6 +1017,406 @@
             updateBadges();
         };
 
+        // ================= LOGIK SÈTIFIKA YP =================
+        window.openCertifPrompt = function() {
+            document.getElementById('certif-input-name').value = currentUser.fullName || currentUser.username;
+            document.getElementById('certif-name-prompt').style.display = 'block';
+        };
+
+        window.submitCertifName = function() {
+            const name = document.getElementById('certif-input-name').value.trim();
+            if(!name) { showPopup("Tanpri antre non w pou w jwenn sètifika a."); return; }
+            document.getElementById('certif-name-prompt').style.display = 'none';
+            generateCertificate(name, window.currentCoursData.NomCours);
+        };
+
+        window.generateCertificate = async function(fullName, courseName) {
+            // Jenere yon kòd ki kòmanse ak RJFlah ak yon pati inik
+            const randomId = Math.floor(100000 + Math.random() * 900000);
+            const certCode = "RJFlah" + randomId;
+            const dateStr = new Date().toLocaleDateString();
+
+            try {
+                // Sove l nan Firebase pou onglè verifikasyon an ka jwenn li
+                const certRef = ref(db, `RJFORDROID/CERTIFICATES/${certCode}`);
+                await set(certRef, {
+                    fullName: fullName,
+                    courseName: courseName,
+                    date: dateStr,
+                    code: certCode,
+                    userKey: currentUserKey
+                });
+                
+                showCertificateFromData(fullName, courseName, certCode, dateStr);
+                closeLessonReader();
+
+            } catch(e) {
+                showPopup("Erè rezo pandan kreyasyon sètifika a.");
+            }
+        };
+
+        window.verifyCertificate = async function() {
+            const code = document.getElementById('certif-code-input').value.trim();
+            const resDiv = document.getElementById('certif-result');
+            if(!code) {
+                resDiv.innerHTML = `<span style="color:red; font-weight:bold;">Tanpri antre yon kòd pou verifye.</span>`;
+                return;
+            }
+            resDiv.innerHTML = "Ap verifye nan sistèm nan...";
+            try {
+                const snap = await get(ref(db, `RJFORDROID/CERTIFICATES/${code}`));
+                if(snap.exists()) {
+                    const data = snap.val();
+                    resDiv.innerHTML = `
+                        <div style="background: #f0fdf4; border: 1px solid #16a34a; padding: 20px; border-radius: 10px; margin-top:20px; text-align: left;">
+                            <h3 style="color:#16a34a; margin-bottom: 10px; text-align: center;">Sètifika Valab ✔️</h3>
+                            <p style="margin-bottom: 5px;"><strong>Non:</strong> ${data.fullName}</p>
+                            <p style="margin-bottom: 5px;"><strong>Kou:</strong> ${data.courseName}</p>
+                            <p style="margin-bottom: 15px;"><strong>Dat:</strong> ${data.date}</p>
+                            <button onclick="showCertificateFromData('${data.fullName}', '${data.courseName}', '${data.code}', '${data.date}')" style="width: 100%; padding: 10px; background: #007aff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight:bold; font-size: 15px;">👀 Wè ak Telechaje</button>
+                        </div>
+                    `;
+                } else {
+                    resDiv.innerHTML = `<div style="background: #fef2f2; border: 1px solid #dc2626; padding: 15px; border-radius: 10px; margin-top:20px; color: #dc2626; font-weight: bold;">Kòd sa a pa ekziste. Sètifika a pa valab.</div>`;
+                }
+            } catch(e) {
+                resDiv.innerHTML = `<span style="color:red;">Erè rezo. Eseye ankò.</span>`;
+            }
+        };
+
+        window.showCertificateFromData = function(name, course, code, date) {
+            // Pou Fòma mobil
+            document.getElementById('certif-name-display').innerText = name;
+            document.getElementById('certif-course-display').innerText = course;
+            document.getElementById('certif-code-display').innerText = code;
+            document.getElementById('certif-date-display').innerText = date;
+            
+            // Pou Fòma Print 11x8.5
+            document.getElementById('print-name-display').innerText = name;
+            document.getElementById('print-course-display').innerText = course;
+            document.getElementById('print-code-display').innerText = code;
+            document.getElementById('print-date-display').innerText = date;
+
+            document.getElementById('certificate-modal').style.display = 'block';
+        };
+
+        window.downloadCertificate = function(format) {
+            let certNode;
+            let code = document.getElementById('certif-code-display').innerText;
+
+            if (format === 'print') {
+                certNode = document.getElementById('certificate-print-content');
+            } else {
+                certNode = document.getElementById('certificate-content');
+            }
+
+            // html2canvas capture perfectly even if z-index is negative
+            html2canvas(certNode, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Setifika_${format === 'print' ? '11x8_5' : 'Mobil'}_${code}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(e => {
+                showPopup("Gen yon pwoblèm pandan preparasyon imaj la.");
+            });
+        };
+
+        // ================= COURS LOGIC =================
+        window.loadCours = async function() {
+            if (!currentUserKey) return;
+            let unlockedCours = {};
+            let coursProgress = {};
+            try { 
+                const userSnap = await get(ref(db, `RJFORDROID/USERS/${currentUserKey}`)); 
+                if (userSnap.exists()) {
+                    let uData = userSnap.val();
+                    unlockedCours = uData.unlockedCours || {}; 
+                    coursProgress = uData.coursProgress || {};
+                }
+            } catch (e) {}
+
+            onValue(ref(db, 'RJFORDROID/COURE'), (snapshot) => {
+                const coursContainer = document.getElementById("coursContainer");
+                coursContainer.innerHTML = "";
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    for(let key in data) {
+                        const cours = data[key];
+                        const isUnlocked = unlockedCours[key] === true;
+                        const cost = cours.credits || 0;
+                        const progress = coursProgress[key] || 0; 
+
+                        const card = document.createElement('article'); 
+                        card.className = 'serie-card'; 
+                        card.onclick = () => handleCoursClick(key, cours, isUnlocked, cost, progress);
+                        
+                        let lessonCount = cours.lessons ? Object.keys(cours.lessons).length : 0;
+
+                        card.innerHTML = `
+                            <div class="status-badge ${isUnlocked ? 'badge-unlocked' : 'badge-price'}">
+                                ${isUnlocked ? '✔️ Deboke' : cost + ' 💰'}
+                            </div>
+                            <div style="height: 120px; background: #e67e22; color: white; display: flex; align-items: center; justify-content: center; font-size: 50px;">🎓</div>
+                            <div class="serie-info">
+                                <h3>${cours.NomCours || 'Kou san non'} ${(cours.complet === true || cours.complet === 'true') ? '<span style="background: #00a884; color: white; padding: 2px 6px; border-radius: 8px; font-size: 9px; vertical-align: middle; margin-left: 5px;">🎓 SÈTIFIKA</span>' : ''}</h3>
+                                <p style="font-size: 11px; color: #666;">${lessonCount} Leson disponib</p>
+                                ${isUnlocked ? `<p style="font-size: 11px; color: #00a884; margin-top:5px; font-weight:bold;">Progresyon: Ou nan Leson ${progress + 1}</p>` : ''}
+                            </div>
+                        `;
+                        coursContainer.appendChild(card);
+                    }
+                } else {
+                    coursContainer.innerHTML = "<p style='text-align:center; width:100%; grid-column: 1 / -1; color:#8696a0;'>Aucun cours disponible pour le moment.</p>";
+                }
+                if (window.globalSearchTerm) window.applyDOMSearch("coursContainer", window.globalSearchTerm);
+            });
+        };
+
+        window.handleCoursClick = async function(coursId, cours, isUnlocked, cost, savedProgress) {
+            if (isUnlocked) {
+                openLessonReader(coursId, cours, savedProgress);
+                return;
+            }
+            try {
+                const userSnap = await get(ref(db, `RJFORDROID/USERS/${currentUserKey}`)); 
+                const userCredits = userSnap.val().credits || 0;
+                if (userCredits < cost) { 
+                    showPopup(`Kredi Enfisiyan: Ou bezwen ${cost} kredi pou kou sa a. Ou sèlman gen ${userCredits} kredi.`); 
+                    return; 
+                }
+                showPopup(`Èske ou vle deboke "${cours.NomCours}" pou ${cost} kredi?`, true, async () => {
+                    const updates = {}; 
+                    updates[`RJFORDROID/USERS/${currentUserKey}/credits`] = userCredits - cost; 
+                    updates[`RJFORDROID/USERS/${currentUserKey}/unlockedCours/${coursId}`] = true;
+                    updates[`RJFORDROID/USERS/${currentUserKey}/coursProgress/${coursId}`] = 0;
+                    
+                    await update(ref(db), updates); 
+                    showPopup("Kou a deboke ak siksè! Ou ka kòmanse aprann kounye a.");
+                    
+                    currentUser.credits = userCredits - cost; 
+                    if(!currentUser.unlockedCours) currentUser.unlockedCours = {}; 
+                    currentUser.unlockedCours[coursId] = true; 
+                    if(!currentUser.coursProgress) currentUser.coursProgress = {};
+                    currentUser.coursProgress[coursId] = 0;
+                    localStorage.setItem("rjfordroid_session", JSON.stringify({ key: currentUserKey, data: currentUser })); 
+                    
+                    refreshMyInfoUI(); 
+                    loadCours(); 
+                });
+            } catch (e) { showPopup("Erè lè nap deboke kou a."); }
+        };
+
+        window.currentCoursData = null;
+        window.currentCoursId = null;
+        window.currentLessonIndex = 0;
+        window.maxAllowedLesson = 0; 
+        window.sortedLessons = [];
+        window.coursRealtimeUnsubscribe = null;
+
+        function getEmbedUrl(url) {
+            if (!url) return "";
+            url = url.trim();
+            let videoId = "";
+            
+            if (url.includes("youtu.be/")) {
+                videoId = url.split("youtu.be/")[1]?.split("?")[0];
+            } else if (url.includes("youtube.com/watch")) {
+                const parts = url.split("?");
+                if(parts.length > 1) {
+                    videoId = new URLSearchParams("?" + parts[1]).get("v");
+                }
+            } else if (!url.includes("http") && !url.includes "/") {
+                videoId = url;
+            }
+            
+            if (videoId) return `https://www.youtube.com/embed/${videoId}?rel=0`;
+            return url; 
+        }
+
+        window.openLessonReader = function(coursId, cours, savedProgress) {
+            window.currentCoursId = coursId;
+            window.currentCoursData = cours;
+            window.currentLessonIndex = savedProgress || 0;
+            window.maxAllowedLesson = savedProgress || 0; 
+
+            if(!cours.lessons) {
+                showPopup("Kou sa poko gen leson ladan l. Rete branche!");
+                return;
+            }
+
+            window.sortedLessons = Object.values(cours.lessons).sort((a, b) => a.numero - b.numero);
+            
+            if(window.currentLessonIndex >= window.sortedLessons.length) {
+                window.currentLessonIndex = window.sortedLessons.length - 1;
+                window.maxAllowedLesson = window.currentLessonIndex;
+            }
+
+            document.getElementById("lesson-course-title").innerText = cours.NomCours;
+            document.getElementById("lesson-reader-overlay").style.display = "flex";
+            
+            document.getElementById("btn-like-cours").onclick = () => voteCours(coursId);
+            document.getElementById("btn-share-cours").onclick = () => shareCours(coursId, cours.NomCours);
+
+            if (window.coursRealtimeUnsubscribe) window.coursRealtimeUnsubscribe();
+            window.coursRealtimeUnsubscribe = onValue(ref(db, `RJFORDROID/COURE/${coursId}`), (snap) => {
+                if (snap.exists()) {
+                    const data = snap.val();
+                    let likeCount = data.likes ? Object.keys(data.likes).length : 0;
+                    document.getElementById('cours-likes-count').innerText = likeCount;
+                }
+            });
+
+            renderCurrentLesson();
+        };
+
+        window.renderCurrentLesson = function() {
+            const lesson = window.sortedLessons[window.currentLessonIndex];
+            if(!lesson) return;
+
+            document.getElementById("lesson-subtitle").innerHTML = `Leson ${window.currentLessonIndex + 1} / ${window.sortedLessons.length}: ${lesson.titre}`;
+            
+            let htmlContent = (lesson.contenuHtml || "").replace(/\n/g, "<br>");
+            document.getElementById("lesson-content-text").innerHTML = htmlContent;
+
+            const videoContainer = document.getElementById("lesson-video-container");
+            const videoIframe = document.getElementById("lesson-video-iframe");
+            if(lesson.url && lesson.url.trim() !== "") {
+                videoContainer.style.display = "block";
+                videoIframe.src = getEmbedUrl(lesson.url.trim());
+            } else {
+                videoContainer.style.display = "none";
+                videoIframe.src = "";
+            }
+
+            const btnPrev = document.getElementById("btn-lesson-prev");
+            const btnNext = document.getElementById("btn-lesson-next");
+
+            if(window.currentLessonIndex > 0) {
+                btnPrev.style.display = "block";
+                btnPrev.innerText = "⬅️";
+                btnPrev.onclick = () => {
+                    window.currentLessonIndex--;
+                    renderCurrentLesson();
+                    document.getElementById("lesson-content-text").scrollTop = 0;
+                };
+            } else {
+                btnPrev.style.display = "none";
+            }
+
+            if(window.currentLessonIndex < window.sortedLessons.length - 1) {
+                btnNext.style.display = "block";
+                btnNext.innerText = "➡️";
+                
+                btnNext.onclick = async () => {
+                    window.currentLessonIndex++;
+                    if(window.currentLessonIndex > window.maxAllowedLesson) {
+                        window.maxAllowedLesson = window.currentLessonIndex;
+                        await set(ref(db, `RJFORDROID/USERS/${currentUserKey}/coursProgress/${window.currentCoursId}`), window.currentLessonIndex);
+                        if(currentUser.coursProgress) currentUser.coursProgress[window.currentCoursId] = window.currentLessonIndex;
+                        localStorage.setItem("rjfordroid_session", JSON.stringify({ key: currentUserKey, data: currentUser })); 
+                    }
+                    renderCurrentLesson();
+                    document.getElementById("lesson-content-text").scrollTop = 0;
+                };
+            } else {
+                // MODIFIKASYON POU MANDE NON LÈ KOU A FINI
+                btnNext.style.display = "block";
+                btnNext.innerText = "🏁 Fini";
+                btnNext.onclick = () => {
+                    openCertifPrompt();
+                };
+            }
+        };
+
+        window.voteCours = async function(coursId) {
+            if(!currentUserKey) return;
+            const coursRef = ref(db, `RJFORDROID/COURE/${coursId}`);
+            try {
+                const snap = await get(coursRef);
+                if (!snap.exists()) return;
+                let data = snap.val();
+                let likesObj = data.likes || {};
+                if (likesObj[currentUser.username]) {
+                    showPopup("Ou deja like kou sa a !");
+                    return;
+                }
+                likesObj[currentUser.username] = Date.now();
+                await update(ref(db, `RJFORDROID/COURE/${coursId}`), { likes: likesObj });
+                showPopup("Mèsi pou like ou a !");
+            } catch(e) { console.error(e); }
+        };
+
+        window.shareCours = async function(coursId, title) {
+            if(!currentUserKey) return;
+            const content = `🎓 *${title}*\n\nVin swiv fòmasyon pwofesyonèl sa a sou aplikasyon nou an!\n\nTelechaje app a kounye a: https://rjfordroid.netlify.app/p/apps.html?nom=RJFlash`;
+            
+            try {
+                const shareRef = ref(db, `RJFORDROID/COURE/${coursId}/shares/${currentUserKey}`);
+                const snap = await get(shareRef);
+                if (!snap.exists()) { 
+                    await set(shareRef, { user: currentUser.username, date: Date.now() }); 
+                    addCredits(10); 
+                    showPopup("+10 Crédits pou pataj ou a !"); 
+                }
+                
+                if (typeof AndroidControler !== "undefined" && AndroidControler.shareToAndroid) {
+                    AndroidControler.shareToAndroid(title, content); 
+                } else if (navigator.share) {
+                    navigator.share({ title, text: content }).catch(() => {}); 
+                } else { 
+                    navigator.clipboard.writeText(content); 
+                    showPopup("Lien copié !"); 
+                }
+            } catch(e) { console.error(e); }
+        };
+
+        window.closeLessonReader = function() {
+            document.getElementById("lesson-reader-overlay").style.display = "none";
+            document.getElementById("lesson-video-iframe").src = "";
+            if (window.coursRealtimeUnsubscribe) {
+                window.coursRealtimeUnsubscribe();
+                window.coursRealtimeUnsubscribe = null;
+            }
+            loadCours(); 
+        };
+
+        // ================= MY APPS LOGIC =================
+        window.loadMyApps = function() {
+            const myAppsContainer = document.getElementById("myAppsContainer");
+            
+            onValue(ref(db, 'RJFORDROID/APPS'), (snapshot) => {
+                myAppsContainer.innerHTML = "";
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    for(let key in data) {
+                        const appData = data[key];
+                        
+                        const card = document.createElement('div');
+                        card.className = 'app-card';
+                        card.onclick = () => {
+                            const url = appData.url || appData.lien || appData.link;
+                            if(url) window.open(url, '_blank');
+                            else showPopup("Lien de l'application non disponible.");
+                        };
+                        
+                        let imgSrc = appData.image || appData.imageUrl || 'https://via.placeholder.com/150?text=App';
+                        let nom = appData.nom || appData.name || 'Application';
+                        
+                        card.innerHTML = `
+                            <img src="${imgSrc}" alt="${nom}">
+                            <h3>${nom}</h3>
+                        `;
+                        myAppsContainer.appendChild(card);
+                    }
+                } else {
+                    myAppsContainer.innerHTML = "<p style='text-align:center; width:100%; grid-column: 1 / -1; color:#8696a0;'>Aucune application disponible pour le moment.</p>";
+                }
+                
+                if (window.globalSearchTerm) window.applyDOMSearch("myAppsContainer", window.globalSearchTerm);
+            });
+        };
+
+        // Lòt fonksyon yo rete menm jan ...
         function listenToNewsNotifications() {
             onValue(ref(db, 'RJFORDROID/ACTUALITE'), (snapshot) => {
                 if (snapshot.exists()) {
@@ -1443,3 +2077,4 @@
 
 </body>
 </html>
+```
