@@ -64,12 +64,14 @@ var courseDescInput = document.getElementById("courseDesc");
 var courseCreditsInput = document.getElementById('courseCredit');
 var submitCourseBtn = courseForm.querySelector('.btn-publish');
 var cancelEditBtn = document.getElementById("cancelEditBtn");
+
 // Nouveaux éléments pour TipTap
 var tiptapEditor = document.getElementById("tiptap-editor");
 var currentLessonKey = null;
 var currentCourseId = null;
 var editingCourseId = null;
 var lessonContent = '';
+
 // --- Fonctions pour TipTap ---
 function updateLessonContent() {
     if (tiptapEditor) {
@@ -162,6 +164,7 @@ function initTipTap() {
         lessonContent = savedContent;
     }
 }
+
 // --- Charger données ---
 function chargerDonneesAdmin() {
     db.ref("RJFORDROID/COURE").on("value", function (snap) {
@@ -181,6 +184,7 @@ function chargerDonneesAdmin() {
         actualiserNumeroLecon(cours);
     });
 }
+
 // --- Afficher la liste des cours et leçons ---
 function afficherListeCoursEtLecons(cours) {
     displayList.innerHTML = '';
@@ -192,28 +196,44 @@ function afficherListeCoursEtLecons(cours) {
         var course = cours[courseId];
         var courseDiv = document.createElement("div");
         courseDiv.className = "course-item";
-        // En-tête du cours avec boutons d'action
+        
+        // --- NOUVO STRITI POU EN-TÊTE AK AKSYON YO ---
         var courseHeader = document.createElement("div");
+        // Sèvi ak flex column pou mete tit la anlè ak bouton yo anba
         courseHeader.style.display = "flex";
-        courseHeader.style.justifyContent = "space-between";
-        courseHeader.style.alignItems = "center";
-        courseHeader.style.marginBottom = "10px";
+        courseHeader.style.flexDirection = "column";
+        courseHeader.style.alignItems = "flex-start";
+        courseHeader.style.gap = "12px"; // Bèl ti espas ant tit la ak bouton yo
+        courseHeader.style.marginBottom = "20px";
+        courseHeader.style.paddingBottom = "15px";
+        courseHeader.style.borderBottom = "1px solid #e2e8f0"; // Yon bèl liy separasyon
+        
         var courseTitle = document.createElement("div");
         courseTitle.className = "course-title";
+        courseTitle.style.fontSize = "18px";
+        courseTitle.style.fontWeight = "bold";
+        courseTitle.style.color = "#1e293b";
         courseTitle.textContent = course.NomCours || courseId;
         
         var courseActions = document.createElement("div");
         courseActions.className = "lesson-actions";
+        // Striti orizontal (row) pou aliyen Select la ak Bouton Edit/Delete yo
+        courseActions.style.display = "flex";
+        courseActions.style.flexDirection = "row";
+        courseActions.style.alignItems = "center";
+        courseActions.style.gap = "10px"; // Mete yon espas inifòm ant tout eleman yo
+        courseActions.style.flexWrap = "wrap"; // Si ekran an piti, yo pa p kraze anlè youn lòt
         
         // ==========================================
         // AJOUT SELECT OPTION POU COMPLET = TRUE/FALSE
         // ==========================================
         var statusSelect = document.createElement("select");
-        statusSelect.style.marginRight = "10px";
-        statusSelect.style.padding = "5px";
-        statusSelect.style.borderRadius = "4px";
+        statusSelect.style.padding = "6px 12px";
+        statusSelect.style.borderRadius = "6px";
         statusSelect.style.border = "1px solid #cbd5e1";
         statusSelect.style.fontWeight = "bold";
+        statusSelect.style.cursor = "pointer";
+        statusSelect.style.outline = "none";
 
         var optNon = document.createElement("option");
         optNon.value = "false";
@@ -254,7 +274,6 @@ function afficherListeCoursEtLecons(cours) {
         var editCourseBtn = document.createElement("button");
         editCourseBtn.className = "btn-edit";
         editCourseBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
-        editCourseBtn.style.marginRight = "5px";
         
         var deleteCourseBtn = document.createElement("button");
         deleteCourseBtn.className = "btn-delete";
@@ -339,6 +358,7 @@ function afficherListeCoursEtLecons(cours) {
         displayList.appendChild(courseDiv);
     });
 }
+
 // --- Numéro auto (1-100) ---
 function actualiserNumeroLecon(cours) {
     var id = selectCours.value;
@@ -371,6 +391,7 @@ function actualiserNumeroLecon(cours) {
     }
     numeroInput.value = nextNum.toString();
 }
+
 // --- Préparer l'édition d'un cours ---
 function prepareEditCourse(courseId, courseName, courseDesc) {
     editingCourseId = courseId;
@@ -393,6 +414,7 @@ function prepareEditCourse(courseId, courseName, courseDesc) {
         openTab('courseForm', tabButtons[0]);
     }
 }
+
 // --- Réinitialiser le formulaire cours ---
 function resetCourseForm() {
     courseForm.reset();
@@ -408,6 +430,7 @@ function resetCourseForm() {
         cancelEditBtn.style.display = "none";
     }
 }
+
 // --- Gestion du formulaire de cours ---
 if (courseForm) {
     courseForm.addEventListener("submit", function (e) { return __awaiter(void 0, void 0, void 0, function () {
@@ -470,6 +493,7 @@ if (courseForm) {
         });
     }); });
 }
+
 // --- Gestion du formulaire de leçon ---
 lessonForm.addEventListener("submit", function (e) { return __awaiter(void 0, void 0, void 0, function () {
     var courseId, titre, numero, data, ref, snapshot, error_2;
@@ -536,6 +560,7 @@ lessonForm.addEventListener("submit", function (e) { return __awaiter(void 0, vo
         }
     });
 }); });
+
 // --- Réinitialiser le formulaire leçon ---
 function resetLessonForm() {
     lessonForm.reset();
@@ -550,6 +575,7 @@ function resetLessonForm() {
         actualiserNumeroLecon(cours);
     });
 }
+
 // --- Édition d'une leçon ---
 function prepareEditLesson(courseId, lessonKey, titre, url, html, numero) {
     currentLessonKey = lessonKey;
@@ -568,6 +594,7 @@ function prepareEditLesson(courseId, lessonKey, titre, url, html, numero) {
         openTab('lessonForm', tabButtons[1]);
     }
 }
+
 // --- Supprimer une leçon ---
 function deleteLesson(courseId, lessonKey) {
     return __awaiter(this, void 0, void 0, function () {
@@ -594,6 +621,7 @@ function deleteLesson(courseId, lessonKey) {
         });
     });
 }
+
 // --- Supprimer un cours ---
 function deleteCourse(courseId) {
     return __awaiter(this, void 0, void 0, function () {
@@ -624,6 +652,7 @@ function deleteCourse(courseId) {
         });
     });
 }
+
 // --- Écouter les changements de sélection de cours ---
 selectCours.addEventListener("change", function () {
     // Recharger les données pour mettre à jour le numéro
@@ -636,6 +665,7 @@ selectCours.addEventListener("change", function () {
         }
     });
 });
+
 // --- Fonction openTab (exposée globalement) ---
 function openTab(id, btn) {
     var _a, _b, _c, _d;
@@ -646,6 +676,7 @@ function openTab(id, btn) {
     (_d = document.getElementById(id)) === null || _d === void 0 ? void 0 : _d.classList.add('active-content');
     btn.classList.add('active');
 }
+
 // Ekspoze fonksyon modal yo pou HTML la ka jwenn yo
 window.showImageModal = function () {
     var modal = document.getElementById('imageModal');
