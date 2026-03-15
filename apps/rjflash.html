@@ -14,6 +14,20 @@
         p{ margin:0px; padding:0px; line-height: normal; }
         ul{ margin: 0px 10px; padding:0px 10px; }
         
+        .appOffice{
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 5px;
+          
+        }
+        .appOffice a{
+          width: 100%;
+          padding: 5px 10px;
+          border: none;
+          outline: none;
+          text-decoration: none;
+        }
+        
         /* Styles du Popup Personnalisé */
         #custom-popup-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 5000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         #custom-popup { background: white; width: 90%; max-width: 400px; border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: popupShow 0.3s ease; }
@@ -554,6 +568,19 @@ box-sizing: border-box;
                 <div id="my-info" class="user-info"></div>
                 <button class="logout-btn" onclick="logout()">Déconnexion</button>
             </div>
+            <div class="appOffice">
+              <a href="Excel/excel.html">
+                <button>Excel Mobile</button>
+              </a>
+              
+              <a href="Editeur/editeur.html">
+                <button>Html Mobile</button>
+              </a>
+              
+              <a href="Word/word.html">
+                <button>Word Mobile</button>
+              </a>
+            </div>
             <div id="user-list"></div>
         </div>
 
@@ -663,7 +690,7 @@ box-sizing: border-box;
         <div class="footer-item user-item" data-chatid="COURS" onclick="switchChat('COURS')">
             <div class="icon">🎓</div>
             <div class="label">Kou</div>
-            <span class="badge" style="display:none;"></span>
+            <span class="badge" style&="display:none;"></span>
         </div>
         <div class="footer-item user-item" data-chatid="SERIES" onclick="switchChat('SERIES')">
             <div class="icon">📺</div>
