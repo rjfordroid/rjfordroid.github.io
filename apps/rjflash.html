@@ -675,7 +675,7 @@ box-sizing: border-box;
         </div>
     </div>
 
-    <!-- FOOTER AVÈK TOUT 5 BOUTON ORIJINAL OU YO + NOUVO A -->
+    <!-- FOOTER AVÈK TOUT BOUTON ORIJINAL OU YO + NOUVO A POU CHAT GROUPE -->
     <div id="bottom-footer">
         <div class="footer-item user-item active" data-chatid="ACTUALITE" onclick="switchChat('ACTUALITE')">
             <div class="icon">📰</div>
@@ -690,7 +690,7 @@ box-sizing: border-box;
         <div class="footer-item user-item" data-chatid="COURS" onclick="switchChat('COURS')">
             <div class="icon">🎓</div>
             <div class="label">Kou</div>
-            <span class="badge" style&="display:none;"></span>
+            <span class="badge" style="display:none;"></span>
         </div>
         <div class="footer-item user-item" data-chatid="SERIES" onclick="switchChat('SERIES')">
             <div class="icon">📺</div>
@@ -708,12 +708,19 @@ box-sizing: border-box;
             <div class="label">Sètif.</div>
             <span class="badge" style="display:none;"></span>
         </div>
+        <!-- NOUVO ONGLÈ CHAT GROUPE -->
+        <div class="footer-item user-item" data-chatid="CHAT_GROUPE" onclick="switchChat('CHAT_GROUPE')">
+            <div class="icon">👥</div>
+            <div class="label">Gwoup</div>
+            <span class="badge" style="display:none;"></span>
+        </div>
     </div>
     
     <script>
       window.handleAndroidBack = function() {
             let lessonReader = document.getElementById('lesson-reader-overlay');
             if (lessonReader && lessonReader.style.display === 'flex') {
+                if(window.lessonAudioObj) { window.lessonAudioObj.pause(); window.lessonAudioObj = null; }
                 if(window.closeLessonReader) window.closeLessonReader();
                 return true;
             }
@@ -958,6 +965,17 @@ box-sizing: border-box;
                 userListDiv.innerHTML = `
                     ${isAdmin ? `<div class="user-item" onclick="window.location.href='admin.html'"><div class="user-info"><div class="avatar avatar-group" style="background: linear-gradient(135deg, #ff3b30, #cc2f26);">⚙️</div><div class="user-details"><div class="user-name">Administration</div><div class="user-sub">Gérer les contenus</div></div></div></div>` : ''}
                     
+                    <div class="user-item" data-chatid="CHAT_GROUPE" onclick="switchChat('CHAT_GROUPE')">
+                        <div class="user-info">
+                            <div class="avatar avatar-group" style="background: linear-gradient(135deg, #00a884, #005bb5);">👥</div>
+                            <div class="user-details">
+                                <div class="user-name">Chat Groupe</div>
+                                <div class="user-sub">Espace de discussion publique</div>
+                            </div>
+                        </div>
+                        <span class="badge" style="display:none;"></span>
+                    </div>
+
                     <div class="user-item" onclick="switchChat('MY_APPS')">
                         <div class="user-info">
                             <div class="avatar avatar-group" style="background: linear-gradient(135deg, #673ab7, #512da8);">📱</div>
@@ -1029,11 +1047,12 @@ box-sizing: border-box;
             else if (target === "MY_APPS") { currentChatId = "MY_APPS"; chatTitleText.innerText = "📱 My Apps"; loadMyApps(); } 
             else if (target === "COURS") { currentChatId = "COURS"; chatTitleText.innerText = "🎓 RJ Academy"; loadCours(); } 
             else if (target === "CERTIF") { currentChatId = "CERTIF"; chatTitleText.innerText = "📜 Verifye Sètifika"; } 
+            else if (target === "CHAT_GROUPE") { currentChatId = "CHAT_GROUPE"; chatTitleText.innerText = "👥 Chat Groupe"; loadChat(currentChatId); }
             else { currentChatId = getPrivateChatId(currentUser.username, target); chatTitleText.innerText = `👤 ${target}`; loadChat(currentChatId); }
 
             document.getElementById("app").classList.remove("menu-active");
-            backBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS" || currentChatId === "MY_APPS" || currentChatId === "COURS" || currentChatId === "CERTIF") ? "none" : "block";
-            menuBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS" || currentChatId === "MY_APPS" || currentChatId === "COURS" || currentChatId === "CERTIF") ? "block" : "none";
+            backBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS" || currentChatId === "MY_APPS" || currentChatId === "COURS" || currentChatId === "CERTIF" || currentChatId === "CHAT_GROUPE") ? "none" : "block";
+            menuBtn.style.display = (currentChatId === "ACTUALITE" || currentChatId === "LANG" || currentChatId === "SERIES" || currentChatId === "PDF_DOCS" || currentChatId === "MY_APPS" || currentChatId === "COURS" || currentChatId === "CERTIF" || currentChatId === "CHAT_GROUPE") ? "block" : "none";
             
             document.querySelectorAll('.user-item').forEach(el => {
                 if (el.getAttribute('data-chatid') === target) el.classList.add('active');
@@ -1240,6 +1259,31 @@ box-sizing: border-box;
         window.maxAllowedLesson = 0; 
         window.sortedLessons = [];
         window.coursRealtimeUnsubscribe = null;
+        
+        // GLOBAL AUDIO OBJECT POU LESON
+        window.lessonAudioObj = null;
+
+        window.toggleLessonAudio = function(audioUrl) {
+            let btnText = document.getElementById("lesson-audio-text");
+            let btnIcon = document.getElementById("lesson-audio-icon");
+            if(window.lessonAudioObj && !window.lessonAudioObj.paused) {
+                window.lessonAudioObj.pause();
+                if(btnText) btnText.innerText = "Koute Odyo Leson an";
+                if(btnIcon) btnIcon.innerText = "🔊";
+            } else {
+                if(!window.lessonAudioObj || window.lessonAudioObj.src !== audioUrl) {
+                    if(window.lessonAudioObj) window.lessonAudioObj.pause();
+                    window.lessonAudioObj = new Audio(audioUrl);
+                    window.lessonAudioObj.onended = () => {
+                        if(btnText) btnText.innerText = "Koute Odyo Leson an";
+                        if(btnIcon) btnIcon.innerText = "🔊";
+                    };
+                }
+                window.lessonAudioObj.play().catch(e => console.log(e));
+                if(btnText) btnText.innerText = "Fè yon poz";
+                if(btnIcon) btnIcon.innerText = "⏸️";
+            }
+        };
 
         function getEmbedUrl(url) {
             if (!url) return "";
@@ -1301,19 +1345,24 @@ box-sizing: border-box;
             const lesson = window.sortedLessons[window.currentLessonIndex];
             if(!lesson) return;
 
-            // MODIFIKASYON: Ajoute ikon audio (🔊) si gen odyo nan leson an
-            let hasAudio = (lesson.audioLesson && lesson.audioLesson.trim() !== "");
-            let audioIcon = hasAudio ? " 🔊" : "";
+            // KANPE ODYO SI L AP JWE SOTI NAN LÒT LESON
+            if(window.lessonAudioObj) { window.lessonAudioObj.pause(); window.lessonAudioObj = null; }
 
-            document.getElementById("lesson-subtitle").innerHTML = `Leson ${window.currentLessonIndex + 1} / ${window.sortedLessons.length}: ${lesson.titre}${audioIcon}`;
+            let audioSrc = lesson.audioLesson || lesson.audioUrl || lesson.audio || "";
+            let hasAudio = (audioSrc && audioSrc.trim() !== "");
+
+            document.getElementById("lesson-subtitle").innerHTML = `Leson ${window.currentLessonIndex + 1} / ${window.sortedLessons.length}: ${lesson.titre}`;
             
             let htmlContent = (lesson.contenuHtml || "").replace(/\n/g, "<br>");
             
             let audioHtml = "";
             if(hasAudio) {
-                audioHtml = `<div style="background: #e8f5e9; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border: 1px solid #c8e6c9;">
-                    <span style="font-size: 24px;">🔊</span>
-                    <audio controls src="${lesson.audioLesson.trim()}" style="flex: 1; outline: none;"></audio>
+                audioHtml = `
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <button onclick="toggleLessonAudio('${audioSrc.trim()}')" style="background: #00a884; color: white; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); outline: none;">
+                        <span id="lesson-audio-icon" style="font-size: 18px;">🔊</span> 
+                        <span id="lesson-audio-text">Koute Odyo Leson an</span>
+                    </button>
                 </div>`;
             }
 
@@ -1418,6 +1467,7 @@ box-sizing: border-box;
         };
 
         window.closeLessonReader = function() {
+            if(window.lessonAudioObj) { window.lessonAudioObj.pause(); window.lessonAudioObj = null; }
             document.getElementById("lesson-reader-overlay").style.display = "none";
             document.getElementById("lesson-video-iframe").src = "";
             if (window.coursRealtimeUnsubscribe) {

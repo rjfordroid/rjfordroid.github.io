@@ -57,6 +57,7 @@ var courseForm = document.getElementById("courseForm");
 var numeroInput = document.getElementById("numeroInput");
 var lessonTitle = document.getElementById("lessonTitle");
 var lessonUrl = document.getElementById("lessonUrl");
+var lessonAudioUrl = document.getElementById("lessonAudioUrl"); // <-- NOUVO: VARYAB POU ODYO A
 var submitLesson = document.getElementById("submitLesson");
 var courseIdInput = document.getElementById("adfCoursId");
 var courseNameInput = document.getElementById("courseName");
@@ -331,9 +332,12 @@ function afficherListeCoursEtLecons(cours) {
                     var deleteBtn = document.createElement("button");
                     deleteBtn.className = "btn-delete";
                     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    
                     editBtn.addEventListener("click", function () {
-                        prepareEditLesson(courseId, lessonKey, l.titre || "", l.url || "", l.contenuHtml || "", l.numero || 0);
+                        // <-- NOUVO: PASE l.audioUrl NAN FONKSYON AN
+                        prepareEditLesson(courseId, lessonKey, l.titre || "", l.url || "", l.audioUrl || "", l.contenuHtml || "", l.numero || 0);
                     });
+                    
                     deleteBtn.addEventListener("click", function () {
                         if (confirm("Voulez-vous vraiment supprimer \"".concat(l.titre, "\" ?"))) {
                             deleteLesson(courseId, lessonKey);
@@ -516,13 +520,17 @@ lessonForm.addEventListener("submit", function (e) { return __awaiter(void 0, vo
                     alert("Le numéro doit être entre 1 et 100");
                     return [2 /*return*/];
                 }
+                
+                // <-- NOUVO: data A KOUNYEA ENKLI audioUrl
                 data = {
                     numero: numero,
                     titre: titre,
                     url: lessonUrl.value,
+                    audioUrl: lessonAudioUrl ? lessonAudioUrl.value : "", 
                     contenuHtml: getLessonContent(),
                     dateModification: new Date().toISOString()
                 };
+                
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 7, , 8]);
@@ -577,7 +585,8 @@ function resetLessonForm() {
 }
 
 // --- Édition d'une leçon ---
-function prepareEditLesson(courseId, lessonKey, titre, url, html, numero) {
+// <-- NOUVO: Ajoute paramèt audioUrl la nan fonksyon an
+function prepareEditLesson(courseId, lessonKey, titre, url, audioUrl, html, numero) {
     currentLessonKey = lessonKey;
     currentCourseId = courseId;
     // Remplir le formulaire
@@ -585,6 +594,12 @@ function prepareEditLesson(courseId, lessonKey, titre, url, html, numero) {
     selectCours.disabled = true;
     lessonTitle.value = titre;
     lessonUrl.value = url;
+    
+    // <-- NOUVO: Rekipere url odyo a
+    if (lessonAudioUrl) {
+        lessonAudioUrl.value = audioUrl || "";
+    }
+    
     setLessonContent(html); // Chanje sa - itilize setLessonContent()
     numeroInput.value = numero.toString();
     submitLesson.textContent = "Modifier la leçon";
